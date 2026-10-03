@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from .config import _freeze, canonical_bytes
+from .config import _freeze, canonical_bytes, resolve_config
 
 
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
@@ -64,7 +64,7 @@ class GateResult:
 
 _REQUIRED_METADATA = {
     "run_id", "created_utc", "local_timezone", "phase", "source", "lock_sha256",
-    "environment_sha256", "resolved_config", "method", "adaptation", "seeds", "data_sha256",
+    "environment_sha256", "resolved_config", "resolved_config_sha256", "method", "adaptation", "seeds", "data_sha256",
     "warm_start_sha256", "policy_sha256", "lineage", "endpoint",
 }
 _COUNTS = ("stream", "unique", "additional_loss", "backward", "query")
@@ -117,6 +117,18 @@ def _validate_metadata(metadata):
     for name in ("resolved_config", "seeds", "lineage", "endpoint"):
         if not isinstance(metadata[name], dict) or not metadata[name]:
             raise ValueError(f"{name} must be a nonempty object")
+    snapshot = metadata["resolved_config"]
+    _check_hash(metadata["resolved_config_sha256"], "resolved_config_sha256")
+    if hashlib.sha256(canonical_bytes(snapshot)).hexdigest() != metadata["resolved_config_sha256"]:
+        raise ValueError("Resolved config payload does not match its SHA-256")
+    if snapshot.get("purpose") != metadata["phase"] or "evidence_gates" not in snapshot:
+        raise ValueError("Resolved config must retain matching purpose and gate provenance")
+    template = dict(snapshot)
+    purpose = template.pop("purpose")
+    gates = template.pop("evidence_gates")
+    validated = resolve_config(template, {"gates": gates}, purpose=purpose)
+    if validated.sha256 != metadata["resolved_config_sha256"]:
+        raise ValueError("Run config is not the complete canonical resolved snapshot")
     for name, seed in metadata["seeds"].items():
         _integer(seed, f"seeds.{name}")
     if set(metadata["lineage"]) != {"parent", "resume"}:

@@ -70,10 +70,17 @@ _BASE_FIELDS = (
 _POLICY_FIELDS = ("policy.controller", "policy.normalizer", "policy.meta_sampling")
 _CONFIRM_FIELDS = ("confirmation.b_star", "confirmation.seeds", "confirmation.n",
                    "confirmation.analysis", "confirmation.manifest")
+_PROBE_FIELDS = (
+    "optimizer_probe.name", "optimizer_probe.learning_rate", "optimizer_probe.betas",
+    "optimizer_probe.epsilon", "optimizer_probe.decay", "meta.probe_horizon", "meta.probe_pairs",
+    "meta.probe_sigma", "meta.outer_learning_rate", "meta.outer_betas", "meta.outer_epsilon",
+    "meta.outer_decay",
+)
 _REQUIRED = {
     "doctor": (), "prepare-data": ("runtime.dependency_lock", "runtime.environment"),
-    "smoke": (), "train": _BASE_FIELDS, "meta": _BASE_FIELDS + _POLICY_FIELDS,
-    "confirm": _BASE_FIELDS + _POLICY_FIELDS + _CONFIRM_FIELDS,
+    "smoke": _PROBE_FIELDS, "train": _BASE_FIELDS + _PROBE_FIELDS,
+    "meta": _BASE_FIELDS + _POLICY_FIELDS + _PROBE_FIELDS,
+    "confirm": _BASE_FIELDS + _POLICY_FIELDS + _CONFIRM_FIELDS + _PROBE_FIELDS,
 }
 _GATES = {
     "doctor": (), "smoke": (), "prepare-data": ("WP00",),
@@ -106,6 +113,20 @@ def _fill_nulls(template, evidence, prefix=""):
 def _positive_integer(value, name, *, minimum=1):
     if type(value) is not int or value < minimum:
         raise ValueError(f"{name} must be an integer >= {minimum}")
+
+
+def _positive_number(value, name, *, allow_zero=False):
+    if (type(value) not in (int, float) or not math.isfinite(value)
+            or value < 0 or (value == 0 and not allow_zero)):
+        bound = "nonnegative" if allow_zero else "positive"
+        raise ValueError(f"{name} must be finite and {bound}")
+
+
+def _betas(value, name):
+    if (not isinstance(value, list) or len(value) != 2
+            or any(type(beta) not in (int, float) or not math.isfinite(beta)
+                   or not 0 <= beta < 1 for beta in value)):
+        raise ValueError(f"{name} must contain exactly two finite numbers in [0, 1)")
 
 
 def _validate_schema(payload):
@@ -196,6 +217,27 @@ def _validate_schema(payload):
 
 def _validate_values(payload):
     from .records import ArtifactRef
+
+    optimizer = payload["optimizer_probe"]
+    if optimizer["name"] is not None and optimizer["name"] != "AdamW":
+        raise ValueError("optimizer_probe.name must be AdamW")
+    for section, fields in (
+            ("optimizer_probe", ("learning_rate", "epsilon", "decay")),
+            ("meta", ("probe_sigma", "outer_learning_rate", "outer_epsilon", "outer_decay"))):
+        for field in fields:
+            value = payload[section][field]
+            if value is not None:
+                _positive_number(value, f"{section}.{field}", allow_zero=field.endswith("decay"))
+    for section, field in (("optimizer_probe", "betas"), ("meta", "outer_betas")):
+        value = payload[section][field]
+        if value is not None:
+            _betas(value, f"{section}.{field}")
+    for field in ("probe_horizon", "probe_pairs"):
+        value = payload["meta"][field]
+        if value is not None:
+            _positive_integer(value, f"meta.{field}")
+    if payload["meta"]["outer_decay"] is not None and payload["meta"]["outer_decay"] != 0:
+        raise ValueError("meta.outer_decay must be zero: S21 outer Adam has no decay")
 
     artifact_fields = (
         "data.manifest", "runtime.dependency_lock", "runtime.environment", "training.b0",

@@ -15,3 +15,5 @@
 - Official validation is development. Confirmation config resolution is necessary but insufficient for test scoring: later code must verify the locked manifest and completed final checkpoint/status inventory for every planned arm before opening protected targets.
 
 All scientific runtime gates remain open. No source revision, numerical release compatibility, MPS success, continuation horizon, confirmation sample size, or acceptance tolerance has been guessed for scientific execution.
+
+2026-10-03 — F01 review corrections validate every optimizer/meta field without freezing tunable probe defaults. Rates, epsilon, sigma, beta shape/range, integer horizons/pair counts, and decay contracts are enforced; null probe inputs block scientific/smoke run resolution. Immutable run metadata now requires both the full resolved payload and `resolved_config_sha256`. Re-resolution checks its schema, matching purpose, measured inputs, and gate provenance before publication or reopening. Old placeholder fixtures are replaced by real resolved synthetic snapshots; no scientific run artifacts existed to invalidate.

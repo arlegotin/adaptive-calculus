@@ -41,7 +41,11 @@ These are resolution purposes, not executable experiment commands. Confirmation 
 
 `ResolvedConfig.payload` is a deeply immutable snapshot; its SHA-256 covers canonical JSON with sorted keys, UTF-8, compact separators, and finite numbers only. Templates and supplied evidence remain unchanged.
 
+Optimizer/meta settings validate numeric types, positive rates/epsilon/sigma, two betas in `[0,1)`, positive integer horizon/pair counts, nonnegative AdamW decay, and zero outer Adam decay. Initial values are probes; valid tuned alternatives are allowed in a declared template. Null optimizer/meta settings block run resolution until supplied, while early inspection/data preparation can retain unresolved inputs.
+
 `RunLedger(directory, metadata)` creates `run.json` exclusively; a second creation fails. `RunLedger(directory)` reopens existing metadata. Metadata records identity, UTC/IANA timezone, phase, source commit/dirty diff, lock/environment hashes, resolved config, method/adaptation, named seeds, data/warm-start/policy hashes, lineage, and endpoint. Completion dispositions are appended through `record_status` to `status.jsonl`, referenced by immutable `run.json`.
+
+Supply `resolved_config` as the full JSON snapshot obtained from `json.loads(canonical_bytes(resolved.payload))` and `resolved_config_sha256` as `resolved.sha256`. Creation and reopening verify the digest, matching phase/purpose, complete schema, required measured fields, and gate provenance. Placeholder or unresolved production snapshots are rejected before publishing `run.json`.
 
 `record(work)` requires `step`, `stream`, `unique`, `additional_loss`, `backward`, `query`, and `elapsed_seconds`. Counts refer to scored targets (raw-byte targets for the specified workload); categories may overlap and are never summed into a synthetic total. Metrics retain optional NLL/count, context work, subregion timings, memory counters, checkpoint hash, nonfinite count, and per-matrix telemetry. Unmeasured fields remain null. Writes flush and fsync; each run directory has one writer. Modified metadata or an incomplete ledger tail blocks further appends.
 

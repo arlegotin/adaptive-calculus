@@ -41,12 +41,14 @@ def evidence():
 
 
 def metadata():
+    config = resolve_config(template("smoke"), {}, purpose="smoke")
     return {
         "run_id": "fixture-001", "created_utc": "2026-10-03T12:00:00Z",
         "local_timezone": "Europe/Amsterdam", "phase": "smoke",
         "source": {"commit": "b" * 40, "dirty_diff_sha256": None},
         "lock_sha256": HASH, "environment_sha256": HASH,
-        "resolved_config": {"synthetic": True},
+        "resolved_config": json.loads(canonical_bytes(config.payload)),
+        "resolved_config_sha256": config.sha256,
         "method": "synthetic_fixture", "adaptation": "fixture",
         "seeds": {"stream": 17}, "data_sha256": HASH,
         "warm_start_sha256": None, "policy_sha256": None,
@@ -155,6 +157,64 @@ def test_training_resolution_rejects_invalid_measurements(changes):
     measured["training"].update(changes)
     with pytest.raises(ValueError):
         resolve_config(template(), measured, purpose="train")
+
+
+@pytest.mark.parametrize("profile,purpose", [("smoke", "smoke"), ("core", "train")])
+@pytest.mark.parametrize("section,field,value", [
+    ("optimizer_probe", "name", "unknown"),
+    ("optimizer_probe", "learning_rate", -1),
+    ("optimizer_probe", "learning_rate", 0),
+    ("optimizer_probe", "learning_rate", True),
+    ("optimizer_probe", "betas", "invalid"),
+    ("optimizer_probe", "betas", [0.9]),
+    ("optimizer_probe", "betas", [0.9, 1]),
+    ("optimizer_probe", "betas", [-0.1, 0.9]),
+    ("optimizer_probe", "betas", [True, 0.9]),
+    ("optimizer_probe", "epsilon", 0),
+    ("optimizer_probe", "decay", -1),
+    ("meta", "probe_horizon", 0),
+    ("meta", "probe_horizon", True),
+    ("meta", "probe_pairs", 0),
+    ("meta", "probe_pairs", 1.5),
+    ("meta", "probe_sigma", -1),
+    ("meta", "probe_sigma", 0),
+    ("meta", "outer_learning_rate", 0),
+    ("meta", "outer_betas", [0.9, 0.99, 0.999]),
+    ("meta", "outer_betas", [0.9, "0.999"]),
+    ("meta", "outer_epsilon", -1),
+    ("meta", "outer_decay", 1),
+    ("meta", "outer_decay", False),
+])
+def test_optimizer_and_meta_invalid_values_are_rejected(profile, purpose, section, field, value):
+    invalid = template(profile)
+    invalid[section][field] = value
+    with pytest.raises(ValueError):
+        resolve_config(invalid, {} if purpose == "smoke" else evidence(), purpose=purpose)
+
+
+@pytest.mark.parametrize("section,field", [
+    ("optimizer_probe", "learning_rate"), ("optimizer_probe", "betas"),
+    ("meta", "probe_horizon"), ("meta", "probe_pairs"), ("meta", "probe_sigma"),
+])
+def test_optimizer_and_meta_unresolved_values_block_run_resolution(section, field):
+    invalid = template("smoke")
+    invalid[section][field] = None
+    with pytest.raises(UnresolvedConfig) as caught:
+        resolve_config(invalid, {}, purpose="smoke")
+    assert f"{section}.{field}" in str(caught.value)
+
+
+def test_optimizer_and_meta_allow_valid_calibrated_alternatives():
+    calibrated = template("smoke")
+    calibrated["optimizer_probe"].update(learning_rate=0.002, betas=[0.8, 0.95],
+                                         epsilon=1e-7, decay=0.01)
+    calibrated["meta"].update(probe_horizon=32, probe_pairs=8, probe_sigma=0.1,
+                              outer_learning_rate=0.02, outer_betas=[0.8, 0.99],
+                              outer_epsilon=1e-7, outer_decay=0)
+    resolved = resolve_config(calibrated, {}, purpose="smoke")
+    assert resolved.payload["optimizer_probe"]["learning_rate"] == 0.002
+    assert resolved.payload["meta"]["probe_horizon"] == 32
+    assert resolved.payload["meta"]["outer_decay"] == 0
 
 
 def test_unknown_purpose_and_unknown_template_fields_are_rejected():
@@ -267,6 +327,49 @@ def test_incomplete_metadata_does_not_publish_run(tmp_path):
     with pytest.raises(ValueError):
         RunLedger(tmp_path, values)
     assert not (tmp_path / "run.json").exists()
+
+
+@pytest.mark.parametrize("profile,purpose", [("smoke", "smoke"), ("core", "train")])
+def test_run_metadata_retains_actual_resolved_payload_and_hash(tmp_path, profile, purpose):
+    values = metadata()
+    resolved = resolve_config(template(profile), {} if purpose == "smoke" else evidence(), purpose=purpose)
+    values.update(phase=purpose, resolved_config=json.loads(canonical_bytes(resolved.payload)),
+                  resolved_config_sha256=resolved.sha256)
+    ledger = RunLedger(tmp_path, values)
+    published = json.loads((tmp_path / "run.json").read_bytes())
+    assert published["resolved_config"] == values["resolved_config"]
+    assert published["resolved_config_sha256"] == values["resolved_config_sha256"]
+    assert ledger.metadata["resolved_config"]["purpose"] == purpose
+    assert RunLedger(tmp_path).metadata["resolved_config_sha256"] == resolved.sha256
+
+
+@pytest.mark.parametrize("defect", ["placeholder", "missing_hash", "wrong_hash", "missing_model",
+                                  "unresolved_training", "missing_gates", "wrong_purpose"])
+def test_run_metadata_rejects_incomplete_or_invalid_production_snapshot_before_publication(tmp_path, defect):
+    values = metadata()
+    config = resolve_config(template(), evidence(), purpose="train")
+    values.update(phase="train", resolved_config=json.loads(canonical_bytes(config.payload)),
+                  resolved_config_sha256=config.sha256)
+    if defect == "placeholder":
+        values["resolved_config"] = {"unresolved_placeholder": True}
+    elif defect == "missing_hash":
+        del values["resolved_config_sha256"]
+    elif defect == "wrong_hash":
+        values["resolved_config_sha256"] = "0" * 64
+    elif defect == "missing_model":
+        del values["resolved_config"]["model"]
+    elif defect == "unresolved_training":
+        values["resolved_config"]["training"]["continuation_steps"] = None
+    elif defect == "missing_gates":
+        values["resolved_config"]["evidence_gates"] = {}
+    elif defect == "wrong_purpose":
+        values["resolved_config"]["purpose"] = "doctor"
+    if defect not in ("missing_hash", "wrong_hash"):
+        values["resolved_config_sha256"] = hashlib.sha256(canonical_bytes(values["resolved_config"])).hexdigest()
+    with pytest.raises(ValueError):
+        RunLedger(tmp_path, values)
+    assert not (tmp_path / "run.json").exists()
+    assert not (tmp_path / "status.jsonl").exists()
 
 
 def test_ledger_rejects_metadata_tampering_and_incomplete_metric_tail(tmp_path):
