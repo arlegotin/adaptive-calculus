@@ -1,0 +1,8 @@
+OCP MX v1.0 primary-browser inspection record
+Version table: 2023-09-07, version 1.0 (printed p6).
+Printed p8 defines roundTiesToEven as nearest with even least-significant digit.
+Printed p11 defines normal/subnormal values from sign, exponent and mantissa.
+Printed p12-p13 section 5.3.3 mandates subnormal support and roundTiesToEven support.
+Printed p13 Table5: E2M1 bias1, no Inf or NaN encodings, signed zeros, max normal magnitude6, min normal1, subnormal magnitude0.5.
+Printed p13: sign-preserving saturation must be supported after rounding; out-of-range inputs may include wider-format infinities; NaN conversion is implementation-defined.
+This is an authored inspection summary, not verbatim PDF extraction or byte-identical PDF source.

@@ -1,0 +1,338 @@
+{
+  "primary_url": "https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf",
+  "version": "1.0",
+  "printed_pages": [
+    8,
+    11,
+    12,
+    13
+  ],
+  "encoding_layout": "S EE M",
+  "bias": 1,
+  "encodings": [
+    {
+      "nibble": 0,
+      "bits": "0000",
+      "sign": 0,
+      "exponent": 0,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": 0.0,
+      "signed_zero": "positive"
+    },
+    {
+      "nibble": 1,
+      "bits": "0001",
+      "sign": 0,
+      "exponent": 0,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": 0.5,
+      "signed_zero": null
+    },
+    {
+      "nibble": 2,
+      "bits": "0010",
+      "sign": 0,
+      "exponent": 1,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": 1.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 3,
+      "bits": "0011",
+      "sign": 0,
+      "exponent": 1,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": 1.5,
+      "signed_zero": null
+    },
+    {
+      "nibble": 4,
+      "bits": "0100",
+      "sign": 0,
+      "exponent": 2,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": 2.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 5,
+      "bits": "0101",
+      "sign": 0,
+      "exponent": 2,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": 3.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 6,
+      "bits": "0110",
+      "sign": 0,
+      "exponent": 3,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": 4.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 7,
+      "bits": "0111",
+      "sign": 0,
+      "exponent": 3,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": 6.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 8,
+      "bits": "1000",
+      "sign": 1,
+      "exponent": 0,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": -0.0,
+      "signed_zero": "negative"
+    },
+    {
+      "nibble": 9,
+      "bits": "1001",
+      "sign": 1,
+      "exponent": 0,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": -0.5,
+      "signed_zero": null
+    },
+    {
+      "nibble": 10,
+      "bits": "1010",
+      "sign": 1,
+      "exponent": 1,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": -1.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 11,
+      "bits": "1011",
+      "sign": 1,
+      "exponent": 1,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": -1.5,
+      "signed_zero": null
+    },
+    {
+      "nibble": 12,
+      "bits": "1100",
+      "sign": 1,
+      "exponent": 2,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": -2.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 13,
+      "bits": "1101",
+      "sign": 1,
+      "exponent": 2,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": -3.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 14,
+      "bits": "1110",
+      "sign": 1,
+      "exponent": 3,
+      "mantissa": 0,
+      "lsb_even": true,
+      "value": -4.0,
+      "signed_zero": null
+    },
+    {
+      "nibble": 15,
+      "bits": "1111",
+      "sign": 1,
+      "exponent": 3,
+      "mantissa": 1,
+      "lsb_even": false,
+      "value": -6.0,
+      "signed_zero": null
+    }
+  ],
+  "unique_numeric_levels": [
+    -6,
+    -4,
+    -3,
+    -2,
+    -1.5,
+    -1,
+    -0.5,
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    3,
+    4,
+    6
+  ],
+  "canonical_nibbles_in_numeric_order": [
+    15,
+    14,
+    13,
+    12,
+    11,
+    10,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "midpoint_ties": [
+    {
+      "midpoint": -5.0,
+      "lower": -6,
+      "upper": -4,
+      "chosen_value": -4,
+      "chosen_nibble": 14,
+      "chosen_ordinal": 1
+    },
+    {
+      "midpoint": -3.5,
+      "lower": -4,
+      "upper": -3,
+      "chosen_value": -4,
+      "chosen_nibble": 14,
+      "chosen_ordinal": 1
+    },
+    {
+      "midpoint": -2.5,
+      "lower": -3,
+      "upper": -2,
+      "chosen_value": -2,
+      "chosen_nibble": 12,
+      "chosen_ordinal": 3
+    },
+    {
+      "midpoint": -1.75,
+      "lower": -2,
+      "upper": -1.5,
+      "chosen_value": -2,
+      "chosen_nibble": 12,
+      "chosen_ordinal": 3
+    },
+    {
+      "midpoint": -1.25,
+      "lower": -1.5,
+      "upper": -1,
+      "chosen_value": -1,
+      "chosen_nibble": 10,
+      "chosen_ordinal": 5
+    },
+    {
+      "midpoint": -0.75,
+      "lower": -1,
+      "upper": -0.5,
+      "chosen_value": -1,
+      "chosen_nibble": 10,
+      "chosen_ordinal": 5
+    },
+    {
+      "midpoint": -0.25,
+      "lower": -0.5,
+      "upper": 0,
+      "chosen_value": 0,
+      "chosen_nibble": 0,
+      "chosen_ordinal": 7
+    },
+    {
+      "midpoint": 0.25,
+      "lower": 0,
+      "upper": 0.5,
+      "chosen_value": 0,
+      "chosen_nibble": 0,
+      "chosen_ordinal": 7
+    },
+    {
+      "midpoint": 0.75,
+      "lower": 0.5,
+      "upper": 1,
+      "chosen_value": 1,
+      "chosen_nibble": 2,
+      "chosen_ordinal": 9
+    },
+    {
+      "midpoint": 1.25,
+      "lower": 1,
+      "upper": 1.5,
+      "chosen_value": 1,
+      "chosen_nibble": 2,
+      "chosen_ordinal": 9
+    },
+    {
+      "midpoint": 1.75,
+      "lower": 1.5,
+      "upper": 2,
+      "chosen_value": 2,
+      "chosen_nibble": 4,
+      "chosen_ordinal": 11
+    },
+    {
+      "midpoint": 2.5,
+      "lower": 2,
+      "upper": 3,
+      "chosen_value": 2,
+      "chosen_nibble": 4,
+      "chosen_ordinal": 11
+    },
+    {
+      "midpoint": 3.5,
+      "lower": 3,
+      "upper": 4,
+      "chosen_value": 4,
+      "chosen_nibble": 6,
+      "chosen_ordinal": 13
+    },
+    {
+      "midpoint": 5.0,
+      "lower": 4,
+      "upper": 6,
+      "chosen_value": 4,
+      "chosen_nibble": 6,
+      "chosen_ordinal": 13
+    }
+  ],
+  "project_choices": {
+    "canonical_zero_nibble": 0,
+    "reject_nan": true,
+    "reject_inf": true,
+    "finite_overflow": "saturate preserving sign",
+    "positive_finite_scale_required": true
+  },
+  "ocp_distinctions": {
+    "negative_zero_encoding_exists": true,
+    "positive_zero_canonicalization_not_mandated": true,
+    "wider_infinities_may_saturate": true,
+    "nan_conversion": "implementation-defined",
+    "other_rounding_modes_allowed": true,
+    "mxfp4_block_size": 32,
+    "mxfp4_scale_type": "E8M0"
+  }
+}

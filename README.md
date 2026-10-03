@@ -2,7 +2,7 @@
 
 Research specification and implementation plans for a representation-aware learned update policy, based on the supplied research brief with cutoff **3 October 2026**.
 
-The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, and isolated FP32 operator probes. Actual MPS operator smoke passed on the recorded laptop. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
+The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, isolated FP32 operator probes, and encoding-aware E2M1 quantization with a CPU float64 reference. Actual MPS operator smoke and F03 tensor/code quantizer checks passed on the recorded laptop with fallback disabled. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
 
 - [Research and system specification](docs/superpowers/specs/2026-10-03-ralup-design.md)
 - [Implementation plan, dependencies, and requirement coverage](docs/superpowers/plans/2026-10-03-ralup.md)
@@ -59,3 +59,13 @@ Supply `resolved_config` as the full JSON snapshot obtained from `json.loads(can
 ```
 
 The successful stable stack is locked for CPython 3.14 macOS arm64 in [requirements.lock](requirements.lock). The package can import without numerical dependencies; probes require the installed stack. [Asset licenses](licenses/ASSETS.md) and [wheel provenance](vendor_manifest.json) retain all dependency and bundled notice hashes. Operator-smoke bounds and measured errors are evidence for F02 only; format oracles, assistance bounds, full snapshots and scientific tolerances require later gates.
+
+`check-numerics --suite quantizer` executes the implemented E2M1 oracle/tensor checks and writes a hashed report. CPU is the default device; actual MPS checks require fallback disabled before starting the interpreter. Blocked or negative checks return exit status 1.
+
+```sh
+.venv/bin/python -m ralup check-numerics --suite quantizer --device cpu --output artifacts/checks/quantizer-cpu.json
+PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m ralup check-numerics --suite quantizer --device mps --output artifacts/checks/quantizer-mps.json
+PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_e2m1.py tests/integration/test_e2m1_mps.py -q
+```
+
+The quantizer returns reconstructed FP32 values and uint8 numerical ordinals. [Numerical provenance and measured limits](docs/numerics/e2m1.md) distinguish ordinals, actual encoding nibbles, significand parity, and FP32 scaled-coordinate rounding. Scales must broadcast, be finite and positive, and share the FP32 input device; row scales normally have shape `[rows,1]`. Original NaN/Inf inputs are rejected. Division overflow from finite inputs saturates; reconstruction overflow raises a storage error. This implements simulated W4A32 rather than the full OCP MXFP4 block/scale format. Gaussian fitting, rotation/context/surrogate checks, assistance and the full WP01 mechanism gate remain pending F04/F05.

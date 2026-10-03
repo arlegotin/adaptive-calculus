@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "scope": "F03 only, not WP01 acceptance",
+  "source_pdf_sha256": null,
+  "source_pdf_checksum_status": "unresolved: official raw PDF HTTP403",
+  "evidence": [
+    {
+      "path": "artifacts/checks/f03-cpu.json",
+      "sha256": "f143eb80a0508f7f97a2e0c7f69d31901324b6347003cef5441f1f87728e9733",
+      "status": "pass",
+      "device": "cpu",
+      "recorded_utc": "2026-10-03T21:57:22.082065+00:00",
+      "snapshot": "final F03 implementation"
+    },
+    {
+      "path": "artifacts/checks/f03-mps.json",
+      "sha256": "f8ac4c7b9a33ccf798283668a01cf66787f870722df5422c4eae66f837c59297",
+      "status": "pass",
+      "device": "mps",
+      "recorded_utc": "2026-10-03T21:57:25.918056+00:00",
+      "snapshot": "final F03 implementation"
+    },
+    {
+      "path": "artifacts/checks/f03-mps-sandbox.json",
+      "sha256": "a2c09c2e7d0602188e5e369d4ebec09319f9644de30773edace185234ef41ae5",
+      "status": "blocked",
+      "device": "mps",
+      "recorded_utc": "2026-10-03T21:53:18.817011+00:00",
+      "snapshot": "earlier F03 sandbox discovery; historical source snapshot"
+    }
+  ],
+  "final_suite": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
+    "sandbox_permissions": "require_escalated",
+    "result": "156 passed in 5.58s",
+    "fallback_environment": "0"
+  },
+  "artifact_storage": "Local artifacts/checks is ignored by Git; hashes and measured claims remain tracked. Rerun the documented CLI to reproduce diagnostics."
+}

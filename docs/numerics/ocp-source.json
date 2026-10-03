@@ -1,0 +1,13 @@
+{
+  "audit_date": "2026-10-03",
+  "version": "1.0",
+  "version_table_date": "2023-09-07",
+  "primary_url": "https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf",
+  "primary_pdf_browser_access": "verified, 16 pages",
+  "primary_pdf_raw_download": "unresolved: Cloudflare HTTP403 for four official URL variants",
+  "raw_pdf_sha256": null,
+  "raw_pdf_bytes_saved": false,
+  "authored_inspection_notes_file": "ocp-inspection-notes.txt",
+  "authored_inspection_notes_sha256": "af7019369691edabd3051e441ca371eae74c14b09bcf6c347cc98bce6f28573f",
+  "note": "The notes hash is not the PDF hash. No PDF hash fabricated."
+}
