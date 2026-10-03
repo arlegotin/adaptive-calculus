@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "profile": "core",
+  "synthetic": false,
+  "data": {
+    "source": "Salesforce/wikitext",
+    "subset": "wikitext-103-raw-v1",
+    "revision": null,
+    "manifest": null,
+    "vocabulary_size": 257,
+    "boundary_token": 256,
+    "context_length": 256,
+    "target_block_bytes": 128,
+    "logical_batch_bytes": 8192,
+    "split_domain": "ralup-split-v1",
+    "split_fractions": [
+      0.2,
+      0.05,
+      0.75
+    ],
+    "near_duplicate": {
+      "normalization": [
+        "NFKC",
+        "lowercase",
+        "whitespace"
+      ],
+      "shingle_tokens": 13,
+      "minhash_functions": 128,
+      "bands": 16,
+      "rows_per_band": 8,
+      "jaccard_threshold": 0.8
+    }
+  },
+  "model": {
+    "layers": 4,
+    "width": 256,
+    "heads": 4,
+    "parameters": 3347456,
+    "quantized_parameters": 3145728,
+    "mlp_ratio": 4,
+    "dropout": 0,
+    "linear_bias": false,
+    "pre_layernorm": true,
+    "layernorm_epsilon": 1e-05,
+    "gelu_approximate": "none",
+    "tied_embeddings": false,
+    "initialization_std": 0.02,
+    "residual_std_rule": "0.02/sqrt(2*layers)"
+  },
+  "quantization": {
+    "format": "E2M1",
+    "simulation": "W4A32",
+    "levels": [
+      -6,
+      -4,
+      -3,
+      -2,
+      -1.5,
+      -1,
+      -0.5,
+      0,
+      0.5,
+      1,
+      1.5,
+      2,
+      3,
+      4,
+      6
+    ],
+    "scope": "internal_projections",
+    "other_dtype": "float32",
+    "moment_coordinates": "W",
+    "rotation": null,
+    "assistance_tau_one": "bypass"
+  },
+  "optimizer_probe": {
+    "name": "AdamW",
+    "learning_rate": 0.001,
+    "betas": [
+      0.9,
+      0.99
+    ],
+    "epsilon": 1e-08,
+    "decay": 0
+  },
+  "runtime": {
+    "device": null,
+    "dependency_lock": null,
+    "environment": null,
+    "tolerances": null
+  },
+  "training": {
+    "microbatch": null,
+    "warm_start_steps": null,
+    "continuation_steps": null,
+    "b0": null,
+    "recipe": null
+  },
+  "policy": {
+    "controller": null,
+    "normalizer": null,
+    "meta_sampling": null,
+    "features": 14,
+    "parameters": 45,
+    "initial_bias": [
+      0,
+      0,
+      1
+    ],
+    "alpha_range": [
+      0,
+      1
+    ],
+    "h_range": [
+      0.25,
+      4
+    ],
+    "tau_range": [
+      0.125,
+      1
+    ],
+    "loss_ema_decay": 0.95,
+    "normalizer_std_floor": 1e-06,
+    "standardized_clip": [
+      -5,
+      5
+    ]
+  },
+  "meta": {
+    "probe_horizon": 16,
+    "probe_pairs": 4,
+    "probe_sigma": 0.05,
+    "outer_learning_rate": 0.01,
+    "outer_betas": [
+      0.9,
+      0.999
+    ],
+    "outer_epsilon": 1e-08,
+    "outer_decay": 0
+  },
+  "confirmation": {
+    "b_star": null,
+    "seeds": null,
+    "n": null,
+    "analysis": null,
+    "manifest": null
+  }
+}

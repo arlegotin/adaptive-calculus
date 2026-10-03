@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "current_gate": "WP00",
+  "completed_checks": [
+    "F01 canonical finite JSON and stable configuration hashing",
+    "F01 purpose-specific null evidence gates and synthetic isolation",
+    "F01 immutable run metadata and append-only independent work records",
+    "F01 read-only configuration CLI and templates"
+  ],
+  "tasks": {
+    "F01": "complete"
+  },
+  "last_valid_checkpoint": null,
+  "blocks": [
+    "WP00 environment, dependency lock, supported-operation and license evidence pending",
+    "WP01 numerical invariants and measured tolerances pending",
+    "All later scientific gates remain pending; protected scoring is unavailable"
+  ],
+  "next_command": ".venv/bin/python -m pytest tests/unit/test_config_records.py -q"
+}
