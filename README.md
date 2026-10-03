@@ -2,7 +2,7 @@
 
 Research specification and implementation plans for a representation-aware learned update policy, based on the supplied research brief with cutoff **3 October 2026**.
 
-The package currently implements validated configuration, hashed artifact references, and append-only run records. Training, numerical probes, benchmarking, and protected scoring remain planned work; no experimental improvement or hardware acceptance is claimed.
+The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, and isolated FP32 operator probes. Actual MPS operator smoke passed on the recorded laptop. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
 
 - [Research and system specification](docs/superpowers/specs/2026-10-03-ralup-design.md)
 - [Implementation plan, dependencies, and requirement coverage](docs/superpowers/plans/2026-10-03-ralup.md)
@@ -50,3 +50,12 @@ Supply `resolved_config` as the full JSON snapshot obtained from `json.loads(can
 `record(work)` requires `step`, `stream`, `unique`, `additional_loss`, `backward`, `query`, and `elapsed_seconds`. Counts refer to scored targets (raw-byte targets for the specified workload); categories may overlap and are never summed into a synthetic total. Metrics retain optional NLL/count, context work, subregion timings, memory counters, checkpoint hash, nonfinite count, and per-matrix telemetry. Unmeasured fields remain null. Writes flush and fsync; each run directory has one writer. Modified metadata or an incomplete ledger tail blocks further appends.
 
 [Engineering decisions](decisions.md) distinguish specified constants from measured gates. [Progress](progress.json) records the current gate and exact verification command.
+
+`doctor` writes a redacted hardware/runtime report and prints its SHA-256. `--probe` separately launches a fresh interpreter with silent MPS fallback disabled and writes a uniquely named operation report. A blocked or negative probe returns exit status 1; missing optional operators remain individually recorded.
+
+```sh
+.venv/bin/python -m ralup doctor --output artifacts/environment/environment.json
+.venv/bin/python -m ralup doctor --output artifacts/environment/environment.json --probe mps
+```
+
+The successful stable stack is locked for CPython 3.14 macOS arm64 in [requirements.lock](requirements.lock). The package can import without numerical dependencies; probes require the installed stack. [Asset licenses](licenses/ASSETS.md) and [wheel provenance](vendor_manifest.json) retain all dependency and bundled notice hashes. Operator-smoke bounds and measured errors are evidence for F02 only; format oracles, assistance bounds, full snapshots and scientific tolerances require later gates.
