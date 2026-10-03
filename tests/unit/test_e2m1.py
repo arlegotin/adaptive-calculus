@@ -167,6 +167,10 @@ def test_check_numerics_dispatch_runs_real_quantizer_and_persists_report(tmp_pat
     assert report['checks']['scaled_fp32']['code_mismatches'] == 0
     assert report['checks']['exact_scale']['code_mismatches'] > 0
     assert report['checks']['neighbors']['mismatches'] == 0
+    assert report['checks']['subnormal']['code_mismatches'] == 0
+    assert report['checks']['subnormal']['reconstruction_bit_mismatches'] == 0
+    assert report['checks']['subnormal']['parameters'] >= 4096
+    assert report['checks']['subnormal']['tiny_direction_mismatches'] == 0
     assert report['source']['ocp_pdf_sha256'] is None
     assert len(json.loads(result.stdout)['sha256']) == 64
 
@@ -178,3 +182,34 @@ def test_reconstruction_overflow_is_a_named_storage_error():
         scale = np.array(maximum / 5.5, dtype=dtype)
         with pytest.raises(ValueError, match='reconstruction overflow'):
             e2m1_oracle(x, scale) if dtype == np.float64 else quantize_e2m1(torch.tensor(x), torch.tensor(scale))
+
+
+@pytest.mark.parametrize('scale_bits', [1, 3, 5, 0x00400000, 0x007fffff, 0x00800000])
+def test_subnormal_operands_preserve_ordinals_and_reconstruction_bits(scale_bits):
+    scale = np.array(scale_bits, dtype=np.uint32).view(np.float32)
+    # Include integer-grid reconstruction halfway cases at scales 3/5 minsub.
+    factors = np.array([0., 1., -1., 6., -6., .5, -.5, .75, -.75, 1.5, -1.5], dtype=np.float32)
+    x = factors * scale
+    expected = e2m1_oracle(np.divide(x, scale, dtype=np.float32), np.array(1.))
+    expected_codes = np.searchsorted(LEVELS, expected).astype(np.uint8)
+    expected_values = (expected * float(scale)).astype(np.float32)
+    values, codes = quantize_e2m1(torch.tensor(x), torch.tensor(scale))
+    np.testing.assert_array_equal(codes.numpy(), expected_codes)
+    np.testing.assert_array_equal(values.numpy().view(np.uint32), expected_values.view(np.uint32))
+
+
+def test_subnormal_reconstruction_halfway_rounds_to_even_bits():
+    minimum = np.nextafter(np.float32(0), np.float32(1))
+    x = np.array([1, -1, 4, -4, 2, -2, 7, -7], dtype=np.float32) * minimum
+    scale = np.array([3, 3, 3, 3, 5, 5, 5, 5], dtype=np.float32) * minimum
+    values, codes = quantize_e2m1(torch.tensor(x), torch.tensor(scale))
+    np.testing.assert_array_equal(codes.numpy(), [8, 6, 10, 4, 8, 6, 10, 4])
+    np.testing.assert_array_equal(values.numpy().view(np.uint32), [2, 0x80000002, 4, 0x80000004, 2, 0x80000002, 8, 0x80000008])
+
+
+def test_subnormal_direction_sign_is_not_zero():
+    minimum = np.nextafter(np.float32(0), np.float32(1))
+    direction = torch.tensor(np.array([-minimum, minimum, -0., 0.], dtype=np.float32))
+    neighbor, feasible = directional_neighbor(torch.full((4,), 7, dtype=torch.uint8), direction)
+    np.testing.assert_array_equal(neighbor.numpy(), [6, 8, 7, 7])
+    np.testing.assert_array_equal(feasible.numpy(), [True, True, False, False])

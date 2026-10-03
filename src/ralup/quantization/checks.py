@@ -1,6 +1,7 @@
 """Measured F03 quantizer diagnostics; this is not the full WP01 mechanism gate."""
 from datetime import datetime, timezone
 import importlib.metadata
+import hashlib
 import os
 from pathlib import Path
 import platform
@@ -138,13 +139,45 @@ def _run_checks(device):
     scalable = _comparison(values_t.cpu().numpy(), codes_t.cpu().numpy(), expected_values, expected_codes)
     scalable['seconds_including_input_transfer'] = seconds
     scalable['allocation_contract'] = '14 sequential comparisons, O(P) storage; no [P,15] or production tensor CPU copies'
+    # Exercise a mixed domain so the exceptional path also preserves ordinary
+    # normal operands. Expected storage bits are rounded once on CPU, including
+    # gradual underflow ties; relative normal-output bounds do not apply here.
+    bit_rng = np.random.default_rng(20261004)
+    scale_bits = np.concatenate([np.array([1, 3, 5, 0x400000, 0x7fffff, 0x800000, 0x800001, 0x1000000], dtype=np.uint32),
+                                bit_rng.integers(1, 0x800000, size=24, dtype=np.uint32),
+                                bit_rng.integers(0x800000, 0x7d800000, size=32, dtype=np.uint32)])
+    scales = scale_bits.view(np.float32)[:, None]
+    factors = np.concatenate([levels, ties, np.nextafter(ties, np.float32(-np.inf)),
+                              np.nextafter(ties, np.float32(np.inf)),
+                              [-0., 0., 1/3, -1/3, 4/3, -4/3, 1.4]]).astype(np.float32)
+    x = factors[None, :] * scales
+    expected_values, expected_codes = _reference(x, scales, rounded_coordinates=True)
+    expected_storage = expected_values.astype(np.float32)
+    values_t, codes_t = quantize_e2m1(torch.tensor(x, device=device), torch.tensor(scales, device=device))
+    if values_t.device.type != device or codes_t.device.type != device:
+        raise AssertionError('Subnormal outputs left the requested device')
+    # Read through integer dtype views so diagnostics cannot flush these bits.
+    actual_bits = values_t.view(torch.int32).cpu().numpy().view(np.uint32)
+    subnormal = _comparison(actual_bits.view(np.float32), codes_t.cpu().numpy(),
+                            expected_storage.astype(np.float64), expected_codes)
+    subnormal['reconstruction_bit_mismatches'] = int(np.count_nonzero(actual_bits != expected_storage.view(np.uint32)))
+    subnormal['input_scale_sha256'] = hashlib.sha256(x.tobytes() + scales.tobytes()).hexdigest()
+    subnormal['seed'] = 20261004
+    subnormal['scale_bits'] = [int(value) for value in scale_bits]
+    tiny = np.nextafter(np.float32(0), np.float32(1))
+    neighbor, mask = directional_neighbor(torch.full((4,), 7, dtype=torch.uint8, device=device),
+        torch.tensor(np.array([-tiny, tiny, -0., 0.], dtype=np.float32), device=device))
+    subnormal['tiny_direction_mismatches'] = int(np.count_nonzero(neighbor.cpu().numpy() != [6, 8, 7, 7]) +
+                                                np.count_nonzero(mask.cpu().numpy() != [True, True, False, False]))
     checks = {'exact': exact, 'scaled_fp32': scaled_fp32, 'exact_scale': exact_scale,
-              'neighbors': neighbors, 'invalid_inputs': invalid_inputs, 'saturation': saturation, 'scalable': scalable}
+              'neighbors': neighbors, 'invalid_inputs': invalid_inputs, 'saturation': saturation, 'scalable': scalable,
+              'subnormal': subnormal}
     passing = (exact['code_mismatches'] == exact['value_max_error'] == exact['signed_zero_count'] == 0 and
                scaled_fp32['code_mismatches'] == scaled_fp32['value_tolerance_exceeded'] == 0 and
                unexpected == neighbors['mismatches'] == invalid_inputs['accepted_invalid'] == 0 and
                saturation['code_mismatches'] == saturation['value_max_error'] == 0 and
-               scalable['code_mismatches'] == scalable['value_tolerance_exceeded'] == 0)
+               scalable['code_mismatches'] == scalable['value_tolerance_exceeded'] == 0 and
+               subnormal['code_mismatches'] == subnormal['reconstruction_bit_mismatches'] == subnormal['tiny_direction_mismatches'] == 0)
     return checks, passing
 
 

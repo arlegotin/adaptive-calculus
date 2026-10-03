@@ -10,7 +10,7 @@
       "status": "pass",
       "device": "cpu",
       "recorded_utc": "2026-10-03T21:57:22.082065+00:00",
-      "snapshot": "final F03 implementation"
+      "snapshot": "04804d0 historical measured normal-domain subset; subnormal review findings superseded by fix1"
     },
     {
       "path": "artifacts/checks/f03-mps.json",
@@ -18,7 +18,7 @@
       "status": "pass",
       "device": "mps",
       "recorded_utc": "2026-10-03T21:57:25.918056+00:00",
-      "snapshot": "final F03 implementation"
+      "snapshot": "04804d0 historical measured normal-domain subset; subnormal review findings superseded by fix1"
     },
     {
       "path": "artifacts/checks/f03-mps-sandbox.json",
@@ -27,13 +27,39 @@
       "device": "mps",
       "recorded_utc": "2026-10-03T21:53:18.817011+00:00",
       "snapshot": "earlier F03 sandbox discovery; historical source snapshot"
+    },
+    {
+      "path": "artifacts/checks/f03-fix1-cpu.json",
+      "sha256": "a22794660e684752c8127ee4e9e3f493bd7d897322146d390114b08207393adf",
+      "status": "pass",
+      "device": "cpu",
+      "recorded_utc": "2026-10-03T22:13:43.934610+00:00",
+      "snapshot": "F03 fix1: integer-bit domain preservation, subnormal operands/reconstruction and tiny directions"
+    },
+    {
+      "path": "artifacts/checks/f03-fix1-mps.json",
+      "sha256": "d11601f52f11ccbf4f1a6cbb5faa5535a98e800ed6ae1f60ff684b14bf28b6d0",
+      "status": "pass",
+      "device": "mps",
+      "recorded_utc": "2026-10-03T22:13:48.164903+00:00",
+      "snapshot": "F03 fix1: integer-bit domain preservation, subnormal operands/reconstruction and tiny directions"
     }
   ],
-  "final_suite": {
+  "artifact_storage": "Local artifacts/checks is ignored by Git; hashes and measured claims remain tracked. Rerun the documented CLI to reproduce diagnostics.",
+  "historical_full_suite": {
     "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
     "sandbox_permissions": "require_escalated",
     "result": "156 passed in 5.58s",
-    "fallback_environment": "0"
+    "fallback_environment": "0",
+    "implementation_commit": "04804d0"
   },
-  "artifact_storage": "Local artifacts/checks is ignored by Git; hashes and measured claims remain tracked. Rerun the documented CLI to reproduce diagnostics."
+  "fix1_covering_tests": {
+    "cpu_command": ".venv/bin/python -m pytest tests/unit/test_e2m1.py -q",
+    "cpu_result": "36 passed in 1.18s",
+    "actual_mps_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/integration/test_e2m1_mps.py -q",
+    "actual_mps_result": "8 passed in 1.66s",
+    "mps_sandbox_permissions": "require_escalated",
+    "full_suite_rerun": false,
+    "scope": "Covering quantizer tests including CLI/F01 report boundary; unrelated environment/config tests unchanged"
+  }
 }

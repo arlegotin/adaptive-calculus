@@ -11,7 +11,8 @@
     "F02 redacted native arm64 M3 Max / 36 GB discovery",
     "F02 fallback-disabled MPS core and named optional operator smoke; hashed reports retained",
     "F02 independent reviewer gate clean at 3517a7b",
-    "F03 exhaustive encoding-aware float64 oracle and threshold FP32 tensor/code parity on CPU and fallback-disabled MPS; scaled-coordinate roundoff retained separately"
+    "F03 exhaustive encoding-aware float64 oracle and threshold FP32 tensor/code parity on CPU and fallback-disabled MPS; scaled-coordinate roundoff retained separately",
+    "F03 review fix1: positive subnormal scales/inputs and reconstructed underflow bits preserved on actual fallback-disabled MPS; 4096 mixed-domain cases and tiny directions match CPU"
   ],
   "tasks": {
     "F01": "complete",
