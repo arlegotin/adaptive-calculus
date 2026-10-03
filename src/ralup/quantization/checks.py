@@ -1,4 +1,4 @@
-"""Measured F03/F04 diagnostics; this is not the full WP01 mechanism gate."""
+"""Measured F03/F04 checks and the complete F05 numerical mechanism CLI."""
 from datetime import datetime, timezone
 import importlib.metadata
 import hashlib
@@ -426,4 +426,156 @@ def check_quantizer(device: str, output: Path) -> ArtifactRef:
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(canonical_bytes(report) + b'\n')
+    return ArtifactRef(output.resolve(), sha256_file(output))
+
+
+# Predeclared from F02 duplicate error zero, F03 two-epsilon reconstruction,
+# and F04 small FP32 algebra's relative bound. These are mechanism fixtures,
+# not neural loss/gradient/resume or optimizer-commit tolerances.
+GEOMETRY_RTOL = CONTEXT_RTOL
+
+
+def _run_action_checks(device):
+    from ..policy.actions import BOUND_RTOL, assist_boundaries, compose_action, multiplicative_proposal
+    from .context import prepare_context
+    from .formats import E2M1_THRESHOLDS
+
+    def context(u, scale=1.):
+        return prepare_context(u.reshape(1, -1), {'name': 'row_fixed_max',
+                               'previous_scales': torch.tensor([[scale]], device=device)}, 0, None)
+    rng = np.random.default_rng(20261004)
+    raw_u = rng.uniform(-6.5, 6.5, 100000).astype(np.float32)
+    raw_d = rng.uniform(-.7, .7, 100000).astype(np.float32)
+    u, d = torch.tensor(raw_u, device=device), torch.tensor(raw_d, device=device)
+    ctx = context(u)
+    cohorts = []
+    for tau in (.125, .25, .5, .75, 1.):
+        out, info = assist_boundaries(u, d, tau, ctx)
+        duplicate, other = assist_boundaries(u, d, tau, ctx)
+        if out.device.type != device or info['accepted_mask'].device.type != device:
+            raise AssertionError('Assistance left requested device')
+        if not torch.equal(out, duplicate) or not torch.equal(info['accepted_mask'], other['accepted_mask']):
+            raise AssertionError('Assistance duplicate variability exceeds frozen zero allowance')
+        accept = info['accepted_mask'].cpu().numpy()
+        actual = out.cpu().numpy().astype(np.float64)-raw_u.astype(np.float64)
+        bound = (1/tau+1/1024)*np.abs(raw_d.astype(np.float64))
+        excess = np.maximum(np.abs(actual)-bound, 0.)
+        exceeded = int(np.count_nonzero(excess[accept] > BOUND_RTOL*bound[accept]))
+        if exceeded or info['bound_tolerance_exceeded_count']:
+            raise AssertionError('Assistance bound tolerance exceeded')
+        if not torch.equal(out[~info['accepted_mask']], (u+d)[~info['accepted_mask']]):
+            raise AssertionError('Rejected/ineligible assistance changed additive shadow')
+        if tau == 1.:
+            if not torch.equal(out, u+d):
+                raise AssertionError('Tau-one identity was not exact')
+        else:
+            _, codes = quantize_e2m1(out, torch.tensor(1., device=device))
+            if not torch.equal(codes[info['accepted_mask']], info['neighbor_codes'][info['accepted_mask']]):
+                raise AssertionError('Accepted candidate did not reach immediate neighbor')
+        ties = torch.tensor(E2M1_THRESHOLDS, device=device).repeat(2)
+        directions = torch.cat([torch.full((14,), -.04, device=device), torch.full((14,), .04, device=device)])
+        tied, tied_info = assist_boundaries(ties, directions, tau, context(ties))
+        if tied_info['accepted_count'] or not torch.equal(tied, ties+directions):
+            raise AssertionError('Boundary ties improperly assisted')
+        cohorts.append({'tau': tau, 'accepted': info['accepted_count'], 'rejected': info['rejected_count'],
+                        'observed_candidate_bound_excess_max': info['observed_bound_excess_max'],
+                        'accepted_fp64_bound_excess_max': float(excess[accept].max(initial=0.)),
+                        'bound_tolerance_exceeded': exceeded, 'duplicate_bit_mismatches': 0,
+                        'boundary_ties': 28, 'boundary_tie_mismatches': 0})
+    # Independent float64 implementation of S17 on the same FP32 coordinates.
+    gu = np.array([-2., -1., 0., 1., 2.], dtype=np.float32)
+    gd = np.array([10., .2, .3, .2, -10.], dtype=np.float32)
+    a = np.sign(gu.astype(np.float64))*gd.astype(np.float64)/np.sqrt(np.mean(gu.astype(np.float64)**2))
+    z = gu*a
+    c = np.sqrt(np.mean(gd.astype(np.float64)**2))/np.sqrt(np.mean(z**2))
+    expected = gu*np.expm1(np.clip(c*a, -.1, .1))
+    actual = multiplicative_proposal(torch.tensor(gu, device=device), torch.tensor(gd, device=device)).cpu().numpy()
+    delta = np.abs(actual-expected)
+    if np.any(delta > GEOMETRY_RTOL*np.abs(expected)) or actual[0] <= 0 or actual[2] != 0:
+        raise AssertionError('Sign-aware exponential geometry exceeds frozen fixture tolerance')
+    base = torch.tensor([1., -1., 0., 6.], device=device)
+    update = torch.tensor([.04, -.04, .1, .2], device=device)
+    identity, identity_info = compose_action(base, update, 0., 1., 1., context(base))
+    decayed = base*.9
+    decay, _ = compose_action(decayed, torch.zeros_like(update), .5, 2., .125, context(base))
+    if not torch.equal(identity, base+update) or not identity_info['authoritative_original_commit_bypass_permitted'] or not torch.equal(decay, decayed):
+        raise AssertionError('Identity or decay reference separation failed')
+    saturate = torch.tensor([-7., -6., 6., 7.], device=device)
+    direction = torch.tensor([.1, -.1, .1, -.1], device=device)
+    saturated, sat_info = assist_boundaries(saturate, direction, .125, context(saturate))
+    if sat_info['accepted_count'] or not torch.equal(saturated, saturate+direction):
+        raise AssertionError('Out-of-bounds or missing-neighbor assistance was accepted')
+    small_scale = torch.tensor([[12]], dtype=torch.int32, device=device).view(torch.float32)
+    tiny_u = torch.tensor([12], dtype=torch.int32, device=device).view(torch.float32)
+    tiny_d = torch.tensor([1], dtype=torch.int32, device=device).view(torch.float32)
+    tiny_ctx = prepare_context(tiny_u.reshape(1, 1), {'name': 'row_fixed_max', 'previous_scales': small_scale}, 0, None)
+    tiny_out, tiny_info = assist_boundaries(tiny_u, tiny_d, .125, tiny_ctx)
+    if tiny_info['unrepresentable_nudge_count'] != 1 or tiny_out.view(torch.int32).cpu().tolist() != [13]:
+        raise AssertionError('Unrepresentable nudge was enlarged or shadow was lost')
+    dynamic_u = torch.tensor([[1., 6.]], device=device)
+    dynamic_ctx = prepare_context(dynamic_u, {'name': 'row_dynamic_max'}, 0, None)
+    dynamic_out, _ = assist_boundaries(dynamic_u, torch.tensor([[.04, 6.]], device=device), .125, dynamic_ctx)
+    refreshed = prepare_context(dynamic_out, {'name': 'row_dynamic_max'}, 1, None)
+    if dynamic_ctx.scales.item() != 1. or refreshed.scales.item() != 2. or abs(dynamic_out[0, 0].item()-1.2500390625) > 1e-7:
+        raise AssertionError('Assistance refreshed scales within a step')
+    return {'coordinate_count_per_tau': 100000, 'seed': 20261004,
+            'input_sha256': hashlib.sha256(raw_u.tobytes()+raw_d.tobytes()).hexdigest(), 'cohorts': cohorts,
+            'geometry_max_abs_error': float(delta.max()), 'geometry_rtol': GEOMETRY_RTOL,
+            'sign_zero_exponent_cap': True, 'no_post_exponential_normalization': True,
+            'identity_exact': True, 'original_commit_bypass_permitted': True,
+            'decay_separated': True, 'saturation_cases': 4, 'dynamic_scale_cache_preserved': True,
+            'unrepresentable_nudge': {'rejected': 1, 'retained_shadow_bits': 13, 'margin_enlarged': False},
+            'duplicate_variability_allowance': 0.}
+
+
+def check_numerics(device: str, output: Path) -> ArtifactRef:
+    """Complete implemented F03–F05 mechanism fixtures, CPU and target device."""
+    from ..diagnostics.quadratics import run_quadratic_diagnostics
+    from ..policy.actions import BOUND_ATOL, BOUND_RTOL
+    import json
+
+    # Preserve the explicit quantizer-only CLI and its historical scope.
+    check_quantizer(device, output)
+    output = Path(output)
+    report = json.loads(output.read_text())
+    root = Path(__file__).resolve().parents[3]
+    report.update({'suite': 'numerics', 'scope': 'F03_F04_F05 numerical foundation; no neural, dataset or optimizer integration',
+                   'acceptance_gate': 'WP01_numerical_mechanism; scientific_training_gates_pending'})
+    for path in ['src/ralup/policy/actions.py', 'src/ralup/diagnostics/quadratics.py', 'src/ralup/__main__.py',
+                 'tests/unit/test_actions.py', 'tests/unit/test_quadratic_diagnostics.py', 'docs/numerics/actions.md']:
+        report['source']['files'][path] = sha256_file(root/path)
+    report['tolerances'].update({'assistance_bound_rtol': BOUND_RTOL, 'assistance_bound_atol': BOUND_ATOL,
+                                 'geometry_rtol': GEOMETRY_RTOL, 'geometry_atol': 0.,
+                                 'assistance_duplicate_variability_allowance': 0.})
+    if report['status'] == 'pass':
+        try:
+            report['checks']['actions'] = _run_action_checks(device)
+            quadratics = run_quadratic_diagnostics(20261004, [0, 1, 4])
+            report['checks']['quadratics'] = quadratics
+            report['tolerances'].update({'positive_q_exponential_rtol': 4*float(np.finfo(np.float64).eps),
+                                         'jackson_quotient_atol': 4e-12})
+            coupled = quadratics['coupled']
+            jackson = quadratics['finite_q_quadratic']
+            if not (quadratics['q_exponential']['identity_max_abs_error'] <= 8*float(np.finfo(np.float64).eps) and
+                    quadratics['q_exponential']['q_one_exact'] and
+                    quadratics['q_exponential']['sampled_signed_identity']['relative_tolerance_exceeded'] == 0 and
+                    jackson['appendix_a']['max_abs_error'] <= 4e-12 and
+                    jackson['analytic_max_abs_error'] <= 4e-12 and
+                    jackson['limit_max_abs_error'] <= jackson['limit_analytic_bound'] and
+                    quadratics['scale_homogeneity']['max_abs_error'] == 0. and
+                    quadratics['persistent_shadow']['first_code_change_step'] == 7 and
+                    quadratics['persistent_shadow']['reset_code_change_count'] == 0 and
+                    quadratics['fp32_nextafter']['next_bits'] == quadratics['fp32_nextafter']['base_bits']+1 and
+                    quadratics['stochastic_expectation']['expectation'] == 1.2 and
+                    all(case['oracle_final_loss'] <= case['baseline_final_loss'] for case in coupled)):
+                raise AssertionError('Quadratic mechanism invariant failed')
+            if not (quadratics['target_1_1_after'] > quadratics['target_1_1_before'] and
+                    quadratics['target_1_8_after'] < quadratics['target_1_8_before'] and
+                    quadratics == run_quadratic_diagnostics(20261004, [0, 1, 4])):
+                raise AssertionError('Crossing controls or seeded trajectories failed')
+            report['checks']['quadratics'] = quadratics
+        except (AssertionError, RuntimeError, ValueError, TypeError) as error:
+            report['status'] = 'negative'
+            report['blockers'].append(f'{type(error).__name__}: {error}')
+    output.write_bytes(canonical_bytes(report)+b'\n')
     return ArtifactRef(output.resolve(), sha256_file(output))

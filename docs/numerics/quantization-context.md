@@ -128,6 +128,6 @@ device, with golden objective/integration comparisons, involution and gradients,
 fixed/dynamic/zero scales, trust/clipped/STE gradients, detached caches and two
 independent backward calls. Bounds are frozen in the checker before device
 measurements. Reports identify grouping and coordinates. Success covers these
-implemented checks only; assistance and the full WP01 acceptance gate remain
-pending. Actual MPS requires fallback disabled before interpreter startup; a
+implemented F03/F04 checks only. The default `check-numerics` additionally runs
+F05 assistance and mechanism invariants; see [actions and measured bounds](actions.md). Actual MPS requires fallback disabled before interpreter startup; a
 sandbox-blocked report cannot stand in for an MPS pass.

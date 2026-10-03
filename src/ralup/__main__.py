@@ -20,17 +20,18 @@ def main(argv: list[str] | None = None) -> int:
     doctor.add_argument("--output", type=Path, required=True)
     doctor.add_argument("--probe", choices=("cpu", "mps"), help="separate isolated FP32 operation gate")
     numerics = subcommands.add_parser("check-numerics", help="run implemented numerical oracle checks")
-    numerics.add_argument("--suite", required=True, choices=("quantizer",))
+    numerics.add_argument("--suite", choices=("numerics", "quantizer"), default="numerics")
     numerics.add_argument("--device", choices=("cpu", "mps"), default="cpu")
-    numerics.add_argument("--output", type=Path, default=Path("artifacts/checks/quantizer.json"))
+    numerics.add_argument("--output", type=Path, default=Path("artifacts/checks/results.json"))
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
     if args.command == "check-numerics":
-        from .quantization.checks import check_quantizer
+        from .quantization.checks import check_numerics, check_quantizer
         try:
-            ref = check_quantizer(args.device, args.output)
+            check = check_quantizer if args.suite == "quantizer" else check_numerics
+            ref = check(args.device, args.output)
             report = json.loads(ref.path.read_text(encoding="utf-8"))
             print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
                                    "status": report["status"], "blockers": report["blockers"]}).decode())
