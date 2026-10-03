@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "F03/F04 only; full WP01 and release source-fixture parity pending",
+  "evidence": [
+    {
+      "path": "artifacts/checks/f04-quantizer-cpu.json",
+      "sha256": "9f98effe3edb6e20b98f76cdee93c37d68a03f54ba1e866f86f7c44e5ce15759",
+      "status": "pass",
+      "device": "cpu",
+      "fallback_environment": "unset",
+      "recorded_utc": "2026-10-03T22:37:38.490290+00:00",
+      "snapshot": "final F04 implementation"
+    },
+    {
+      "path": "artifacts/checks/f04-quantizer-mps.json",
+      "sha256": "ec949d3758204b1faf731d7bf1d916f5e0e22de85b5f67f43cbc0188d6acdd7c",
+      "status": "pass",
+      "device": "mps",
+      "fallback_environment": "0",
+      "recorded_utc": "2026-10-03T22:37:42.028418+00:00",
+      "snapshot": "final F04 implementation"
+    },
+    {
+      "path": "artifacts/checks/f04-quantizer-mps-sandbox-blocked.json",
+      "sha256": "13a1e7ff0cc5ba34208977e2bd3b31c152432a23a158ebd9a1b72439f73b6759",
+      "status": "blocked",
+      "device": "mps",
+      "fallback_environment": "0",
+      "recorded_utc": "2026-10-03T22:29:37.641239+00:00",
+      "snapshot": "earlier sandbox device-discovery snapshot; not an MPS pass"
+    }
+  ],
+  "mutation_evidence": [
+    {
+      "path": "artifacts/checks/f04-red-wrong-normalization.txt",
+      "sha256": "0cab65be0ae6b4d6306fc83c793ccd980a34bae5ac9b8d3b380ea966806aa503",
+      "result": "expected RED mutation failure; original source restored"
+    },
+    {
+      "path": "artifacts/checks/f04-red-graph-reuse.txt",
+      "sha256": "cd4eb540de82691089e284c1c1ed0ba65b61ac173fba823de6085725229154c3",
+      "result": "expected RED mutation failure; original source restored"
+    }
+  ],
+  "artifact_storage": "artifacts/checks is local and ignored by Git; hashes and measured summaries are tracked here.",
+  "focused_tests": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py -q",
+    "result": "44 passed in 2.42s",
+    "sandbox_permissions": "require_escalated",
+    "fallback_environment": "0"
+  },
+  "full_suite": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
+    "result": "215 passed in 8.37s",
+    "sandbox_permissions": "require_escalated",
+    "fallback_environment": "0"
+  },
+  "representability_limits": [
+    "Automatic scale underflow/subnormal scales fail explicitly",
+    "Full Hadamard rejects subnormal input/output and nonfinite/overflowed transforms",
+    "Trust/clipped masks reject subnormal scales; fixed-scale plain STE retains F03 integer-bit forward behavior"
+  ],
+  "no_training_data_or_protected_scoring": true
+}

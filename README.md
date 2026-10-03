@@ -2,7 +2,7 @@
 
 Research specification and implementation plans for a representation-aware learned update policy, based on the supplied research brief with cutoff **3 October 2026**.
 
-The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, isolated FP32 operator probes, and encoding-aware E2M1 quantization with a CPU float64 reference. Actual MPS operator smoke and F03 tensor/code quantizer checks passed on the recorded laptop with fallback disabled. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
+The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, isolated FP32 operator probes, and encoding-aware E2M1 quantization with a CPU float64 reference, deterministic Gaussian fitting, full-row Hadamard transforms, detached logical-step contexts and fresh STE/trust/clipped surrogate graphs. Actual MPS operator smoke and F03/F04 tensor/code, rotation, context and backward checks passed on the recorded laptop with fallback disabled. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
 
 - [Research and system specification](docs/superpowers/specs/2026-10-03-ralup-design.md)
 - [Implementation plan, dependencies, and requirement coverage](docs/superpowers/plans/2026-10-03-ralup.md)
@@ -60,7 +60,7 @@ Supply `resolved_config` as the full JSON snapshot obtained from `json.loads(can
 
 The successful stable stack is locked for CPython 3.14 macOS arm64 in [requirements.lock](requirements.lock). The package can import without numerical dependencies; probes require the installed stack. [Asset licenses](licenses/ASSETS.md) and [wheel provenance](vendor_manifest.json) retain all dependency and bundled notice hashes. Operator-smoke bounds and measured errors are evidence for F02 only; format oracles, assistance bounds, full snapshots and scientific tolerances require later gates.
 
-`check-numerics --suite quantizer` executes the implemented E2M1 oracle/tensor checks and writes a hashed report. CPU is the default device; actual MPS checks require fallback disabled before starting the interpreter. Blocked or negative checks return exit status 1.
+`check-numerics --suite quantizer` executes the implemented E2M1 oracle/tensor and Gaussian-fit/rotation/context/surrogate checks and writes a hashed report. CPU is the default device; actual MPS checks require fallback disabled before starting the interpreter. Blocked or negative checks return exit status 1.
 
 ```sh
 .venv/bin/python -m ralup check-numerics --suite quantizer --device cpu --output artifacts/checks/quantizer-cpu.json
@@ -68,4 +68,41 @@ PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m ralup check-numerics --suite q
 PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_e2m1.py tests/integration/test_e2m1_mps.py -q
 ```
 
-The quantizer returns reconstructed FP32 values and uint8 numerical ordinals. [Numerical provenance and measured limits](docs/numerics/e2m1.md) distinguish ordinals, actual encoding nibbles, significand parity, and FP32 scaled-coordinate rounding. Scales must broadcast, be finite and positive, and share the FP32 input device; row scales normally have shape `[rows,1]`. Original NaN/Inf inputs are rejected. Division overflow from finite inputs saturates; reconstruction overflow raises a storage error. A device integer/FP32 path preserves subnormal operands, underflow rounding and tiny direction signs on MPS. This implements simulated W4A32 rather than the full OCP MXFP4 block/scale format. Gaussian fitting, rotation/context/surrogate checks, assistance and the full WP01 mechanism gate remain pending F04/F05.
+The quantizer returns reconstructed FP32 values and uint8 numerical ordinals. [Numerical provenance and measured limits](docs/numerics/e2m1.md) distinguish ordinals, actual encoding nibbles, significand parity, and FP32 scaled-coordinate rounding. Scales must broadcast, be finite and positive, and share the FP32 input device; row scales normally have shape `[rows,1]`. Original NaN/Inf inputs are rejected. Division overflow from finite inputs saturates; reconstruction overflow raises a storage error. A device integer/FP32 path preserves subnormal operands, underflow rounding and tiny direction signs on MPS. This implements simulated W4A32 rather than the full OCP MXFP4 block/scale format. The F04 interfaces and measured numerical limits are documented in [quantization context provenance](docs/numerics/quantization-context.md). Assistance and the full WP01 mechanism gate remain pending F05 and later acceptance checks.
+
+`hadamard`, `to_storage` and `from_storage` use explicit `identity` or
+`full_hadamard` IDs. `compute_scales(u, recipe, previous)` returns detached FP32
+scales; `fit_gaussian_e2m1()` returns the deterministic fit, independent integration
+residual and conventions. The caller owns fixed-scale handoff and prepares one
+context per logical step. Reuse it across fresh microbatch views:
+
+```python
+from ralup.quantization import prepare_context, quantized_view, to_storage
+
+context = prepare_context(w, {"name": "row_fixed_max", "rotation": "full_hadamard"}, 0, rng=None)
+# quantized_view returns storage Q(W@R); transform the input consistently.
+output = to_storage(x, context.rotation) @ quantized_view(w, context).T
+output.sum().backward()
+# A second physical microbatch constructs another fresh view using context.
+
+next_context = prepare_context(w, {
+    "name": "row_fixed_max", "rotation": context.rotation,
+    "previous_scales": context.scales,
+    "previous_zero_groups": context.scale_zero_groups,
+}, 1, rng=None)
+```
+
+`row_dynamic_max` recomputes at explicit preparation; row Gaussian reference is
+`quest_fp4_row_reference` (trust backward by default). Whole-tensor sensitivity
+recipes are `tensor_fixed_max`, `tensor_dynamic_max` and
+`quest_fp4_tensor_reference`. Named backward options are `ste`, `trust` and
+`clipped_ste`. Runtime tensor recipe fields are caller-owned state, separate from
+canonical scientific JSON. All continuous state remains FP32; ordinals/flags are
+uint8/bool. No optimizer history or supplied RNG is advanced. Supplying `codes`
+reuses an externally generated realization; stochastic generation is reserved
+for M05. The project refit, full-row rotation and physical trust threshold are
+explicit adaptations of paper mathematics; QuEST release-fixture parity is
+reserved for M07.
+
+[Measured F04 evidence](docs/numerics/f04-evidence.json) retains CPU/MPS report hashes,
+separate sandbox-blocked evidence and the current-suite verification command.

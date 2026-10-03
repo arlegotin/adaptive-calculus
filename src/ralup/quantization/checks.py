@@ -1,4 +1,4 @@
-"""Measured F03 quantizer diagnostics; this is not the full WP01 mechanism gate."""
+"""Measured F03/F04 diagnostics; this is not the full WP01 mechanism gate."""
 from datetime import datetime, timezone
 import importlib.metadata
 import hashlib
@@ -181,6 +181,156 @@ def _run_checks(device):
     return checks, passing
 
 
+
+# Frozen F04 absolute/relative bounds before CPU/MPS measurements. These apply
+# only to the small explicit rotation/backward fixtures, not scientific training.
+CONTEXT_ATOL = 8e-6
+CONTEXT_RTOL = 2e-6
+
+
+def _run_context_checks(device):
+    from .context import prepare_context, quantized_view
+    from .rotation import from_storage, hadamard, to_storage
+    from .scales import fit_gaussian_e2m1
+
+    fit = fit_gaussian_e2m1()
+    if fit != fit_gaussian_e2m1():
+        raise AssertionError('Gaussian fitting is not exactly deterministic')
+    if abs(fit['a']-2.922475071373709) > 2e-7 or abs(fit['objective']-.01268490413871003) > 2e-13:
+        raise AssertionError('Gaussian fitting differs from independent numerical reference')
+    w = torch.tensor([[1., 2., -3., 4.], [0., 1., 3., -2.]], device=device, requires_grad=True)
+    dense = torch.tensor([[1., 1., 1., 1.], [1., -1., 1., -1.],
+                          [1., 1., -1., -1.], [1., -1., -1., 1.]], device=device) / 2
+    double = hadamard(hadamard(w))
+    torch.testing.assert_close(double, w, atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    torch.testing.assert_close(to_storage(w, 'full_hadamard'), w@dense, atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    torch.testing.assert_close(from_storage(to_storage(w, 'full_hadamard'), 'full_hadamard'), w,
+                               atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    upstream = torch.tensor([[1., 2., -1., 3.], [-2., 0., 1., 4.]], device=device)
+    rotation_gradient, = torch.autograd.grad((hadamard(w)*upstream).sum(), w)
+    torch.testing.assert_close(rotation_gradient, upstream@dense, atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    rotation = {'id': 'full_hadamard', 'scope': 'full_last_axis',
+                'involution_max_abs_error': float((double-w).detach().abs().max()),
+                'gradient_max_abs_error': float((rotation_gradient-upstream@dense).abs().max())}
+    impulse = torch.zeros((2, 256), device=device)
+    impulse[:, 0] = 1.
+    rotated_impulse = hadamard(impulse)
+    torch.testing.assert_close(rotated_impulse, torch.full_like(impulse, 1/16), atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    rotation['full_row_width'] = 256
+    rotation['full_row_impulse_max_abs_error'] = float((rotated_impulse-1/16).abs().max())
+    zero_w = torch.tensor([[0., 0., 0., 0.], [6., -3., 0., 1.]], device=device)
+    initial = prepare_context(zero_w, {'name': 'row_fixed_max'}, 0, None)
+    torch.testing.assert_close(initial.scales, torch.ones((2, 1), device=device), atol=0., rtol=0.)
+    if initial.zero_groups.cpu().tolist() != [[True], [False]]:
+        raise AssertionError('Zero sentinel misclassified original rows')
+    fixed = prepare_context(zero_w*12, {'name': 'row_fixed_max', 'previous_scales': initial.scales,
+                                      'previous_zero_groups': initial.scale_zero_groups}, 1, None)
+    dynamic = prepare_context(zero_w*12, {'name': 'row_dynamic_max'}, 1, None)
+    torch.testing.assert_close(fixed.scales, initial.scales, atol=0., rtol=0.)
+    torch.testing.assert_close(dynamic.scales, torch.tensor([[1.], [12.]], device=device), atol=0., rtol=0.)
+    whole = prepare_context(zero_w*12, {'name': 'tensor_dynamic_max'}, 1, None)
+    torch.testing.assert_close(whole.scales, torch.tensor([[12.]], device=device), atol=0., rtol=0.)
+    warm = prepare_context(zero_w*12, {'name': 'row_fixed_max', 'warm_start': zero_w}, 1, None)
+    torch.testing.assert_close(warm.scales, initial.scales, atol=0., rtol=0.)
+    rms_cases = []
+    for magnitude in (1e30, 1e-30):
+        u = torch.tensor([[magnitude, -magnitude, magnitude, -magnitude]], device=device)
+        c = prepare_context(u, {'name': 'quest_fp4_row_reference'}, 0, None)
+        torch.testing.assert_close(c.scales, torch.tensor([[fit['scale_constant']*magnitude]], device=device),
+                                   atol=0., rtol=CONTEXT_RTOL)
+        rms_cases.append({'magnitude': magnitude, 'scale': float(c.scales.item())})
+    underflow = torch.tensor([[1, 0, 0, 0]], dtype=torch.int32, device=device).view(torch.float32)
+    try:
+        prepare_context(underflow, {'name': 'row_dynamic_max'}, 0, None)
+    except ValueError as error:
+        if 'underflow' not in str(error):
+            raise
+    else:
+        raise AssertionError('Nonzero underflow group was silently treated as zero')
+    surrogate_results = {}
+    for rule, expected in [('ste', [1., 1., 1., 1.]), ('trust', [1., 0., 1., 1.]),
+                           ('clipped_ste', [1., 0., 1., 0.])]:
+        shadow = torch.tensor([[.1, 7.1, -1., 6.2]], device=device, requires_grad=True)
+        c = prepare_context(shadow, {'name': 'row_fixed_max', 'previous_scales': torch.ones((1, 1), device=device),
+                                     'backward': rule}, 2, None)
+        q = quantized_view(shadow, c)
+        torch.testing.assert_close(q, torch.tensor([[0., 6., -1., 6.]], device=device), atol=0., rtol=0.)
+        q.sum().backward()
+        want = torch.tensor([expected], device=device)
+        torch.testing.assert_close(shadow.grad, want, atol=0., rtol=0.)
+        surrogate_results[rule] = {'gradient': shadow.grad.cpu().tolist(), 'max_abs_error': float((shadow.grad-want).abs().max())}
+    rotated_trust_w = torch.tensor([[6.2, -7.1, 1., .1]], device=device, requires_grad=True)
+    rotated_trust_c = prepare_context(rotated_trust_w, {'name': 'row_fixed_max', 'rotation': 'full_hadamard',
+                                                      'previous_scales': torch.ones((1, 1), device=device),
+                                                      'backward': 'trust'}, 0, None)
+    (quantized_view(rotated_trust_w, rotated_trust_c)*torch.tensor([[1., 2., 3., 4.]], device=device)).sum().backward()
+    torch.testing.assert_close(rotated_trust_w.grad, torch.tensor([[4., 0., -3., 1.]], device=device),
+                               atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    surrogate_results['rotated_trust'] = {'gradient': rotated_trust_w.grad.cpu().tolist()}
+    context = prepare_context(w, {'name': 'row_dynamic_max', 'rotation': 'full_hadamard'}, 7, None)
+    cache_before = [t.clone() for t in context.numeric_tensors()]
+    x1 = torch.tensor([[1., 2., 0., -1.]], device=device)
+    x2 = torch.tensor([[-1., 3., 2., 1.]], device=device)
+    first = quantized_view(w, context)
+    ((x1@dense)@first.T).sum().backward()
+    second = quantized_view(w, context)
+    ((x2@dense)@second.T).sum().backward()
+    torch.testing.assert_close(first, second, atol=0., rtol=0.)
+    torch.testing.assert_close(w.grad, (x1+x2).expand_as(w), atol=CONTEXT_ATOL, rtol=CONTEXT_RTOL)
+    if first.grad_fn is second.grad_fn:
+        raise AssertionError('Microbatch view reused an autograd graph')
+    for before, after in zip(cache_before, context.numeric_tensors()):
+        torch.testing.assert_close(before, after, atol=0., rtol=0.)
+        if after.requires_grad or after.grad_fn is not None or after.device.type != device:
+            raise AssertionError('Numeric context retained a graph or left requested device')
+    rng = torch.Generator().manual_seed(20261004)
+    rng_before = rng.get_state().clone()
+    supplied = torch.tensor([[7, 8, 9, 14]], dtype=torch.uint8, device=device)
+    supplied_context = prepare_context(torch.tensor([[1., 2., 3., 6.]], device=device),
+                                       {'name': 'row_dynamic_max', 'codes': supplied}, 3, rng)
+    supplied.fill_(0)
+    torch.testing.assert_close(supplied_context.storage_values, torch.tensor([[0., .5, 1., 6.]], device=device),
+                               atol=0., rtol=0.)
+    invalid_zero_codes = torch.full((2, 4), 7, dtype=torch.uint8, device=device)
+    invalid_zero_codes[0, 0] = 8
+    try:
+        prepare_context(torch.zeros((2, 4), device=device), {'name': 'row_dynamic_max', 'codes': invalid_zero_codes}, 0, None)
+    except ValueError as error:
+        if 'zero group' not in str(error):
+            raise
+    else:
+        raise AssertionError('Supplied realization turned an all-zero group nonzero')
+    if not torch.equal(rng.get_state(), rng_before):
+        raise AssertionError('Context preparation advanced the supplied training RNG')
+    subnormal_scale = torch.tensor([[3]], dtype=torch.int32, device=device).view(torch.float32)
+    subnormal_w = torch.tensor([[7, -2147483641]], dtype=torch.int32, device=device).view(torch.float32).requires_grad_()
+    subnormal_c = prepare_context(subnormal_w, {'name': 'row_fixed_max', 'previous_scales': subnormal_scale}, 0, None)
+    subnormal_q = quantized_view(subnormal_w, subnormal_c)
+    if subnormal_q.view(torch.int32).cpu().tolist() != [[6, -2147483642]]:
+        raise AssertionError('Fixed-scale STE changed F03 subnormal forward bits')
+    subnormal_q.sum().backward()
+    torch.testing.assert_close(subnormal_w.grad, torch.ones_like(subnormal_w), atol=0., rtol=0.)
+    for rule in ('trust', 'clipped_ste'):
+        try:
+            prepare_context(subnormal_w, {'name': 'row_fixed_max', 'previous_scales': subnormal_scale, 'backward': rule}, 0, None)
+        except ValueError as error:
+            if 'underflow' not in str(error):
+                raise
+        else:
+            raise AssertionError('Subnormal mask arithmetic failed to declare underflow risk')
+    return {'fit': fit, 'rotation': rotation, 'grouping_labels': [initial.grouping, whole.grouping],
+            'scales': {'zero_group_count': initial.metadata['zero_group_count'],
+                       'sentinel': 1., 'fixed_previous_preserved': True, 'explicit_warm_start_preserved': True,
+                       'dynamic_recomputed': True, 'stable_rms_cases': rms_cases, 'nonzero_underflow_rejected': True,
+                       'fixed_subnormal_ste_bits_preserved': True, 'subnormal_masks_rejected': True},
+            'surrogates': surrogate_results,
+            'microbatch_backward': {'independent_backward_calls': 2, 'retained_graph': False,
+                                    'gradient_max_abs_error': float((w.grad-(x1+x2)).abs().max())},
+            'detached_context': {'tensor_count': len(context.numeric_tensors()), 'tensors_requiring_grad': 0,
+                                 'numeric_cache_unchanged': True, 'output_coordinates': 'storage_Q(U)'},
+            'supplied_realization': {'codes_owned': True, 'rng_unchanged': True, 'zero_groups_preserved': True, 'generation': 'reserved_M05'},
+            'reference_label': 'project_S14_refit_full_row; upstream_release_parity_pending_M07'}
+
 def check_quantizer(device: str, output: Path) -> ArtifactRef:
     """Persist measured device/oracle evidence, including blocked/negative results."""
     if device not in ('cpu', 'mps'):
@@ -188,16 +338,22 @@ def check_quantizer(device: str, output: Path) -> ArtifactRef:
     root = Path(__file__).resolve().parents[3]
     source_paths = ['docs/numerics/e2m1-encoding-reference.json', 'docs/numerics/ocp-source.json',
                     'docs/numerics/ocp-inspection-notes.txt', 'src/ralup/quantization/formats.py',
-                    'src/ralup/quantization/oracle.py', 'src/ralup/quantization/checks.py', 'requirements.lock']
-    report = {'schema_version': 1, 'suite': 'quantizer', 'scope': 'F03 format only; F04 fit/context and F05 mechanism gate pending',
+                    'src/ralup/quantization/oracle.py', 'src/ralup/quantization/checks.py',
+                    'src/ralup/quantization/scales.py', 'src/ralup/quantization/rotation.py',
+                    'src/ralup/quantization/surrogates.py', 'src/ralup/quantization/context.py',
+                    'docs/numerics/quantization-context.md', 'docs/numerics/gaussian-e2m1-reference.json', 'requirements.lock']
+    report = {'schema_version': 1, 'suite': 'quantizer', 'scope': 'F03 format and F04 project fit/rotation/context/surrogates only; F05 and full WP01 pending',
+              'acceptance_gate': 'F03_F04_only; full_WP01_pending',
               'recorded_utc': datetime.now(timezone.utc).isoformat(), 'device': device,
               'fallback_environment': os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK', 'unset'),
               'environment': {'python': platform.python_version(), 'machine': platform.machine(),
-                              'packages': {name: importlib.metadata.version(name) for name in ('torch', 'numpy')},
+                              'packages': {name: importlib.metadata.version(name) for name in ('torch', 'numpy', 'scipy')},
                               'mps_built': torch.backends.mps.is_built(), 'mps_available': torch.backends.mps.is_available()},
               'source': {'ocp_pdf_sha256': None, 'ocp_pdf_checksum_status': 'unresolved: raw official PDF download HTTP403',
                          'files': {path: sha256_file(root / path) for path in source_paths}},
-              'tolerances': {'exact_values_atol': 0., 'code_mismatches': 0, 'reconstruction_rtol': VALUE_RTOL,
+              'tolerances': {'context_atol': CONTEXT_ATOL, 'context_rtol': CONTEXT_RTOL,
+                             'gaussian_objective_atol': 2e-13, 'gaussian_a_atol': 2e-7, 'gaussian_integration_residual_max': 2e-12,
+                             'exact_values_atol': 0., 'code_mismatches': 0, 'reconstruction_rtol': VALUE_RTOL,
                              'reconstruction_atol': VALUE_ATOL, 'exact_scale_boundary_distance_max_fp32_ulp': 1.,
                              'exact_scale_boundary_mismatch_rule': 'adjacent ordinals; FP32 division lands on exact midpoint'},
               'checks': {}, 'status': 'blocked', 'blockers': []}
@@ -208,6 +364,7 @@ def check_quantizer(device: str, output: Path) -> ArtifactRef:
     if not report['blockers']:
         try:
             report['checks'], passing = _run_checks(device)
+            report['checks']['context'] = _run_context_checks(device)
             report['status'] = 'pass' if passing else 'negative'
             if not passing:
                 report['blockers'].append('Measured quantizer discrepancy exceeds predeclared acceptance')
