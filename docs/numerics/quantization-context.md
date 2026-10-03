@@ -53,7 +53,11 @@ and products. Tiny division/product rounding is performed once with integer
 significands; rounding a normal intermediate into a subnormal can otherwise
 introduce a second-rounding error. Row maxima/scale positivity are tested by bits.
 Stable RMS normalizes tiny inputs through their decoded significands; Gaussian
-scales retain representable tiny products.
+scales always use preserved product arithmetic. Group sparsity can make a scale
+subnormal even when its maximum is normal and above any fixed magnitude cutoff;
+preserving every Gaussian product avoids such input-based assumptions. Sparse
+256-value row and whole-tensor groups with maximum bits 0x2000000 both retain
+scale bits 2042958 on CPU/MPS.
 
 Hadamard keeps the ordinary normalized butterfly unchanged. Near-zero butterfly
 pairs use the gradual-underflow helpers; custom autograd applies the same

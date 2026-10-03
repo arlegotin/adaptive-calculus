@@ -168,10 +168,10 @@ def compute_scales(u: Tensor, recipe: str, previous: Tensor | None) -> Tensor:
                       if bool(((bits > 0) & (bits < 0x800000)).any()) else u / safe_maximum)
         rms_normalized = normalized.square().mean(dim=dims, keepdim=True).sqrt()
         factor = rms_normalized * _gaussian_scale_constant()
-        ordinary = factor * safe_maximum
-        small = maximum_bits < 0x2000000
-        scale = (torch.where(small, fp32_bits(multiply_rescaled(safe_maximum, factor)), fp32_bits(ordinary)).view(torch.float32)
-                 if bool(small.any()) else ordinary)
+        # Sparsity can make this product subnormal for any normal maximum.
+        # Preserve the computed product directly; input-magnitude cutoffs cannot
+        # determine its representability across arbitrary group sizes.
+        scale = multiply_rescaled(safe_maximum, factor)
     else:
         scale = divide_six(safe_maximum)
     scale = torch.where(zero, torch.ones_like(scale), scale)

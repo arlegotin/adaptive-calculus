@@ -52,4 +52,7 @@ def test_quantizer_cli_reports_actual_fit_context_and_surrogate_checks(tmp_path)
     assert checks['microbatch_backward']['independent_backward_calls'] == 2
     assert checks['detached_context']['tensors_requiring_grad'] == 0
     assert checks['grouping_labels'] == ['last_axis_row', 'whole_tensor']
+    assert checks['gradual_underflow']['sparse_normal_max_gaussian_scale_bits'] == {
+        'quest_fp4_row_reference': [[2042958]], 'quest_fp4_tensor_reference': [[2042958]],
+    }
     assert report['acceptance_gate'] == 'F03_F04_only; full_WP01_pending'

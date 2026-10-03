@@ -343,6 +343,15 @@ def _run_context_checks(device):
                                 {'name': 'quest_fp4_row_reference'}, 0, None)
     if mixed_rms.scales.view(torch.int32).cpu().tolist() != [[3230200]]:
         raise AssertionError('Gaussian RMS dropped a subnormal member under a normal group maximum')
+    sparse_gaussian_bits = {}
+    for name, shape in [('quest_fp4_row_reference', (1, 256)), ('quest_fp4_tensor_reference', (2, 128))]:
+        sparse_raw = torch.zeros(shape, dtype=torch.int32, device=device)
+        sparse_raw[0, 0] = 0x2000000
+        sparse_context = prepare_context(sparse_raw.view(torch.float32), {'name': name}, 0, None)
+        actual_scale_bits = sparse_context.scales.view(torch.int32).cpu().tolist()
+        if actual_scale_bits != [[2042958]] or bool(sparse_context.zero_groups.any()):
+            raise AssertionError('Sparse normal-maximum Gaussian group lost its representable subnormal scale')
+        sparse_gaussian_bits[name] = actual_scale_bits
     huge = torch.tensor([[2e38, 2e38]], device=device)
     torch.testing.assert_close(hadamard(huge), torch.tensor([[2.8284271e38, 0.]], device=device), atol=0., rtol=CONTEXT_RTOL)
     overflow_w = torch.tensor([[3.3e38]], device=device)
@@ -365,7 +374,8 @@ def _run_context_checks(device):
             'surrogates': surrogate_results,
             'gradual_underflow': {'max_scale_groups': 256, 'max_scale_bit_mismatches': scale_mismatches,
                                  'hadamard_parameters': 2048, 'hadamard_bit_mismatches': rotation_mismatches,
-                                 'gaussian_scale_bits': 4, 'mixed_normal_subnormal_gaussian_scale_bits': 3230200, 'high_range_finite_hadamard': True},
+                                 'gaussian_scale_bits': 4, 'mixed_normal_subnormal_gaussian_scale_bits': 3230200,
+                                 'sparse_normal_max_gaussian_scale_bits': sparse_gaussian_bits, 'high_range_finite_hadamard': True},
             'microbatch_backward': {'independent_backward_calls': 2, 'retained_graph': False,
                                     'gradient_max_abs_error': float((w.grad-(x1+x2)).abs().max())},
             'detached_context': {'tensor_count': len(context.numeric_tensors()), 'tensors_requiring_grad': 0,

@@ -104,7 +104,8 @@ def test_surrogates_have_named_distinct_gradients(device, rule, expected):
     torch.testing.assert_close(w.grad, torch.tensor([expected], device=device))
     tiny_upstream = torch.tensor([[1, 2, 3, 4]], dtype=torch.int32, device=device).view(torch.float32)
     tiny_gradient, = torch.autograd.grad(view(w, c), w, tiny_upstream)
-    assert tiny_gradient.view(torch.int32).cpu().tolist() == [[1, 0, 3, 4 if rule == "trust" else 0]]
+    expected_bits = {'ste': [1, 2, 3, 4], 'trust': [1, 0, 3, 4], 'clipped_ste': [1, 0, 3, 0]}
+    assert tiny_gradient.view(torch.int32).cpu().tolist() == [expected_bits[rule]]
 
 
 def test_rng_untouched_supplied_codes_reused_and_inputs_unchanged(device):
@@ -287,3 +288,18 @@ def test_gaussian_rms_keeps_subnormal_members_when_group_max_is_normal(device):
     factor = np.float32(np.sqrt(np.float32(.625))*np.float32(.4870791785622801))
     expected = (np.array([0x800000], dtype=np.int32).view(np.float32)*factor).view(np.int32)[0]
     assert c.scales.view(torch.int32).cpu().tolist() == [[int(expected)]]
+
+
+@pytest.mark.parametrize('name, shape', [('quest_fp4_row_reference', (1, 256)), ('quest_fp4_tensor_reference', (2, 128))])
+def test_sparse_normal_max_gaussian_scale_preserves_subnormal_product(device, name, shape):
+    import numpy as np
+    prepare, _, _, _, _, _ = api()
+    raw = torch.zeros(shape, dtype=torch.int32, device=device)
+    raw[0, 0] = 0x2000000
+    c = prepare(raw.view(torch.float32), {'name': name}, 0, None)
+    # One nonzero among 256 values: RMS = maximum/16; factor a/6 is FP32.
+    maximum = np.array([0x2000000], dtype=np.int32).view(np.float32)[0]
+    expected = np.array([maximum*np.float32(np.float32(.4870791785622801)/16)], dtype=np.float32).view(np.int32)[0]
+    assert int(expected) == 2042958
+    assert c.scales.view(torch.int32).cpu().tolist() == [[int(expected)]]
+    assert not bool(c.zero_groups.any())

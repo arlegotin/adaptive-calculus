@@ -15,7 +15,8 @@
     "F03 review fix1: positive subnormal scales/inputs and reconstructed underflow bits preserved on actual fallback-disabled MPS; 4096 mixed-domain cases and tiny directions match CPU",
     "F03 independent reviewer gate complete at af847e3",
     "F04 analytic Gaussian refit independently integrated; full-row Hadamard, fixed/dynamic scales, detached storage contexts and fresh STE/trust/clipped graphs passed CPU and actual fallback-disabled MPS checks; 215/215 current-suite tests passed; independent reviewer gate pending",
-    "F04 review fix1: finite supplied codes bypass unused nearest overflow; representable subnormal automatic/Gaussian scales, Hadamard forward/inverse gradients and physical trust/clipped masks preserved on actual fallback-disabled MPS; 112 covering cases passed and independent mixed-bit cohorts match; review pending"
+    "F04 review fix1: finite supplied codes bypass unused nearest overflow; representable subnormal automatic/Gaussian scales, Hadamard forward/inverse gradients and physical trust/clipped masks preserved on actual fallback-disabled MPS; 112 covering cases passed and independent mixed-bit cohorts match; review pending",
+    "F04 review fix2: every Gaussian scale product uses preserved FP32/integer arithmetic, including sparse normal maxima with subnormal row/tensor scales; final context/Gaussian/microbatch files 72/72 passed on actual fallback-disabled CPU/MPS after all test edits; independent review pending"
   ],
   "tasks": {
     "F01": "complete",

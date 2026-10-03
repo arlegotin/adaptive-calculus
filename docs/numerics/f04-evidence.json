@@ -36,7 +36,7 @@
       "device": "cpu",
       "fallback_environment": "unset",
       "recorded_utc": "2026-10-03T23:07:47.347603+00:00",
-      "snapshot": "F04 fix1: chosen supplied reconstruction; representable gradual-underflow scales/rotation/masks/inverse gradients"
+      "snapshot": "historical fix1 measured cohort; sparse Gaussian finding and late assertion regression superseded by fix2"
     },
     {
       "path": "artifacts/checks/f04-fix1-quantizer-mps.json",
@@ -45,7 +45,25 @@
       "device": "mps",
       "fallback_environment": "0",
       "recorded_utc": "2026-10-03T23:07:51.283931+00:00",
-      "snapshot": "F04 fix1: chosen supplied reconstruction; representable gradual-underflow scales/rotation/masks/inverse gradients"
+      "snapshot": "historical fix1 measured cohort; sparse Gaussian finding and late assertion regression superseded by fix2"
+    },
+    {
+      "path": "artifacts/checks/f04-fix2-quantizer-cpu.json",
+      "sha256": "87d58a0035766bf2f9bbba7f4e4c49a4f52258f9d27f77101dbf00766a83efd1",
+      "status": "pass",
+      "device": "cpu",
+      "fallback_environment": "unset",
+      "recorded_utc": "2026-10-03T23:23:29.393975+00:00",
+      "snapshot": "F04 fix2: Gaussian product preservation independent of input cutoff; final affected-file verification"
+    },
+    {
+      "path": "artifacts/checks/f04-fix2-quantizer-mps.json",
+      "sha256": "b1b5294fa741d3a203d5b1813be139c6076ca36a837be057737a85f5b7d1950c",
+      "status": "pass",
+      "device": "mps",
+      "fallback_environment": "0",
+      "recorded_utc": "2026-10-03T23:23:33.318364+00:00",
+      "snapshot": "F04 fix2: Gaussian product preservation independent of input cutoff; final affected-file verification"
     }
   ],
   "mutation_evidence": [
@@ -88,7 +106,8 @@
     "additional_tiny_mask_gradient_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py::test_subnormal_mask_arithmetic_preserves_physical_thresholds -q",
     "additional_tiny_mask_gradient_result": "4 passed in .81s",
     "whole_suite_rerun": false,
-    "reason": "Covering tests and actual diagnostics cover the changed numerical interfaces; no unrelated integration risk found"
+    "reason": "Covering tests and actual diagnostics cover the changed numerical interfaces; no unrelated integration risk found",
+    "snapshot_note": "The 112-case run predates a later incorrect plain-STE assertion; fix2 final affected-file results supersede that test snapshot."
   },
   "gradual_underflow_support": {
     "row_max_scale_groups": 256,
@@ -99,6 +118,34 @@
     "gaussian_scale_example_bits": 4,
     "mixed_normal_subnormal_gaussian_scale_bits": 3230200,
     "trust_clipped_subnormal_scales_and_upstream_gradients": "verified actual CPU/MPS",
-    "ordinary_normal_hadamard": "same normalized butterfly arithmetic; inverse Function uses the same device path"
+    "ordinary_normal_hadamard": "same normalized butterfly arithmetic; inverse Function uses the same device path",
+    "sparse_normal_max_gaussian_scale_bits": {
+      "quest_fp4_row_reference": [
+        [
+          2042958
+        ]
+      ],
+      "quest_fp4_tensor_reference": [
+        [
+          2042958
+        ]
+      ]
+    },
+    "gaussian_product_path": "always preserved; no maximum cutoff or sparsity assumption"
+  },
+  "fix2_final_affected_tests": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py -q",
+    "cpu_sandbox_result": "42 passed, 30 skipped in 2.26s; skips are MPS unavailable",
+    "actual_cpu_mps_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py -q",
+    "actual_cpu_mps_result": "72 passed in 2.79s",
+    "fallback_environment": "0",
+    "sandbox_permissions": "require_escalated",
+    "test_file_sha256": {
+      "tests/unit/test_quantization_context.py": "08aa1ec25363f07ae3dd0d711cbb7cd14d76c0dc9a520454db16b88a5bad7638",
+      "tests/unit/test_gaussian_fit.py": "7a1f7a1231bfe92060b3b2b06cf6974fc1f5f39a5a1c33a423457c53c350fd00",
+      "tests/integration/test_surrogate_microbatches.py": "94a41f3c58f1f1d4154034561c205c279e761dcf2bed22d7dc476ebca9738b61"
+    },
+    "later_test_edits": false,
+    "whole_suite_rerun": false
   }
 }
