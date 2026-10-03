@@ -102,6 +102,9 @@ def test_surrogates_have_named_distinct_gradients(device, rule, expected):
     torch.testing.assert_close(out, torch.tensor([[0., 6., -1., 6.]], device=device))
     out.sum().backward()
     torch.testing.assert_close(w.grad, torch.tensor([expected], device=device))
+    tiny_upstream = torch.tensor([[1, 2, 3, 4]], dtype=torch.int32, device=device).view(torch.float32)
+    tiny_gradient, = torch.autograd.grad(view(w, c), w, tiny_upstream)
+    assert tiny_gradient.view(torch.int32).cpu().tolist() == [[1, 0, 3, 4 if rule == "trust" else 0]]
 
 
 def test_rng_untouched_supplied_codes_reused_and_inputs_unchanged(device):
@@ -138,13 +141,19 @@ def test_fixed_scale_initialization_flags_owned_independently_of_current_rows():
         prepare(current, {'name': 'row_dynamic_max', 'previous_zero_groups': initial.scale_zero_groups}, 1, None)
 
 
-@pytest.mark.parametrize('rule', ['trust', 'clipped_ste'])
-def test_subnormal_mask_arithmetic_fails_explicitly_instead_of_flushing(device, rule):
-    prepare, _, _, _, _, _ = api()
+@pytest.mark.parametrize('rule, expected', [('trust', [1., 0., 1., 1.]), ('clipped_ste', [1., 0., 1., 0.])])
+def test_subnormal_mask_arithmetic_preserves_physical_thresholds(device, rule, expected):
+    prepare, view, _, _, _, _ = api()
+    # Unit s has three minimum-subnormal units; errors are [0,4,0,1].
     scale = torch.tensor([[3]], dtype=torch.int32, device=device).view(torch.float32)
-    w = torch.tensor([[7, 0]], dtype=torch.int32, device=device).view(torch.float32)
-    with pytest.raises(ValueError, match='underflow'):
-        prepare(w, {'name': 'row_fixed_max', 'previous_scales': scale, 'backward': rule}, 0, None)
+    w = torch.tensor([[0, 22, -2147483645, 19]], dtype=torch.int32, device=device).view(torch.float32).requires_grad_()
+    c = prepare(w, {'name': 'row_fixed_max', 'previous_scales': scale, 'backward': rule}, 0, None)
+    assert c.storage_values.view(torch.int32).cpu().tolist() == [[0, 18, -2147483645, 18]]
+    view(w, c).sum().backward()
+    torch.testing.assert_close(w.grad, torch.tensor([expected], device=device))
+    tiny_upstream = torch.tensor([[1, 2, 3, 4]], dtype=torch.int32, device=device).view(torch.float32)
+    tiny_gradient, = torch.autograd.grad(view(w, c), w, tiny_upstream)
+    assert tiny_gradient.view(torch.int32).cpu().tolist() == [[1, 0, 3, 4 if rule == "trust" else 0]]
 
 
 def test_fixed_subnormal_scale_plain_ste_keeps_f03_integer_bits(device):
@@ -185,3 +194,96 @@ def test_supplied_realization_cannot_turn_an_all_zero_group_nonzero(device):
     codes[0, 0] = 8
     with pytest.raises(ValueError, match='zero group'):
         prepare(w, {'name': 'row_dynamic_max', 'codes': codes}, 0, None)
+
+
+
+def test_supplied_finite_code_bypasses_unused_nearest_overflow(device):
+    prepare, view, _, _, _, _ = api()
+    w = torch.tensor([[3.3e38]], device=device, requires_grad=True)
+    scale = torch.tensor([[6e37]], device=device)
+    c = prepare(w, {'name': 'row_fixed_max', 'previous_scales': scale,
+                     'codes': torch.tensor([[13]], dtype=torch.uint8, device=device)}, 0, None)
+    torch.testing.assert_close(view(w, c), torch.tensor([[2.4e38]], device=device))
+    view(w, c).sum().backward()
+    torch.testing.assert_close(w.grad, torch.ones_like(w))
+    with pytest.raises(ValueError, match='overflow'):
+        prepare(w, {'name': 'row_fixed_max', 'previous_scales': scale}, 0, None)
+
+
+@pytest.mark.parametrize('name', ['row_fixed_max', 'row_dynamic_max', 'tensor_dynamic_max', 'quest_fp4_row_reference'])
+def test_automatic_scales_preserve_representable_subnormals(device, name):
+    prepare, _, _, _, _, _ = api()
+    w = torch.tensor([[12, 0]], dtype=torch.int32, device=device).view(torch.float32)
+    c = prepare(w, {'name': name}, 0, None)
+    # Max recipes: (12 units)/6=2 units. RMS fit: a/6 * sqrt(72)=4.133... units.
+    expected = 4 if name.startswith('quest') else 2
+    assert c.scales.view(torch.int32).cpu().tolist() == [[expected]]
+    assert not bool(c.zero_groups.any())
+    assert c.storage_values.view(torch.int32).cpu().tolist() == [[12, 0]]
+
+
+@pytest.mark.parametrize('bits', [12, 0x800000])
+def test_hadamard_preserves_finite_subnormal_operands_results_and_backward(device, bits):
+    import numpy as np
+    _, _, h, _, _, _ = api()
+    x = torch.tensor([[bits, 0]], dtype=torch.int32, device=device).view(torch.float32).requires_grad_()
+    q = h(x)
+    expected = (np.array([bits], dtype=np.int32).view(np.float32)/np.float32(2**.5)).view(np.int32)[0]
+    assert q.view(torch.int32).cpu().tolist() == [[int(expected), int(expected)]]
+    # Incoming subnormal gradient also traverses the bit-safe inverse rotation.
+    upstream = torch.tensor([[bits, 0]], dtype=torch.int32, device=device).view(torch.float32)
+    gradient, = torch.autograd.grad(q, x, upstream)
+    assert gradient.view(torch.int32).cpu().tolist() == [[int(expected), int(expected)]]
+
+
+def test_mixed_tiny_max_scale_cohort_matches_independent_fp32_division(device):
+    import numpy as np
+    prepare, _, _, _, _, _ = api()
+    rng = np.random.default_rng(20261004)
+    raw = rng.integers(12, 0x2000000, size=(256, 8), dtype=np.int32)
+    raw[:, 1] = 0
+    x = raw.view(np.float32)
+    expected = (x.max(axis=-1, keepdims=True)/np.float32(6)).view(np.int32)
+    c = prepare(torch.tensor(raw, dtype=torch.int32, device=device).view(torch.float32), {'name': 'row_dynamic_max'}, 0, None)
+    np.testing.assert_array_equal(c.scales.view(torch.int32).cpu().numpy(), expected)
+    assert not bool(c.zero_groups.any())
+
+
+def test_mixed_tiny_hadamard_matches_independent_gradual_underflow_butterfly(device):
+    import numpy as np
+    _, _, hadamard, _, _, _ = api()
+    rng = np.random.default_rng(20261004)
+    raw = rng.integers(1, 0x1000000, size=(256, 8), dtype=np.int32)
+    raw[:, 1::2] |= np.int32(-2147483648)
+    reference = raw.view(np.float32).copy()
+    for stride in (1, 2, 4):
+        groups = reference.reshape(256, -1, 2, stride)
+        left, right = groups[:, :, 0, :]/np.float32(2**.5), groups[:, :, 1, :]/np.float32(2**.5)
+        reference = np.stack((left+right, left-right), axis=-2).reshape(256, 8)
+    x = torch.tensor(raw, device=device).view(torch.float32)
+    actual = hadamard(x)
+    np.testing.assert_array_equal(actual.view(torch.int32).cpu().numpy(), reference.view(np.int32))
+
+
+def test_hadamard_high_range_finite_output_avoids_unnormalized_sum_overflow(device):
+    _, _, hadamard, _, _, _ = api()
+    x = torch.tensor([[2e38, 2e38]], device=device)
+    torch.testing.assert_close(hadamard(x), torch.tensor([[2.8284271e38, 0.]], device=device), atol=0., rtol=2e-6)
+
+
+def test_supplied_codes_still_reject_nonfinite_actual_weights_with_valid_warm_start(device):
+    prepare, _, _, _, _, _ = api()
+    with pytest.raises(ValueError, match='nonfinite'):
+        prepare(torch.tensor([[float('nan')]], device=device),
+                {'name': 'row_fixed_max', 'warm_start': torch.tensor([[6.]], device=device),
+                 'codes': torch.tensor([[13]], dtype=torch.uint8, device=device)}, 0, None)
+
+
+def test_gaussian_rms_keeps_subnormal_members_when_group_max_is_normal(device):
+    import numpy as np
+    prepare, _, _, _, _, _ = api()
+    w = torch.tensor([[0x800000, 0x400000]], dtype=torch.int32, device=device).view(torch.float32)
+    c = prepare(w, {'name': 'quest_fp4_row_reference'}, 0, None)
+    factor = np.float32(np.sqrt(np.float32(.625))*np.float32(.4870791785622801))
+    expected = (np.array([0x800000], dtype=np.int32).view(np.float32)*factor).view(np.int32)[0]
+    assert c.scales.view(torch.int32).cpu().tolist() == [[int(expected)]]

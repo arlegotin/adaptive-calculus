@@ -9,11 +9,13 @@ import math
 import torch
 from torch import Tensor
 
+from .fp32 import add_rescaled, bits as fp32_bits, divide_sqrt2
+
 ROTATIONS = ('identity', 'full_hadamard')
 
 
-def hadamard(x: Tensor) -> Tensor:
-    """Orthonormal butterfly along the complete last axis; preserves autograd."""
+def _hadamard_numeric(x: Tensor) -> Tensor:
+    """Numeric orthonormal butterfly; the outer Function owns inverse autograd."""
     if x.dtype != torch.float32:
         raise TypeError('Hadamard requires float32 tensors')
     if x.ndim < 1 or x.shape[-1] < 1 or x.shape[-1] & (x.shape[-1]-1):
@@ -21,8 +23,6 @@ def hadamard(x: Tensor) -> Tensor:
     bits = x.detach().contiguous().view(torch.int32) & 0x7fffffff
     if not bool((bits < 0x7f800000).all()):
         raise ValueError('Hadamard requires finite inputs')
-    if bool(((bits > 0) & (bits < 0x800000)).any()):
-        raise ValueError('Hadamard subnormal input risks device underflow')
     result = x
     stride = 1
     while stride < x.shape[-1]:
@@ -30,16 +30,39 @@ def hadamard(x: Tensor) -> Tensor:
         # Normalize before addition to avoid unnecessary intermediate overflow.
         left = groups[..., 0, :] / math.sqrt(2.)
         right = groups[..., 1, :] / math.sqrt(2.)
-        result = torch.stack((left+right, left-right), dim=-2).reshape_as(x)
+        plus, minus = left+right, left-right
+        pair_bits = fp32_bits(groups) & 0x7fffffff
+        small_pair = pair_bits.amax(dim=-2) < 0x0d000000
+        if bool(small_pair.any()):
+            # Exact tiny quotients and bit-preserved sums avoid denormal arithmetic.
+            safe_left = divide_sqrt2(groups[..., 0, :])
+            safe_right = divide_sqrt2(groups[..., 1, :])
+            plus = torch.where(small_pair, fp32_bits(add_rescaled(safe_left, safe_right)), fp32_bits(plus)).view(torch.float32)
+            minus = torch.where(small_pair, fp32_bits(add_rescaled(safe_left, safe_right, subtract=True)), fp32_bits(minus)).view(torch.float32)
+        result = torch.stack((plus, minus), dim=-2).reshape_as(x)
         stride *= 2
     outbits = result.detach().contiguous().view(torch.int32) & 0x7fffffff
     if not bool((outbits < 0x7f800000).all()):
         raise ValueError('Hadamard overflow in float32 storage')
     if bool(((bits.amax(dim=-1) > 0) & (outbits.amax(dim=-1) == 0)).any()):
         raise ValueError('Hadamard nonzero row underflow in float32 storage')
-    if bool(((outbits > 0) & (outbits < 0x800000)).any()):
-        raise ValueError('Hadamard subnormal output risks device underflow')
     return result
+
+
+class _Hadamard(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x):
+        return _hadamard_numeric(x)
+
+    @staticmethod
+    def backward(ctx, upstream):
+        # The same orthonormal inverse preserves tiny incoming gradients.
+        return _Hadamard.apply(upstream)
+
+
+def hadamard(x: Tensor) -> Tensor:
+    """Full-last-axis orthonormal transform, including representable subnormals."""
+    return _Hadamard.apply(x)
 
 
 def to_storage(x: Tensor, rotation: str) -> Tensor:

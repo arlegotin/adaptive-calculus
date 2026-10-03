@@ -9,7 +9,7 @@
       "device": "cpu",
       "fallback_environment": "unset",
       "recorded_utc": "2026-10-03T22:37:38.490290+00:00",
-      "snapshot": "final F04 implementation"
+      "snapshot": "historical b371b69 initial implementation; representable-domain findings superseded by fix1"
     },
     {
       "path": "artifacts/checks/f04-quantizer-mps.json",
@@ -18,7 +18,7 @@
       "device": "mps",
       "fallback_environment": "0",
       "recorded_utc": "2026-10-03T22:37:42.028418+00:00",
-      "snapshot": "final F04 implementation"
+      "snapshot": "historical b371b69 initial implementation; representable-domain findings superseded by fix1"
     },
     {
       "path": "artifacts/checks/f04-quantizer-mps-sandbox-blocked.json",
@@ -28,6 +28,24 @@
       "fallback_environment": "0",
       "recorded_utc": "2026-10-03T22:29:37.641239+00:00",
       "snapshot": "earlier sandbox device-discovery snapshot; not an MPS pass"
+    },
+    {
+      "path": "artifacts/checks/f04-fix1-quantizer-cpu.json",
+      "sha256": "30d73bbcb3fb9d149c07afbfa80cde8f43f5494e189ad8c59226e8bf841bd24b",
+      "status": "pass",
+      "device": "cpu",
+      "fallback_environment": "unset",
+      "recorded_utc": "2026-10-03T23:07:47.347603+00:00",
+      "snapshot": "F04 fix1: chosen supplied reconstruction; representable gradual-underflow scales/rotation/masks/inverse gradients"
+    },
+    {
+      "path": "artifacts/checks/f04-fix1-quantizer-mps.json",
+      "sha256": "957bfebec593bbddd115a2ba6c7c296b6e13bca2e05a43753e9bd200d77471ec",
+      "status": "pass",
+      "device": "mps",
+      "fallback_environment": "0",
+      "recorded_utc": "2026-10-03T23:07:51.283931+00:00",
+      "snapshot": "F04 fix1: chosen supplied reconstruction; representable gradual-underflow scales/rotation/masks/inverse gradients"
     }
   ],
   "mutation_evidence": [
@@ -43,22 +61,44 @@
     }
   ],
   "artifact_storage": "artifacts/checks is local and ignored by Git; hashes and measured summaries are tracked here.",
-  "focused_tests": {
+  "representability_limits": [
+    "Computed positive scale rounding to zero for a nonzero group raises underflow",
+    "Original nonfinite tensors and genuinely nonfinite/overflowed transform results are rejected",
+    "Chosen reconstruction overflow raises; an unused nearest reconstruction is never evaluated for supplied codes"
+  ],
+  "no_training_data_or_protected_scoring": true,
+  "historical_focused_tests": {
     "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py -q",
     "result": "44 passed in 2.42s",
     "sandbox_permissions": "require_escalated",
     "fallback_environment": "0"
   },
-  "full_suite": {
+  "historical_full_suite": {
     "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
     "result": "215 passed in 8.37s",
     "sandbox_permissions": "require_escalated",
     "fallback_environment": "0"
   },
-  "representability_limits": [
-    "Automatic scale underflow/subnormal scales fail explicitly",
-    "Full Hadamard rejects subnormal input/output and nonfinite/overflowed transforms",
-    "Trust/clipped masks reject subnormal scales; fixed-scale plain STE retains F03 integer-bit forward behavior"
-  ],
-  "no_training_data_or_protected_scoring": true
+  "fix1_covering_tests": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py tests/unit/test_e2m1.py tests/integration/test_e2m1_mps.py -q",
+    "result": "112 passed in 5.59s",
+    "scope": "68 F04 cases and 44 unchanged F03 interface cases",
+    "fallback_environment": "0",
+    "sandbox_permissions": "require_escalated",
+    "additional_tiny_mask_gradient_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py::test_subnormal_mask_arithmetic_preserves_physical_thresholds -q",
+    "additional_tiny_mask_gradient_result": "4 passed in .81s",
+    "whole_suite_rerun": false,
+    "reason": "Covering tests and actual diagnostics cover the changed numerical interfaces; no unrelated integration risk found"
+  },
+  "gradual_underflow_support": {
+    "row_max_scale_groups": 256,
+    "row_max_scale_bit_mismatches": 0,
+    "hadamard_parameters": 2048,
+    "hadamard_bit_mismatches": 0,
+    "automatic_scale_example_bits": 2,
+    "gaussian_scale_example_bits": 4,
+    "mixed_normal_subnormal_gaussian_scale_bits": 3230200,
+    "trust_clipped_subnormal_scales_and_upstream_gradients": "verified actual CPU/MPS",
+    "ordinary_normal_hadamard": "same normalized butterfly arithmetic; inverse Function uses the same device path"
+  }
 }

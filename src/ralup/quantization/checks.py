@@ -310,25 +310,67 @@ def _run_context_checks(device):
         raise AssertionError('Fixed-scale STE changed F03 subnormal forward bits')
     subnormal_q.sum().backward()
     torch.testing.assert_close(subnormal_w.grad, torch.ones_like(subnormal_w), atol=0., rtol=0.)
-    for rule in ('trust', 'clipped_ste'):
-        try:
-            prepare_context(subnormal_w, {'name': 'row_fixed_max', 'previous_scales': subnormal_scale, 'backward': rule}, 0, None)
-        except ValueError as error:
-            if 'underflow' not in str(error):
-                raise
-        else:
-            raise AssertionError('Subnormal mask arithmetic failed to declare underflow risk')
+    for rule, want in [('trust', [1., 0., 1., 1.]), ('clipped_ste', [1., 0., 1., 0.])]:
+        tiny = torch.tensor([[0, 22, -2147483645, 19]], dtype=torch.int32, device=device).view(torch.float32).requires_grad_()
+        c = prepare_context(tiny, {'name': 'row_fixed_max', 'previous_scales': subnormal_scale, 'backward': rule}, 0, None)
+        quantized_view(tiny, c).sum().backward()
+        torch.testing.assert_close(tiny.grad, torch.tensor([want], device=device), atol=0., rtol=0.)
+        surrogate_results['subnormal_'+rule] = {'gradient': tiny.grad.cpu().tolist()}
+    raw = np.random.default_rng(20261004).integers(12, 0x2000000, size=(256, 8), dtype=np.int32)
+    raw[:, 1] = 0
+    tiny_matrix = torch.tensor(raw, device=device).view(torch.float32)
+    tiny_context = prepare_context(tiny_matrix, {'name': 'row_dynamic_max'}, 0, None)
+    expected_scale_bits = (raw.view(np.float32).max(axis=-1, keepdims=True)/np.float32(6)).view(np.int32)
+    scale_mismatches = int(np.count_nonzero(tiny_context.scales.view(torch.int32).cpu().numpy() != expected_scale_bits))
+    if scale_mismatches or bool(tiny_context.zero_groups.any()):
+        raise AssertionError('Automatic subnormal scales disagree with independent gradual-underflow division')
+    raw_h = np.random.default_rng(20261004).integers(1, 0x1000000, size=(256, 8), dtype=np.int32)
+    raw_h[:, 1::2] |= np.int32(-2147483648)
+    reference_h = raw_h.view(np.float32).copy()
+    for stride in (1, 2, 4):
+        groups = reference_h.reshape(256, -1, 2, stride)
+        left, right = groups[:, :, 0, :]/np.float32(2**.5), groups[:, :, 1, :]/np.float32(2**.5)
+        reference_h = np.stack((left+right, left-right), axis=-2).reshape(256, 8)
+    actual_h = hadamard(torch.tensor(raw_h, device=device).view(torch.float32))
+    rotation_mismatches = int(np.count_nonzero(actual_h.view(torch.int32).cpu().numpy() != reference_h.view(np.int32)))
+    if rotation_mismatches:
+        raise AssertionError('Subnormal Hadamard disagrees with independent gradual-underflow butterfly')
+    tiny_gaussian = prepare_context(torch.tensor([[12, 0]], dtype=torch.int32, device=device).view(torch.float32),
+                                    {'name': 'quest_fp4_row_reference'}, 0, None)
+    if tiny_gaussian.scales.view(torch.int32).cpu().tolist() != [[4]]:
+        raise AssertionError('Gaussian RMS scale lost representable subnormal')
+    mixed_rms = prepare_context(torch.tensor([[0x800000, 0x400000]], dtype=torch.int32, device=device).view(torch.float32),
+                                {'name': 'quest_fp4_row_reference'}, 0, None)
+    if mixed_rms.scales.view(torch.int32).cpu().tolist() != [[3230200]]:
+        raise AssertionError('Gaussian RMS dropped a subnormal member under a normal group maximum')
+    huge = torch.tensor([[2e38, 2e38]], device=device)
+    torch.testing.assert_close(hadamard(huge), torch.tensor([[2.8284271e38, 0.]], device=device), atol=0., rtol=CONTEXT_RTOL)
+    overflow_w = torch.tensor([[3.3e38]], device=device)
+    overflow_scale = torch.tensor([[6e37]], device=device)
+    finite_supplied = prepare_context(overflow_w, {'name': 'row_fixed_max', 'previous_scales': overflow_scale,
+                                                  'codes': torch.tensor([[13]], dtype=torch.uint8, device=device)}, 0, None)
+    torch.testing.assert_close(finite_supplied.storage_values, torch.tensor([[2.4e38]], device=device), atol=0., rtol=CONTEXT_RTOL)
+    try:
+        prepare_context(overflow_w, {'name': 'row_fixed_max', 'previous_scales': overflow_scale}, 0, None)
+    except ValueError as error:
+        if 'overflow' not in str(error):
+            raise
+    else:
+        raise AssertionError('Genuine nearest reconstruction overflow was accepted')
     return {'fit': fit, 'rotation': rotation, 'grouping_labels': [initial.grouping, whole.grouping],
             'scales': {'zero_group_count': initial.metadata['zero_group_count'],
                        'sentinel': 1., 'fixed_previous_preserved': True, 'explicit_warm_start_preserved': True,
                        'dynamic_recomputed': True, 'stable_rms_cases': rms_cases, 'nonzero_underflow_rejected': True,
-                       'fixed_subnormal_ste_bits_preserved': True, 'subnormal_masks_rejected': True},
+                       'fixed_subnormal_ste_bits_preserved': True, 'representable_subnormal_scales_preserved': True},
             'surrogates': surrogate_results,
+            'gradual_underflow': {'max_scale_groups': 256, 'max_scale_bit_mismatches': scale_mismatches,
+                                 'hadamard_parameters': 2048, 'hadamard_bit_mismatches': rotation_mismatches,
+                                 'gaussian_scale_bits': 4, 'mixed_normal_subnormal_gaussian_scale_bits': 3230200, 'high_range_finite_hadamard': True},
             'microbatch_backward': {'independent_backward_calls': 2, 'retained_graph': False,
                                     'gradient_max_abs_error': float((w.grad-(x1+x2)).abs().max())},
             'detached_context': {'tensor_count': len(context.numeric_tensors()), 'tensors_requiring_grad': 0,
                                  'numeric_cache_unchanged': True, 'output_coordinates': 'storage_Q(U)'},
-            'supplied_realization': {'codes_owned': True, 'rng_unchanged': True, 'zero_groups_preserved': True, 'generation': 'reserved_M05'},
+            'supplied_realization': {'codes_owned': True, 'rng_unchanged': True, 'zero_groups_preserved': True, 'finite_supplied_bypasses_unused_nearest_overflow': True, 'generation': 'reserved_M05'},
             'reference_label': 'project_S14_refit_full_row; upstream_release_parity_pending_M07'}
 
 def check_quantizer(device: str, output: Path) -> ArtifactRef:
@@ -340,7 +382,7 @@ def check_quantizer(device: str, output: Path) -> ArtifactRef:
                     'docs/numerics/ocp-inspection-notes.txt', 'src/ralup/quantization/formats.py',
                     'src/ralup/quantization/oracle.py', 'src/ralup/quantization/checks.py',
                     'src/ralup/quantization/scales.py', 'src/ralup/quantization/rotation.py',
-                    'src/ralup/quantization/surrogates.py', 'src/ralup/quantization/context.py',
+                    'src/ralup/quantization/surrogates.py', 'src/ralup/quantization/context.py', 'src/ralup/quantization/fp32.py',
                     'docs/numerics/quantization-context.md', 'docs/numerics/gaussian-e2m1-reference.json', 'requirements.lock']
     report = {'schema_version': 1, 'suite': 'quantizer', 'scope': 'F03 format and F04 project fit/rotation/context/surrogates only; F05 and full WP01 pending',
               'acceptance_gate': 'F03_F04_only; full_WP01_pending',

@@ -10,7 +10,8 @@ import math
 import torch
 from torch import Tensor
 
-from .formats import E2M1_VALUES
+from .formats import E2M1_VALUES, _preserved_ratio
+from .fp32 import bits as fp32_bits, divide_six, multiply_rescaled
 
 RECIPES = ('row_fixed_max', 'row_dynamic_max', 'tensor_fixed_max',
            'tensor_dynamic_max', 'quest_fp4_row_reference', 'quest_fp4_tensor_reference')
@@ -135,7 +136,8 @@ def compute_scales(u: Tensor, recipe: str, previous: Tensor | None) -> Tensor:
     U. Dynamic/Gaussian recipes reject previous scales to prevent accidental
     freezing. Zero groups alone use sentinel one. Stable RMS first divides by
     group maximum to avoid squaring overflow/underflow. A scale not representable
-    as a normal FP32 number raises explicitly (device denormals may flush).
+    as a positive FP32 number raises explicitly; representable subnormals
+    use device integer bits and normal-range rescaling.
     """
     grouping = grouping_for(recipe)
     if u.dtype != torch.float32:
@@ -161,17 +163,20 @@ def compute_scales(u: Tensor, recipe: str, previous: Tensor | None) -> Tensor:
             raise ValueError('Previous scales must be finite and positive')
         return previous.detach().clone()
     safe_maximum = torch.where(zero, torch.ones_like(maximum), maximum)
-    if bool(((maximum_bits > 0) & (maximum_bits < 0x800000)).any()):
-        raise ValueError('Nonzero group scale underflow: subnormal maximum')
     if recipe.startswith('quest'):
-        normalized = u / safe_maximum
+        normalized = (_preserved_ratio(fp32_bits(u), fp32_bits(safe_maximum))
+                      if bool(((bits > 0) & (bits < 0x800000)).any()) else u / safe_maximum)
         rms_normalized = normalized.square().mean(dim=dims, keepdim=True).sqrt()
-        scale = (rms_normalized * _gaussian_scale_constant()) * safe_maximum
+        factor = rms_normalized * _gaussian_scale_constant()
+        ordinary = factor * safe_maximum
+        small = maximum_bits < 0x2000000
+        scale = (torch.where(small, fp32_bits(multiply_rescaled(safe_maximum, factor)), fp32_bits(ordinary)).view(torch.float32)
+                 if bool(small.any()) else ordinary)
     else:
-        scale = safe_maximum / 6
+        scale = divide_six(safe_maximum)
     scale = torch.where(zero, torch.ones_like(scale), scale)
     scale_bits = scale.contiguous().view(torch.int32)
-    if bool(((~zero) & (scale_bits < 0x800000)).any()):
+    if bool(((~zero) & (scale_bits == 0)).any()):
         raise ValueError('Nonzero group scale underflow in float32 storage')
     if not bool(((scale_bits > 0) & (scale_bits < 0x7f800000)).all()):
         raise ValueError('Group scale overflow in float32 storage')

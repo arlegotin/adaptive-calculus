@@ -10,7 +10,7 @@ from typing import Mapping
 import torch
 from torch import Tensor
 
-from .formats import _preserved_reconstruction, quantize_e2m1
+from .formats import _fp32_pair, _preserved_reconstruction, quantize_e2m1
 from .rotation import to_storage
 from .scales import compute_scales, group_zero_flags, grouping_for
 from .surrogates import BACKWARD_RULES, backward_mask, surrogate_view
@@ -87,7 +87,7 @@ def prepare_context(w: Tensor, recipe: dict, step: int, rng: object) -> Quantiza
             raise ValueError('Warm start must match weight shape/device')
         scale_input = to_storage(warm_start.detach(), rotation)
     scales = compute_scales(scale_input, name, previous)
-    values, codes = quantize_e2m1(u, scales)
+    _fp32_pair(u, scales)  # Supplied codes still require finite actual U and valid scales.
     zero = group_zero_flags(u, name)
     supplied = recipe.get('codes')
     if supplied is not None:
@@ -99,6 +99,8 @@ def prepare_context(w: Tensor, recipe: dict, step: int, rng: object) -> Quantiza
             raise ValueError('Supplied codes must remain canonical zero in an all-zero group')
         codes = supplied.detach().clone()
         values = _preserved_reconstruction(codes.to(torch.int64), scales.view(torch.int32))
+    else:
+        values, codes = quantize_e2m1(u, scales)
     scale_zero = group_zero_flags(scale_input, name) if previous is None else None
     if previous_zero is not None:
         if previous_zero.dtype != torch.bool or previous_zero.shape != scales.shape or previous_zero.device != w.device:

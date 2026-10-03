@@ -44,13 +44,29 @@ trust is the default backward. RMS divides by the group maximum before squaring,
 avoiding needless overflow/underflow for inputs such as 1e30 or 1e-30. Automatic initialization/dynamic scales assign true zero
 groups positive sentinel s=1 with an explicit zero flag. Reused fixed scales
 remain frozen even if a current row becomes zero. Integer
-FP32 bit tests preserve nonzero classification on MPS. Automatic scales that
-would be subnormal or zero fail explicitly because device arithmetic may flush
-them. Fixed supplied scales retain positive subnormal bits for the F03 quantizer;
-trust/clipped masks reject subnormal scales because FP32 mask arithmetic can
-flush them; plain STE preserves the F03 forward path. Full Hadamard rejects subnormal inputs/outputs and nonfinite or overflowed
-rotations rather than pretending to preserve them. This is a declared F04
-representability limit, not a regression in F03's device integer-bit path.
+FP32 bit tests preserve nonzero classification on MPS. Representable positive
+subnormal scales, weights, transform outputs and incoming gradients are supported
+with device integer bits and normal-range FP32 operations. `fp32.py` provides
+exact mantissa/exponent decomposition, nearest-even power-of-two reconstruction,
+exact rational rounding for tiny x/6 and x/sqrt(2), and preserved FP32 subtraction
+and products. Tiny division/product rounding is performed once with integer
+significands; rounding a normal intermediate into a subnormal can otherwise
+introduce a second-rounding error. Row maxima/scale positivity are tested by bits.
+Stable RMS normalizes tiny inputs through their decoded significands; Gaussian
+scales retain representable tiny products.
+
+Hadamard keeps the ordinary normalized butterfly unchanged. Near-zero butterfly
+pairs use the gradual-underflow helpers; custom autograd applies the same
+orthonormal inverse to incoming gradients, including subnormals. Trust compares
+preserved physical abs(Q(U)-U) bits against scale bits. Clipped STE retains the
+FP32 abs(U/s)<=6 rule using normal significand division. Masked backward selects
+integer gradient bits to preserve tiny incoming gradients. All tensor operations
+remain on the requested device with FP32 arithmetic and integer tensors; there
+are no CPU tensor copies, higher precision production tensors or fallback.
+A nonzero group's computed scale that rounds to zero is unrepresentable and
+raises explicitly rather than being mislabeled all-zero. Nonfinite input,
+nonfinite transform output and genuinely overflowing chosen reconstructions also
+raise. Independently integrated Gaussian fitting remains a CPU float64 oracle.
 
 S14's analytic normal moments use midpoint cells with infinite exterior tails:
 M0=Phi(u)-Phi(l), M1=phi(l)-phi(u),
@@ -75,7 +91,10 @@ Plain `ste` passes the incoming storage gradient. `trust` multiplies it by
 `clipped_ste` uses `abs(U/s)<=6`. Masks are frozen at context preparation.
 A custom autograd function returns exact cached values without the cancellation
 error of adding/subtracting a straight-through residual. Supplying `codes`
-accepts one externally generated realization and owns a detached copy.
+accepts one externally generated realization and owns a detached copy. The
+supplied branch validates actual weights/scales and reconstructs only the chosen
+codes; it never reconstructs an unused nearest result. Thus a finite supplied
+endpoint remains valid even when a different nearest endpoint would overflow.
 Nonzero supplied ordinals in an all-zero group are rejected to preserve its
 zero forward contract. Drawing
 stochastic realizations is reserved for M05; F04 never consumes `rng`.
