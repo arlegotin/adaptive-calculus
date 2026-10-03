@@ -329,18 +329,37 @@ def test_incomplete_metadata_does_not_publish_run(tmp_path):
     assert not (tmp_path / "run.json").exists()
 
 
-@pytest.mark.parametrize("profile,purpose", [("smoke", "smoke"), ("core", "train")])
-def test_run_metadata_retains_actual_resolved_payload_and_hash(tmp_path, profile, purpose):
+@pytest.mark.parametrize("profile,purpose,phase", [
+    ("smoke", "smoke", "smoke"), ("core", "train", "explore"),
+    ("meta", "meta", "explore"), ("core", "confirm", "confirm"),
+])
+def test_run_metadata_retains_actual_resolved_payload_and_hash(tmp_path, profile, purpose, phase):
     values = metadata()
     resolved = resolve_config(template(profile), {} if purpose == "smoke" else evidence(), purpose=purpose)
-    values.update(phase=purpose, resolved_config=json.loads(canonical_bytes(resolved.payload)),
+    values.update(phase=phase, resolved_config=json.loads(canonical_bytes(resolved.payload)),
                   resolved_config_sha256=resolved.sha256)
     ledger = RunLedger(tmp_path, values)
     published = json.loads((tmp_path / "run.json").read_bytes())
     assert published["resolved_config"] == values["resolved_config"]
     assert published["resolved_config_sha256"] == values["resolved_config_sha256"]
     assert ledger.metadata["resolved_config"]["purpose"] == purpose
+    assert published["phase"] == phase
     assert RunLedger(tmp_path).metadata["resolved_config_sha256"] == resolved.sha256
+
+
+@pytest.mark.parametrize("phase,purpose", [
+    ("confirm", "train"), ("confirm", "meta"), ("confirm", "smoke"),
+    ("explore", "confirm"), ("explore", "smoke"), ("smoke", "train"),
+])
+def test_run_metadata_rejects_incompatible_phase_and_purpose(tmp_path, phase, purpose):
+    values = metadata()
+    resolved = resolve_config(template("smoke" if purpose == "smoke" else "core"),
+                              {} if purpose == "smoke" else evidence(), purpose=purpose)
+    values.update(phase=phase, resolved_config=json.loads(canonical_bytes(resolved.payload)),
+                  resolved_config_sha256=resolved.sha256)
+    with pytest.raises(ValueError):
+        RunLedger(tmp_path, values)
+    assert not (tmp_path / "run.json").exists()
 
 
 @pytest.mark.parametrize("defect", ["placeholder", "missing_hash", "wrong_hash", "missing_model",
@@ -348,7 +367,7 @@ def test_run_metadata_retains_actual_resolved_payload_and_hash(tmp_path, profile
 def test_run_metadata_rejects_incomplete_or_invalid_production_snapshot_before_publication(tmp_path, defect):
     values = metadata()
     config = resolve_config(template(), evidence(), purpose="train")
-    values.update(phase="train", resolved_config=json.loads(canonical_bytes(config.payload)),
+    values.update(phase="explore", resolved_config=json.loads(canonical_bytes(config.payload)),
                   resolved_config_sha256=config.sha256)
     if defect == "placeholder":
         values["resolved_config"] = {"unresolved_placeholder": True}

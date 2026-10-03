@@ -8,10 +8,11 @@
     "F01 read-only configuration CLI and templates"
   ],
   "tasks": {
-    "F01": "complete"
+    "F01": "implemented_pending_review"
   },
   "last_valid_checkpoint": null,
   "blocks": [
+    "F01 reviewer gate pending; implementation checks do not establish clean review",
     "WP00 environment, dependency lock, supported-operation and license evidence pending",
     "WP01 numerical invariants and measured tolerances pending",
     "All later scientific gates remain pending; protected scoring is unavailable"

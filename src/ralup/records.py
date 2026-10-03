@@ -14,6 +14,7 @@ from .config import _freeze, canonical_bytes, resolve_config
 
 
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
+_PHASE_PURPOSES = {"smoke": ("smoke",), "explore": ("train", "meta"), "confirm": ("confirm",)}
 
 
 def _check_hash(value, name="sha256", *, nullable=False):
@@ -121,8 +122,10 @@ def _validate_metadata(metadata):
     _check_hash(metadata["resolved_config_sha256"], "resolved_config_sha256")
     if hashlib.sha256(canonical_bytes(snapshot)).hexdigest() != metadata["resolved_config_sha256"]:
         raise ValueError("Resolved config payload does not match its SHA-256")
-    if snapshot.get("purpose") != metadata["phase"] or "evidence_gates" not in snapshot:
-        raise ValueError("Resolved config must retain matching purpose and gate provenance")
+    if snapshot.get("purpose") not in _PHASE_PURPOSES.get(metadata["phase"], ()):
+        raise ValueError("Run phase is incompatible with the resolved config purpose")
+    if "evidence_gates" not in snapshot:
+        raise ValueError("Resolved config must retain its gate provenance")
     template = dict(snapshot)
     purpose = template.pop("purpose")
     gates = template.pop("evidence_gates")
