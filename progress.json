@@ -17,7 +17,8 @@
     "F05 independent reviewer gate clean at bc1e4a8; bounded update geometry and mechanism diagnostics accepted on CPU and actual fallback-disabled MPS",
     "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
     "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending",
-    "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS"
+    "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS",
+    "H03 implementation: exact byte tiling, fixed-context score-mask carries, compact authenticated indexed cursors, named data RNG/JSON restoration and logical packing invariance; bounded real data correctness recorded in docs/data/h03-indexed-evidence.json; independent review pending"
   ],
   "tasks": {
     "F01": "complete",
@@ -25,15 +26,17 @@
     "F03": "complete",
     "F04": "complete",
     "F05": "complete",
-    "H01": "implemented_pending_review"
+    "H01": "implemented_pending_review",
+    "H03": "implemented_pending_review"
   },
   "last_valid_checkpoint": null,
   "blocks": [
     "H01 independent reviewer gate pending",
-    "WP02 requires H02-H08; source ingestion alone does not pass the data/harness gate",
+    "WP02 requires independent acceptance of implemented data stages and remaining H04-H08; data correctness alone does not pass the harness gate",
     "All later scientific gates remain pending; protected targets/model scoring stays closed until E03",
     "Pinned source card license version discrepancy and unspecified GFDL version remain unresolved; local research only; no corpus redistribution authorized",
-    "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate"
+    "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate",
+    "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate"
   ],
-  "next_command": ".venv/bin/python -m pytest tests/unit/test_articles.py -q"
+  "next_command": ".venv/bin/python -m ralup test-harness --suite data"
 }
