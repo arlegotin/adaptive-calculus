@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw",), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
@@ -61,7 +61,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            ref = check_adamw(args.device, args.output)
+            if args.suite == "muon":
+                from .baselines.muon_checks import check_muon
+                ref = check_muon(args.device,args.output)
+            else:
+                ref = check_adamw(args.device, args.output)
             report = json.loads(ref.path.read_bytes())
             print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
                                    "status": report["status"], "blockers": report["blockers"]}).decode())
@@ -194,7 +198,7 @@ def _run_explore(path):
     import time
     project_start = time.perf_counter()
     envelope = json.loads(Path(path).read_bytes())
-    if set(envelope)-{"config","evidence","purpose","pilot_target_budget","seed","output","checkpoint_directory","resume","stop_after_steps"}:
+    if set(envelope)-{"config","evidence","purpose","pilot_target_budget","seed","output","checkpoint_directory","resume","stop_after_steps","method"}:
         raise ValueError("Unknown explore envelope field")
     purpose = envelope.get("purpose")
     template = envelope.get("config")
@@ -220,7 +224,15 @@ def _run_explore(path):
     stop_after = envelope.get("stop_after_steps")
     if stop_after is not None and (type(stop_after) is not int or stop_after <= 0 or checkpoint_directory is None):
         raise ValueError("stop_after_steps requires a positive count and explicit checkpoint_directory")
+    method_settings = envelope.get('method')
+    if method_settings is not None:
+        if not isinstance(method_settings,dict) or set(method_settings) != {'name','adaptation_label','config','learning_rate'}:
+            raise ValueError('Matrix method requires explicit name, adaptation_label, config and learning_rate')
+        import math
+        if type(method_settings['learning_rate']) not in (int,float) or not math.isfinite(method_settings['learning_rate']) or method_settings['learning_rate'] < 0:
+            raise ValueError('Matrix learning rate must be finite and nonnegative')
     scientific_configuration = {"resolved":config,"seed":seed,"pilot_target_budget":budget}
+    if method_settings is not None: scientific_configuration['method'] = method_settings
     resumed_state = None
     if envelope.get("resume") is not None:
         resumed_state = restore_snapshot(load_snapshot(ArtifactRef(**envelope["resume"])),config["runtime"]["device"])
@@ -253,6 +265,15 @@ def _run_explore(path):
     optimizer = config["optimizer_probe"]
     method = MethodAdapter(dict(model.named_parameters()),default_parameter_groups(model),
                            AdamWUpdateRule(betas=tuple(optimizer["betas"]),eps=optimizer["epsilon"]))
+    matrix_lr = optimizer['learning_rate']
+    method_name, adaptation = 'adamw_original_W_byte_adapter','project_H06_bootstrap'
+    if method_settings is not None:
+        from .baselines.registry import build_matrix_method, matrix_record, MethodRegistry
+        method = build_matrix_method(method_settings['name'],dict(model.named_parameters()),default_parameter_groups(model),method_settings['config'])
+        registry = MethodRegistry();registry.register(matrix_record(method_settings['name'],method.groups,method.rule))
+        record = registry.require(method_settings['name'],adaptation_label=method_settings['adaptation_label'])
+        method_name,adaptation = record.name,record.adaptation_label
+        matrix_lr = method_settings['learning_rate']
     run_id = "h07-"+uuid.uuid4().hex
     output = Path(envelope.get("output",f"artifacts/runs/{run_id}"))
     commit = subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
@@ -264,13 +285,14 @@ def _run_explore(path):
         "source":{"commit":commit,"dirty_diff_sha256":hashlib.sha256(diff).hexdigest() if diff else None},
         "lock_sha256":artifact_hash("dependency_lock"),"environment_sha256":artifact_hash("environment"),
         "resolved_config":config,"resolved_config_sha256":resolved.sha256,
-        "method":"adamw_original_W_byte_adapter","adaptation":"project_H06_bootstrap",
+        "method":method_name,"adaptation":adaptation,
+        "method_settings":json.loads(json.dumps({**method.metadata,"ordered_parameter_groups":[{"name":g.name,"parameter_names":list(g.parameter_names),"weight_decay":g.weight_decay} for g in method.groups]})),
         "seeds":{"model":seed,"data":seed},"data_sha256":None if config["synthetic"] else config["data"]["manifest"]["sha256"],
         "warm_start_sha256":None,"policy_sha256":None,"lineage":{"parent":None if resumed_state is None or resumed_state.ledger.run_ledger is None else resumed_state.ledger.run_ledger.run_id,
         "resume":None if resumed_state is None else envelope["resume"]["sha256"]},
         "endpoint":{"pilot_target_budget":budget,"disposition":disposition,"final_scientific_duration":False}})
     state = TrainingState(model,method,cursor=cursor,ledger=WorkLedger(ledger),microbatch=config["training"]["microbatch"],
-                          schedule={"step":0,"point":SchedulePoint(optimizer["learning_rate"],optimizer["decay"],0.)},
+                          schedule={"step":0,"point":SchedulePoint(matrix_lr,optimizer["decay"],0.)},
                           configuration=scientific_configuration,rng_streams=rng_streams,
                           process_audit=[{"kind":"launch","pid":os.getpid(),"process_elapsed_seconds":0.}])
     if resumed_state is not None:

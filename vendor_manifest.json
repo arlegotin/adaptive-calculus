@@ -1853,5 +1853,55 @@
       "license_discrepancy": "Pinned card YAML: CC BY-SA 3.0 and GFDL (version unspecified); prose: CC BY-SA 4.0. Unresolved.",
       "measured_evidence": "docs/data/h01-evidence.json"
     }
+  ],
+  "methods": [
+    {
+      "family": "Muon",
+      "revision": "f98f1cacc0263b04290753e32be8d498c1efc806",
+      "source_url": "https://github.com/KellerJordan/Muon/tree/f98f1cacc0263b04290753e32be8d498c1efc806",
+      "implementation": "independent S23 equation implementation; no upstream code copied",
+      "license": "MIT",
+      "license_notice": {
+        "path": "licenses/methods/muon/LICENSE",
+        "sha256": "8c8d17398ecce3dd3fcb1bb77b5d268a427f8250f364ac655c9b38df5b693f6b"
+      },
+      "departures": [
+        "FP32 instead of upstream BF16 polynomial",
+        "project M=beta*M+G and G+beta*M instead of upstream EMA",
+        "transpose iff original rows>cols",
+        "explicit zero original-W momentum",
+        "pre-displacement decoupled decay",
+        "independent configured matrix LR and auxiliary no-decay scalar AdamW"
+      ],
+      "parity_scope": "independent equation fixtures; source release reproduction not established",
+      "rights_status": "MIT inspected; no distribution decision"
+    },
+    {
+      "family": "Muon+",
+      "revision": "arXiv:2602.21545v3",
+      "source_url": "https://arxiv.org/html/2602.21545v3",
+      "primary_html_sha256": "10536d1f1921f61f8f427c196990ca1855aef3a414be28a4be594bfacd0a2679",
+      "implementation": "independent Eq4/Algorithm1 normalization equations; no paper snippet or upstream source copied",
+      "license": "arXiv non-exclusive distribution license; software grant unresolved",
+      "license_raw_sha256": null,
+      "rights_status": "author software reuse grant unverified; source-reference eligibility blocked, never defeated",
+      "departures": [
+        "FP32 Jordan five-step polynomial realization of abstract Ortho",
+        "numeric default momentum .95",
+        "zero original-W EMA initialization",
+        "pre-displacement decoupled decay unspecified by Eq4",
+        "independent configured matrix LR and auxiliary no-decay scalar AdamW"
+      ],
+      "normalizations": [
+        "none",
+        "row",
+        "col",
+        "row_col",
+        "col_row"
+      ],
+      "normalization_epsilon": 1e-08,
+      "epsilon_placement": "inside sqrt at each serial stage",
+      "parity_scope": "paper equation fixtures; no author implementation release identified"
+    }
   ]
 }

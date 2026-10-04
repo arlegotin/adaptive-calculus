@@ -24,7 +24,10 @@ from .config import canonical_bytes
 from .data.cursor import BatchCursor
 from .models.transformer import ByteTransformer, ModelConfig
 from .optim.adamw import AdamWUpdateRule
-from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint
+from .optim.muon import MuonUpdateRule
+from .optim.muon_plus import MuonPlusUpdateRule
+from .optim.matrix_adapter import MatrixMethodAdapter
+from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
 from .quantization.context import QuantizationContext
@@ -81,6 +84,45 @@ for _name,_cls in [('model_config.v1',ModelConfig),('schedule_point.v1',Schedule
     register_state_schema(_name,_cls,tuple(f.name for f in fields(_cls)))
 register_method_schema('ordinary_adapter.v1',MethodAdapter,
                        ('optimizer_states','proposals','snapshot_schema'),MethodAdapter)
+
+register_method_schema('matrix_adapter.v1',MatrixMethodAdapter,
+                       ('optimizer_states','proposals','snapshot_schema'),MatrixMethodAdapter)
+
+
+def _rule_payload(rule):
+    if type(rule) is AdamWUpdateRule and set(vars(rule)) == {'betas','eps'}:
+        # Preserve the historical AdamW representation and strict source boundary.
+        return dict(vars(rule))
+    if type(rule) in (MuonUpdateRule,MuonPlusUpdateRule) and set(vars(rule)) == {'config'}:
+        value = {'schema':rule.state_schema,'config':dict(rule.configuration)}
+        _construct_rule(value)
+        return value
+    raise IntegrityError('Unknown update rule requires registered schema')
+
+
+def _construct_rule(payload):
+    if set(payload) == {'betas','eps'}:
+        return AdamWUpdateRule(**payload)
+    _keys(payload,('schema','config'))
+    constructors = {MuonUpdateRule.state_schema:MuonUpdateRule,MuonPlusUpdateRule.state_schema:MuonPlusUpdateRule}
+    if payload['schema'] not in constructors:
+        raise IntegrityError('Unknown update rule requires registered schema')
+    constructor = constructors[payload['schema']]
+    _keys(payload['config'],constructor.defaults)
+    return constructor(dict(payload['config']))
+
+
+def _validated_adapter(payload, prototype, rule):
+    _,_,constructor = _METHODS[payload['method_schema']]
+    if constructor is MatrixMethodAdapter:
+        if payload['groups'] != default_parameter_groups(prototype):
+            raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
+    elif type(rule) is not AdamWUpdateRule:
+        raise IntegrityError('Muon rules require the registered matrix adapter')
+    adapter = constructor(dict(prototype.named_parameters()),payload['groups'],rule)
+    if payload['method']['snapshot_schema'] != adapter.snapshot_schema:
+        raise IntegrityError('Method state schema mismatch')
+    return adapter
 
 
 @dataclass
@@ -280,8 +322,7 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
     method_name,(_,method_fields,_) = matches[0]
     if set(vars(state.method)) != set(method_fields)|{'parameters','groups','rule'}:
         raise IntegrityError('Unknown adapter fields require registered method schema')
-    if type(state.method.rule) is not AdamWUpdateRule or set(vars(state.method.rule)) != {'betas','eps'}:
-        raise IntegrityError('Unknown update rule requires registered schema')
+    rule_payload = _rule_payload(state.method.rule)
     parameters = dict(state.model.named_parameters())
     if set(parameters) != set(state.method.parameters) or any(state.method.parameters[n] is not p for n,p in parameters.items()):
         raise IntegrityError('Adapter must retain authoritative original Parameters')
@@ -298,7 +339,7 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
         'gradients':{n:None if p.grad is None else p.grad for n,p in parameters.items()},
         'model_training':state.model.training,'module_training':{n:m.training for n,m in state.model.named_modules()},
         'model_cache':{n:getattr(state.model,n) for n in ('_recipe','_runtime','_contexts','_context_step')},
-        'method_schema':method_name,'groups':state.method.groups,'rule':vars(state.method.rule),
+        'method_schema':method_name,'groups':state.method.groups,'rule':rule_payload,
         'method':{n:getattr(state.method,n) for n in method_fields},
         'quantizer_state':state.quantizer_state,'histories':state.histories,'schedule':state.schedule,
         'cursor':None if state.cursor is None else state.cursor.state,
@@ -424,7 +465,7 @@ def _validated(snapshot):
         producer = _validate_producer(snapshot,payload['identities'])
         _references(payload['configuration'],producer); _references(payload['run_ledger'])
         _keys(payload['model_cache'],('_recipe','_runtime','_contexts','_context_step'))
-        _keys(payload['rule'],('betas','eps'))
+        rule = _construct_rule(payload['rule'])
         _keys(payload['ledger'],('stream','coverage','passes','elapsed','events'))
         # Validate architecture/array identities on meta before any device transfer.
         if type(payload['model_config']) is not ModelConfig: raise IntegrityError('Unregistered model geometry')
@@ -442,17 +483,20 @@ def _validated(snapshot):
                 if array is not None and (not isinstance(array,torch.Tensor) or array.shape != parameter.shape or array.dtype != parameter.dtype):
                     raise IntegrityError('Model/gradient shape or dtype mismatch')
             if payload['weights'][name] is None: raise IntegrityError('Missing model array')
+        adapter = _validated_adapter(payload,prototype,rule)
         _keys(payload['method']['optimizer_states'],expected)
         completed_step = payload['schedule']['step']
         if type(completed_step) is not int or completed_step < 0: raise IntegrityError('Invalid completed step')
         for name,values in payload['method']['optimizer_states'].items():
             if completed_step and not values: raise IntegrityError('Completed step is missing optimizer moments')
             if values:
-                _keys(values,AdamWUpdateRule.optimizer_state_fields)
-                counter = values['step']
-                if counter.shape != torch.Size([]) or counter.dtype != torch.float32 or counter.item() < 0 or counter.item() != int(counter.item()):
-                    raise IntegrityError('Invalid optimizer scalar counter')
-                for field in ('exp_avg','exp_avg_sq'):
+                parameter_rule = adapter.rule_for_parameter(name)
+                _keys(values,parameter_rule.optimizer_state_fields)
+                if type(parameter_rule) is AdamWUpdateRule:
+                    counter = values['step']
+                    if counter.shape != torch.Size([]) or counter.dtype != torch.float32 or counter.item() < 0 or counter.item() != int(counter.item()):
+                        raise IntegrityError('Invalid optimizer scalar counter')
+                for field in (set(parameter_rule.optimizer_state_fields)-{'step'}):
                     if values[field].shape != expected[name].shape or values[field].dtype != torch.float32:
                         raise IntegrityError('Optimizer original-W shape/dtype mismatch')
         _,names,_ = _METHODS[payload['method_schema']]
@@ -494,7 +538,7 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
             grad = payload['gradients'][name]
             if grad is not None and (grad.shape != p.shape or grad.dtype != p.dtype): raise IntegrityError('Gradient shape/dtype mismatch')
             p.grad = None if grad is None else grad.to(device).clone()
-        rule = AdamWUpdateRule(**payload['rule'])
+        rule = _construct_rule(payload['rule'])
         _,_,constructor = _METHODS[payload['method_schema']]
         method = constructor(parameters,payload['groups'],rule)
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
@@ -502,8 +546,10 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
         if set(method.optimizer_states) != set(parameters): raise IntegrityError('Optimizer manifest mismatch')
         for name,values in method.optimizer_states.items():
             if values:
-                _keys(values,rule.optimizer_state_fields)
-                values['step'] = values['step'].cpu().clone()
+                parameter_rule = method.rule_for_parameter(name)
+                _keys(values,parameter_rule.optimizer_state_fields)
+                if type(parameter_rule) is AdamWUpdateRule:
+                    values['step'] = values['step'].cpu().clone()
         streams = {}
         for name,rng in payload['rng_streams'].items():
             _keys(rng,('__rng_kind__','device','state'))

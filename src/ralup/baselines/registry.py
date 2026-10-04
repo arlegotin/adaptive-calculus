@@ -84,4 +84,49 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
             'proposals':'named.proposal.v1:reference_after_decay,gradient_displacement,new_optimizer_state,authoritative_update',
             'adapter_mutable_state':'none.v1'},licenses=('PyTorch BSD-3-Clause; https://github.com/pytorch/pytorch/blob/main/LICENSE',),
         update_rule_settings=dict(rule.configuration),parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture'))
+    register_matrix_methods(registry,groups)
     return registry
+
+
+MATRIX_NAMES = ('muon_project_fp32',) + tuple(f'muon_plus_{order}_fp32' for order in ('none','row','col','row_col','col_row'))
+
+
+def matrix_rule(name, config):
+    from ..optim.muon import MuonUpdateRule
+    from ..optim.muon_plus import MuonPlusUpdateRule
+    if name == 'muon_project_fp32': return MuonUpdateRule(config)
+    if name not in MATRIX_NAMES: raise ValueError(f'Unregistered matrix method: {name}')
+    order = name.removeprefix('muon_plus_').removesuffix('_fp32')
+    if 'normalization' in config and config['normalization'] != order:
+        raise ValueError('Named Muon+ variant must match normalization')
+    return MuonPlusUpdateRule({**config,'normalization':order})
+
+
+def matrix_record(name, groups, rule, *, parity_status='unverified', operations_status='unverified'):
+    plus = name != 'muon_project_fp32'
+    order = rule.configuration.get('normalization')
+    return MethodRecord(name=name,family='Muon+' if plus else 'Muon',
+        source_revision='arXiv:2602.21545v3;html-sha256=10536d1f1921f61f8f427c196990ca1855aef3a414be28a4be594bfacd0a2679' if plus else 'KellerJordan/Muon@f98f1cacc0263b04290753e32be8d498c1efc806;project momentum departure',
+        adaptation_label=f'paper_muon_plus_fp32_{order}_original_W' if plus else 'project_muon_fp32_original_W',
+        required_operations=('transpose','frobenius_norm','matmul','mul','add','sum','sqrt','div','auxiliary_scalar_adamw'),
+        ordered_parameter_groups=groups,
+        state_schema={'optimizer_states':f'named.original_W.{rule.state_schema}+auxiliary.adamw.v1',
+            'proposals':'named.proposal.v1:reference_after_decay,gradient_displacement,new_optimizer_state,authoritative_update',
+            'adapter_mutable_state':'none.v1'},
+        licenses=('arXiv distribution grant; author software reuse grant unresolved; clean equation implementation',) if plus else ('MIT; Keller Jordan; independently implemented equations',),
+        update_rule_settings={**rule.configuration,'polynomial_dtype':'float32','iterations':5,'coefficients':(3.4445,-4.775,2.0315),
+            'norm_stabilizer':1e-7,'transpose_when':'original_rows>original_columns','normalization_epsilon_inside_sqrt':1e-8 if plus else None,
+            'rectangular_multiplier':'sqrt(rows/cols)' if plus else 'sqrt(max(1,rows/cols))','initialization':'zero original-W momentum',
+            'decay':'decoupled before displacement; auxiliary no decay'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='project_adaptation',
+        license_status='blocked' if plus else 'permitted')
+
+
+def register_matrix_methods(registry, groups):
+    for name in MATRIX_NAMES:
+        registry.register(matrix_record(name,groups,matrix_rule(name,{})))
+
+
+def build_matrix_method(name, parameters, groups, config):
+    from ..optim.matrix_adapter import MatrixMethodAdapter
+    return MatrixMethodAdapter(parameters,groups,matrix_rule(name,config))

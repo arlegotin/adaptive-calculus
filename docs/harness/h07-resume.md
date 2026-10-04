@@ -172,3 +172,5 @@ and `tests/integration/test_resume.py`. Current source/test/log/lock/environment
 hashes and initial full-suite historical evidence are recorded in
 [h07-fix1-evidence.json](h07-fix1-evidence.json). No full-suite rerun was claimed
 for this scoped round.
+
+M01 extension: `matrix_adapter.v1` is an explicit trusted constructor, restricted to the model's exact projection manifest and no-decay auxiliary groups. Registered rule envelopes are `{schema:muon_project_fp32.v1|muon_plus_fp32.v1,config:<complete exact defaults-key inventory>}`. Constructors are selected only from a local two-entry table, never artifact-selected imports. Old AdamW `{betas,eps}` encoding remains unchanged. Unknown rule/schema/fields, mismatched named groups, cross-owner moment inventory/geometry, missing completed moments and uncommitted proposals reject before scientific transfer. Matrix state is original-W `{momentum}`, auxiliary state is original-W AdamW; only actual Adam scalar counters transfer back to CPU. Rule/adapter schema checks and source compatibility remain strict. No old-source full-state migration is inferred.

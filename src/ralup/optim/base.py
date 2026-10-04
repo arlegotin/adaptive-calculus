@@ -138,18 +138,24 @@ class MethodAdapter:
         return {'summed_nll':float(loss.detach()),'forward_passes':1,'backward_passes':1,
                 'extra_forward_passes':0,'extra_backward_passes':0}
 
+    def rule_for_parameter(self, name: str) -> BaseUpdateRule:
+        return self.rule
+
+    def schedule_for_group(self, group: ParameterGroup, schedule: SchedulePoint) -> SchedulePoint:
+        return SchedulePoint(schedule.lr,schedule.weight_decay if group.weight_decay is None else group.weight_decay,schedule.progress)
+
     def collect_proposals(self, schedule: SchedulePoint) -> dict[str,Proposal]:
         if self.proposals:
             raise ValueError('Uncommitted proposals must be resolved before another collection')
         proposals = {}
         for group in self.groups:
-            point = SchedulePoint(schedule.lr,schedule.weight_decay if group.weight_decay is None else group.weight_decay,schedule.progress)
+            point = self.schedule_for_group(group,schedule)
             for name in group.parameter_names:
                 parameter = self.parameters[name]
                 if parameter.grad is not None:
                     if not _finite(parameter.grad):
                         raise ValueError(f'Gradient must be finite: {name}')
-                    proposals[name] = self.rule.propose(parameter,parameter.grad,self.optimizer_states[name],point)
+                    proposals[name] = self.rule_for_parameter(name).propose(parameter,parameter.grad,self.optimizer_states[name],point)
         self.proposals = proposals
         return proposals
 
@@ -164,11 +170,11 @@ class MethodAdapter:
                                                      proposal.new_optimizer_state,proposal.authoritative_update)):
                 raise ValueError(f'Proposal and optimizer state must be finite: {name}')
             candidate = self.parameters[name].detach().clone()
-            self.rule.commit(candidate,proposal)
+            self.rule_for_parameter(name).commit(candidate,proposal)
             if not _finite(candidate):
                 raise ValueError(f'Committed candidate must be finite: {name}')
         for name,proposal in proposals.items():
-            self.rule.commit(self.parameters[name],proposal)
+            self.rule_for_parameter(name).commit(self.parameters[name],proposal)
         # Publish new moments deliberately, only after every parameter commit.
         for name,proposal in proposals.items():
             self.optimizer_states[name] = proposal.new_optimizer_state
