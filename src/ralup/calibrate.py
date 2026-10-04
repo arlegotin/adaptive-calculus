@@ -647,9 +647,24 @@ def import_warmstart(reference: ArtifactRef, fresh: TrainingState, *, partition:
     except IntegrityError as error:
         raise IntegrityError(f'Warmstart model parameterization mismatch: {error}') from error
     current = _automatic_identities()
-    for name in ('src/ralup/models/transformer.py', 'src/ralup/models/linear.py'):
-        if name not in payload['identities']['automatic'] or current[name].sha256 != payload['identities']['automatic'][name].sha256:
+    model_names = ('src/ralup/models/transformer.py', 'src/ralup/models/linear.py', 'src/ralup/models/embedding.py')
+    same_model = all(name in payload['identities']['automatic'] and
+                     current[name].sha256 == payload['identities']['automatic'][name].sha256 for name in model_names)
+    model_contract = 'identical_model_source'
+    if not same_model:
+        # Narrow N01 model-only migration: authenticate exact historical model
+        # bytes. Only the imported owner and two embedding constructors differ.
+        # Never execute archived Python or waive full-state strict runtime checks.
+        old = snapshot.producer_files.get(model_names[0], b'')
+        migrated = old.replace(b'from .linear import QuantizedLinear',
+                              b'from .linear import QuantizedLinear\nfrom .embedding import OrderedEmbedding')
+        migrated = migrated.replace(b'nn.Embedding(257,', b'OrderedEmbedding(257,')
+        migrated = migrated.replace(b'nn.Embedding(256,', b'OrderedEmbedding(256,')
+        if (model_names[2] in snapshot.producer_files or
+                migrated != current[model_names[0]].path.read_bytes() or
+                snapshot.producer_files.get(model_names[1]) != current[model_names[1]].path.read_bytes()):
             raise IntegrityError('Model parameterization producer differs; no model migration is registered')
+        model_contract = 'n01_native_gather_identical_forward_model_only_v1'
     for name, parameter in fresh.model.state_dict().items():
         weight = payload['weights'][name]
         if parameter.shape != weight.shape or parameter.dtype != weight.dtype:
@@ -681,6 +696,7 @@ def import_warmstart(reference: ArtifactRef, fresh: TrainingState, *, partition:
                                  'archive': {'path': str(reference.path.parent / producer_manifest['producer_files'][name]['path']), 'sha256': ref.sha256}}
                             for name, ref in payload['identities']['automatic'].items()},
         'configuration_sha256': payload['configuration_sha256'], 'source_partition': partition,
+        'model_contract': model_contract,
         'continuation_contract': 'same cursor and all named/global RNG; declared budget extension only',
         'continuation_targets': continuation_targets, 'parent_cursor_sha256': hashlib.sha256(canonical_bytes(cursor)).hexdigest(),
         'resets': ['optimizer', 'quantizer', 'history', 'schedule'], 'parent_process_audit': payload['process_audit']}}

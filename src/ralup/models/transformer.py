@@ -9,6 +9,7 @@ from torch import Tensor, nn
 
 from ..quantization.context import QuantizationContext, prepare_context
 from .linear import QuantizedLinear
+from .embedding import OrderedEmbedding
 
 MATRIX_NAMES = ('q', 'k', 'v', 'attention_output', 'up', 'down')
 
@@ -63,8 +64,8 @@ class ByteTransformer(nn.Module):
     def __init__(self, config: ModelConfig):
         super().__init__()
         self.config = config
-        self.embedding = nn.Embedding(257, config.width, dtype=torch.float32)
-        self.position = nn.Embedding(256, config.width, dtype=torch.float32)
+        self.embedding = OrderedEmbedding(257, config.width, dtype=torch.float32)
+        self.position = OrderedEmbedding(256, config.width, dtype=torch.float32)
         self.blocks = nn.ModuleList(_Block(config) for _ in range(config.layers))
         self.final_norm = nn.LayerNorm(config.width, eps=1e-5, dtype=torch.float32)
         self.output = nn.Linear(config.width,257,bias=False,dtype=torch.float32)
