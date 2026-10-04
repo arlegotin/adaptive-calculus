@@ -592,5 +592,12 @@
   "scientific_gate": null,
   "protected_scoring": "denied; not run",
   "rights": "SOAP permitted MIT source; Madam source-copy blocked, independent mathematical local research comparator separate, without legal assurance; release reproduction unverified",
-  "review_status": "implementation self-reviewed; fresh task review pending"
+  "review_status": "implementation self-reviewed; fresh task review pending",
+  "feature_commit": "fac1eaf",
+  "git_checks": {
+    "task_diff_excluding_untouched_upstream_source": "pass",
+    "untouched_upstream_source": "contains original trailing whitespace/EOF blank lines; retained byte-for-byte to preserve pinned checksum; full task whitespace check reports these upstream-only warnings",
+    "worktree_after_feature_commit": "clean",
+    "source_sha256": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b"
+  }
 }
