@@ -66,3 +66,19 @@ def test_central_unique_union_does_not_count_disposable_reset_arms_twice():
     assert fixed['global_coverage']['intervals'] == {'source:article-a': [[0, 4]], 'source:article-b': [[4, 7]]}
     assert len(fixed['global_coverage']['sha256']) == 64
     assert fixed['cost']['passes'] == raw['cost']['passes']
+
+
+@pytest.mark.parametrize('counter', ['rss_bytes', 'driver_bytes'])
+def test_sampler_retains_transient_cap_violation_until_work_boundary(monkeypatch, counter):
+    import ralup.calibrate as calibration
+    sampler = calibration._Sampler('cpu', {'resident_cap_bytes': 1, 'driver_cap_bytes': 1})
+    current = {'rss_bytes': 0, 'metal_bytes': None, 'driver_bytes': 0}
+    monkeypatch.setattr(calibration, '_memory', lambda device: current.copy())
+    sampler.sample()
+    assert not sampler.exceeded
+    current[counter] = 2
+    sampler.sample()
+    current[counter] = 0
+    sampler.sample()
+    assert sampler.exceeded  # A later below-cap sample cannot authorize more work.
+    assert calibration.memory_report(sampler.samples)['sampled_maxima'][counter] == 2

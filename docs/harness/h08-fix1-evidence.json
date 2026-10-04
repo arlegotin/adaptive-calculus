@@ -1,0 +1,273 @@
+{
+  "boundaries": [
+    "admission",
+    "before_transaction",
+    "completed_transaction",
+    "before_snapshot",
+    "after_snapshot",
+    "before_checkpoint_capture",
+    "before_checkpoint_write",
+    "before_warmstart_report"
+  ],
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pytest -q tests/integration/test_warmstart_isolation.py -k warmstart_caps_stop",
+      "exit_code": 1,
+      "log": {
+        "path": "artifacts/checks/h08-fix1-red.txt",
+        "sha256": "719e730816cfa89f4c79152484e9e4245609db1d1120f0f3ea023c9f09ebc337"
+      },
+      "output": "3 failed, 10 deselected in 2.03s",
+      "stage": "RED before product fix"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/integration/test_warmstart_isolation.py -k warmstart_caps_stop",
+      "exit_code": 0,
+      "log": {
+        "path": "artifacts/checks/h08-fix1-green.txt",
+        "sha256": "26a2d0bfc5ef46c9193b61aebca28ecb3e76ec71565c5fb83343a5c65ac9e1a8"
+      },
+      "output": "3 passed, 10 deselected in 1.64s",
+      "stage": "intermediate GREEN before final report check/unit coverage"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/unit/test_calibration_accounting.py tests/integration/test_warmstart_isolation.py",
+      "exit_code": 0,
+      "log": {
+        "path": "artifacts/checks/h08-fix1-focused.txt",
+        "sha256": "64d0e94814affeaa49c1a7f2562e61685a814c20f109bedc3de568beef7a3cce"
+      },
+      "output": "21 passed in 6.77s",
+      "stage": "final current-source focused validation"
+    }
+  ],
+  "cost_policy": "Actual completed training and capture work, cap-boundary sampled memory/caps and elapsed cap observation, terminal failure/status and whole-project time retained in durable run ledgers; RED and intermediate attempts separately retained; inherited project histories not relabeled",
+  "current_outcomes": {
+    "entry": {
+      "checkpoint": false,
+      "completed_steps": 0,
+      "training_targets": 0
+    },
+    "snapshot": {
+      "checkpoint": false,
+      "completed_steps": 3,
+      "training_targets": 15
+    },
+    "transaction": {
+      "checkpoint": false,
+      "completed_steps": 1,
+      "training_targets": 5
+    }
+  },
+  "current_runtime": [
+    {
+      "path": "src/ralup/__init__.py",
+      "sha256": "ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd"
+    },
+    {
+      "path": "src/ralup/__main__.py",
+      "sha256": "97ca3231cc730122a13ceddbe75d57efe03917bf099f2dccc5c27b78221dc4b5"
+    },
+    {
+      "path": "src/ralup/baselines/__init__.py",
+      "sha256": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f"
+    },
+    {
+      "path": "src/ralup/baselines/checks.py",
+      "sha256": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b"
+    },
+    {
+      "path": "src/ralup/baselines/registry.py",
+      "sha256": "f28bbe19803cc22649c5dff79de3865711f417e6cf46a6e84fdab73ea455602e"
+    },
+    {
+      "path": "src/ralup/calibrate.py",
+      "sha256": "af16846815246e3046b0744f85fdf2ed8ebcaafc40adf45f8358f22ababaa58b"
+    },
+    {
+      "path": "src/ralup/config.py",
+      "sha256": "96bf4a3ee4ffe8a3c27dfdefbd7679ae804a41c8243357857b7ef39da085a350"
+    },
+    {
+      "path": "src/ralup/data/__init__.py",
+      "sha256": "6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0"
+    },
+    {
+      "path": "src/ralup/data/articles.py",
+      "sha256": "1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c"
+    },
+    {
+      "path": "src/ralup/data/batches.py",
+      "sha256": "5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750"
+    },
+    {
+      "path": "src/ralup/data/blocks.py",
+      "sha256": "c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe"
+    },
+    {
+      "path": "src/ralup/data/checks.py",
+      "sha256": "cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f"
+    },
+    {
+      "path": "src/ralup/data/cursor.py",
+      "sha256": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af"
+    },
+    {
+      "path": "src/ralup/data/dedup.py",
+      "sha256": "c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f"
+    },
+    {
+      "path": "src/ralup/data/partitions.py",
+      "sha256": "551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9"
+    },
+    {
+      "path": "src/ralup/data/source.py",
+      "sha256": "fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f"
+    },
+    {
+      "path": "src/ralup/diagnostics/__init__.py",
+      "sha256": "ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00"
+    },
+    {
+      "path": "src/ralup/diagnostics/quadratics.py",
+      "sha256": "3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840"
+    },
+    {
+      "path": "src/ralup/environment.py",
+      "sha256": "0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160"
+    },
+    {
+      "path": "src/ralup/evaluate.py",
+      "sha256": "d1050885478ef197a44b77551ee545ff9e05a1804662440ae4170649cc2c2189"
+    },
+    {
+      "path": "src/ralup/models/__init__.py",
+      "sha256": "7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752"
+    },
+    {
+      "path": "src/ralup/models/checks.py",
+      "sha256": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a"
+    },
+    {
+      "path": "src/ralup/models/linear.py",
+      "sha256": "01c2b161292e35a6dc7d7188a1fc5377360914aad8203199b1c3937ab4a6acf3"
+    },
+    {
+      "path": "src/ralup/models/transformer.py",
+      "sha256": "e25aebbb2d0247bddaf6b988c161d37d3d070dc27d9281934a6c1c6193d793f5"
+    },
+    {
+      "path": "src/ralup/optim/__init__.py",
+      "sha256": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae"
+    },
+    {
+      "path": "src/ralup/optim/adamw.py",
+      "sha256": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c"
+    },
+    {
+      "path": "src/ralup/optim/base.py",
+      "sha256": "5e3830cfcce048838b0bae643f426bd6dfb5aa8c4130f525223faa2ca93ebb9b"
+    },
+    {
+      "path": "src/ralup/policy/__init__.py",
+      "sha256": "2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4"
+    },
+    {
+      "path": "src/ralup/policy/actions.py",
+      "sha256": "f4830341e79fb54c863fcbdf0d02d20a6f288e74f8918742b440b0808b5cf4f5"
+    },
+    {
+      "path": "src/ralup/quantization/__init__.py",
+      "sha256": "733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16"
+    },
+    {
+      "path": "src/ralup/quantization/checks.py",
+      "sha256": "fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2"
+    },
+    {
+      "path": "src/ralup/quantization/context.py",
+      "sha256": "f53793dfd1fb1c92565be3cb627091d7f3fe54623c2b2291539cae86da51d599"
+    },
+    {
+      "path": "src/ralup/quantization/formats.py",
+      "sha256": "a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896"
+    },
+    {
+      "path": "src/ralup/quantization/fp32.py",
+      "sha256": "ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5"
+    },
+    {
+      "path": "src/ralup/quantization/oracle.py",
+      "sha256": "78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c"
+    },
+    {
+      "path": "src/ralup/quantization/rotation.py",
+      "sha256": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d"
+    },
+    {
+      "path": "src/ralup/quantization/scales.py",
+      "sha256": "17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64"
+    },
+    {
+      "path": "src/ralup/quantization/surrogates.py",
+      "sha256": "78999f808c02322049ec0437b105e2103043f244e62a77a476615fc06c371ac1"
+    },
+    {
+      "path": "src/ralup/records.py",
+      "sha256": "243aeec2352531a03a695267b00e04b7a5675c687e1932f90058cc5f96702faf"
+    },
+    {
+      "path": "src/ralup/state.py",
+      "sha256": "483930e9613532c26d8e458b86ed425552955c2120b02fe23a724f956144e8d4"
+    },
+    {
+      "path": "src/ralup/train.py",
+      "sha256": "f7b9aa5705d77efe4b8e0d5a23b48855eb5dc7dc52167f009d510228eb8e5c6d"
+    }
+  ],
+  "date": "2026-10-04",
+  "finding": "I1 warmstart cap admission and completed-transaction stopping",
+  "free_storage_bytes": 2955538432,
+  "historical_evidence": {
+    "disposition": "Previous542/16 outcomes and real calibration/warmstart producer archives are historical previous-source evidence. This product fix changes runtime identity; all12 v4 numerical scopes remain FAILED and downstream numerical/scientific acceptance CLOSED. No old archive/source hash relabeled.",
+    "focused_before_fix": {
+      "path": "artifacts/checks/h08-focused-final.txt",
+      "sha256": "7ff14a6b8a1c69a7a940fd4f11db013470c32e1294836fdbed8adc928f8cac7f"
+    },
+    "full_suite_before_fix": {
+      "path": "artifacts/checks/h08-full-final.txt",
+      "sha256": "07026b56e7fbe50ff5742d5f8006a234f1976d44c9a0e0bb83e3a1660dee5ea6"
+    },
+    "index": {
+      "path": "docs/harness/h08-evidence.json",
+      "sha256": "62de03c9e7d7a2d4ace0dbd8ed8870428516c9a20cbbf0ca8a495c8fe2489933"
+    }
+  },
+  "historical_regression_attempts": {
+    "path": "artifacts/calibration/h08-fix1/historical-regressions.json",
+    "sha256": "c2685c050f3e8088563135b64a059816202085ca10c901bcdf495847579de8e7"
+  },
+  "limitations": [
+    "Sampled RSS/driver caps stop additional work at safe completed transaction boundaries, not instant cancellation inside a transaction",
+    "M1 original consolidated index contains its own obsolete still-open consolidation-log hash; explicitly deferred to E07/root final. Original index preserved; no circular fresh receipt created",
+    "No repeat full542 suite or actual MPS/numerical study authorized/needed for this scoped fix"
+  ],
+  "publication_seconds": 0.009153250139206648,
+  "regressions": {
+    "path": "artifacts/calibration/h08-fix1/regressions.json",
+    "sha256": "25a6facc87ebb316b13f144830c1ba9071f493474e335179aa7f518c8730ab27"
+  },
+  "review_head": "96658ed",
+  "schema_version": 1,
+  "scope": "Focused CPU engineering validation only; no new actual-device capacity/numerical wave or N01 work",
+  "test_sources": [
+    {
+      "path": "tests/integration/test_warmstart_isolation.py",
+      "sha256": "61800586a2e54dfe0aa10ede741503e05618635856a6d78f8f7835e93df6a62b"
+    },
+    {
+      "path": "tests/unit/test_calibration_accounting.py",
+      "sha256": "4adb53ff4df63fbf7a548180706691cff8d5ce4753c1378ff3be73c815ac6859"
+    }
+  ]
+}

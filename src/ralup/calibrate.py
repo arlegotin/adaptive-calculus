@@ -564,15 +564,33 @@ def train_warmstart(config: ResolvedConfig, partition: str, seed: int) -> Artifa
     ledger.record_status('running')
     try:
         with _Sampler(payload['runtime']['device'], _limits(payload)) as sampler:
+            def check_cap(boundary):
+                started = time.perf_counter()
+                sampler.sample()
+                if sampler.exceeded:
+                    _event(state, 'memory_cap_exceeded', time.perf_counter()-started,
+                           boundary=boundary, memory=memory_report(sampler.samples), caps=sampler.caps)
+                    raise RuntimeError('Warmstart exceeded conservative memory cap')
+
+            check_cap('admission')
             while state.cursor.remaining_run_targets:
-                        step_with_oom_retry(state)
+                check_cap('before_transaction')
+                step_with_oom_retry(state)
+                check_cap('completed_transaction')
+            check_cap('before_snapshot')
             snapshot, seconds = _timed(state.model, lambda: capture_snapshot(state))
             _event(state, 'snapshot_capture', seconds)
+            check_cap('after_snapshot')
             bytes_needed = 2*(sum(t.numel()*t.element_size() for t in snapshot.tensors.values()) + len(canonical_bytes(snapshot.metadata)) + sum(map(len, snapshot.producer_files.values())))
             if shutil.disk_usage(output).free < bytes_needed + 256*2**20: raise ValueError('Insufficient storage for warmstart retention')
-            checkpoint, seconds = _timed(state.model, lambda: save_snapshot(capture_snapshot(state), output/'checkpoint'))
+            def publish_checkpoint():
+                check_cap('before_checkpoint_capture')
+                current = capture_snapshot(state)
+                check_cap('before_checkpoint_write')
+                return save_snapshot(current, output/'checkpoint')
+            checkpoint, seconds = _timed(state.model, publish_checkpoint)
             _event(state, 'checkpoint_write', seconds)
-        if sampler.exceeded: raise RuntimeError('Warmstart exceeded conservative memory cap')
+        check_cap('before_warmstart_report')
         report = {'schema_version': 1, 'scope': 'immutable H08 engineering warmstart; duration selection pending M07',
                   'source_partition': partition, 'synthetic': payload['synthetic'],
                   'checkpoint': {'path': str(checkpoint.path), 'sha256': checkpoint.sha256},

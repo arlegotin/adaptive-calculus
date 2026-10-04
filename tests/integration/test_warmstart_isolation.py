@@ -200,3 +200,55 @@ def test_oom_capacity_remeasures_all_arms_with_common_smaller_packing(tmp_path, 
     remeasured = [arm for arm in report['arms'] if arm.get('oom_common_packing_remeasurement')]
     assert {arm['recipe'] for arm in remeasured} == {'row_fixed_max', 'row_dynamic_max'}
     assert all(arm['microbatch_actual'] == 1 and len(arm['full_step_seconds']) == 2 for arm in remeasured)
+
+
+@pytest.mark.parametrize('exceeded_at,expected_steps', [('entry', 0), ('transaction', 1), ('snapshot', 3)])
+def test_warmstart_caps_stop_work_and_prevent_checkpoint_publication(tmp_path, monkeypatch, exceeded_at, expected_steps):
+    from pathlib import Path
+    import ralup.calibrate as calibration
+    from ralup.config import resolve_config
+
+    template = json.loads((Path(__file__).parents[2] / 'configs/smoke.json').read_bytes())
+    template['calibration'] = {'output': str(tmp_path/'runs'), 'seed': 808, 'repeats': 2,
+                               'pilot_target_budget': 10, 'warmstart_target_budget': 15,
+                               'continuation_target_budget': 7, 'doublings': 2}
+    config = resolve_config(template, {'gates': {}}, purpose='calibration')
+    create, step, capture, save = calibration._create, calibration.step_with_oom_retry, calibration.capture_snapshot, calibration.save_snapshot
+    state = None
+    capture_calls, save_calls = [], []
+    def create_state(*args):
+        nonlocal state
+        state = create(*args)
+        return state
+    def memory(device):
+        over = exceeded_at == 'entry' or (exceeded_at == 'transaction' and state.schedule['step'] >= 1) or (exceeded_at == 'snapshot' and bool(capture_calls))
+        return {'rss_bytes': 2 if over else 0, 'metal_bytes': None, 'driver_bytes': None}
+    def capture_state(value):
+        capture_calls.append(value.schedule['step'])
+        return capture(value)
+    def save_state(*args):
+        save_calls.append(True)
+        return save(*args)
+    monkeypatch.setattr(calibration, '_create', create_state)
+    monkeypatch.setattr(calibration, '_limits', lambda payload: {'resident_cap_bytes': 1, 'driver_cap_bytes': None})
+    monkeypatch.setattr(calibration, '_memory', memory)
+    monkeypatch.setattr(calibration, 'step_with_oom_retry', lambda value: step(value, 5))
+    monkeypatch.setattr(calibration, 'capture_snapshot', capture_state)
+    monkeypatch.setattr(calibration, 'save_snapshot', save_state)
+    with pytest.raises(RuntimeError, match='memory cap'):
+        calibration.train_warmstart(config, 'meta_train', 808)
+    assert state.schedule['step'] == expected_steps
+    assert state.cursor.cumulative_target_count == state.ledger.stream['targets'] == expected_steps*5
+    assert state.ledger.passes['backward'] == expected_steps*5
+    assert state.ledger.elapsed['seconds'] >= 0
+    assert capture_calls == ([3] if exceeded_at == 'snapshot' else [])
+    assert save_calls == []
+    directory = tmp_path/'runs/warmstart-meta_train-808'
+    assert not (directory/'checkpoint').exists()
+    assert not (directory/'warmstart.json').exists()
+    statuses = [json.loads(line) for line in (directory/'status.jsonl').read_text().splitlines()]
+    assert statuses[-1]['status'] == 'failed'
+    rows = [json.loads(line) for line in (directory/'metrics.jsonl').read_text().splitlines()]
+    assert sum(row['stream'] for row in rows) == expected_steps*5
+    assert any(row['status'] == 'memory_cap_exceeded' for row in rows)
+    assert rows[-1]['project_elapsed_seconds'] > 0

@@ -147,3 +147,13 @@ case11's earlier context6 numeric operands were never captured. These distinct
 forensic limits remain explicit. A versioned read-only observer preserved later
 paired producing-context evidence before authorized audited disposable-file
 retention. Future numerical remedies require separate prospective design/review.
+
+Warmstart cap enforcement was corrected after review I1: entry admission rejects
+before the first transaction; sticky sampled violations are checked before and
+after completed transactions and before snapshot/checkpoint/report publication.
+Actual completed work and cap observations remain in the terminal failed ledger.
+See [h08-fix1-evidence.json](h08-fix1-evidence.json) for the new current-source
+focused validation and historical producer references. Prior calibration and
+542/16-test evidence retain their original source identities. The original index's
+still-open consolidation-log hash issue (M1) is explicitly deferred to E07/root
+final; no new circular authentication receipt is claimed.
