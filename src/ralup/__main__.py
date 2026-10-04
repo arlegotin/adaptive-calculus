@@ -145,6 +145,7 @@ def _run_explore(path):
     import os
     import subprocess
     import uuid
+    import random
     from datetime import datetime, timezone
     import torch
     from .data.articles import Article
@@ -152,12 +153,13 @@ def _run_explore(path):
     from .models.transformer import ByteTransformer, ModelConfig
     from .optim.base import MethodAdapter, SchedulePoint, default_parameter_groups
     from .optim.adamw import AdamWUpdateRule
-    from .records import RunLedger, WorkLedger
+    from .records import ArtifactRef, RunLedger, WorkLedger
+    from .state import capture_snapshot, restore_snapshot, save_snapshot, load_snapshot
     from .train import TrainingState, select_logical_batch, train_step
     import time
     project_start = time.perf_counter()
     envelope = json.loads(Path(path).read_bytes())
-    if set(envelope)-{"config","evidence","purpose","pilot_target_budget","seed","output"}:
+    if set(envelope)-{"config","evidence","purpose","pilot_target_budget","seed","output","checkpoint_directory","resume","stop_after_steps"}:
         raise ValueError("Unknown explore envelope field")
     purpose = envelope.get("purpose")
     template = envelope.get("config")
@@ -179,6 +181,16 @@ def _run_explore(path):
     if type(seed) is not int or seed < 0:
         raise ValueError("Explore seed must be a nonnegative integer")
     config = json.loads(canonical_bytes(resolved.payload))
+    checkpoint_directory = envelope.get("checkpoint_directory")
+    stop_after = envelope.get("stop_after_steps")
+    if stop_after is not None and (type(stop_after) is not int or stop_after <= 0 or checkpoint_directory is None):
+        raise ValueError("stop_after_steps requires a positive count and explicit checkpoint_directory")
+    scientific_configuration = {"resolved":config,"seed":seed,"pilot_target_budget":budget}
+    resumed_state = None
+    if envelope.get("resume") is not None:
+        resumed_state = restore_snapshot(load_snapshot(ArtifactRef(**envelope["resume"])),config["runtime"]["device"])
+        if resumed_state.configuration != scientific_configuration:
+            raise ValueError("Resume config/seed/data budget differs from complete snapshot")
     if config["synthetic"] and budget > config["training"]["continuation_steps"]*8192:
         raise ValueError("Synthetic envelope exceeds its bounded smoke steps")
     device = config["runtime"]["device"]
@@ -192,15 +204,21 @@ def _run_explore(path):
         if json.loads(Path(manifest["path"]).read_bytes())["revision"] != config["data"]["revision"]:
             raise ValueError("Bootstrap corpus revision differs from resolved identity")
         cursor = BatchCursor.from_manifest(Path(manifest["path"]),manifest["sha256"],partition="target-training",seed=seed,run_target_budget=budget)
+    initialization = torch.Generator().manual_seed(seed)
     with torch.random.fork_rng():
-        torch.manual_seed(seed)
+        torch.set_rng_state(initialization.get_state())
         model = ByteTransformer(ModelConfig(**{key:config["model"][key] for key in ("layers","width","heads")})).to(device)
+        initialization.set_state(torch.get_rng_state())
+    stream_seed = lambda name: int.from_bytes(hashlib.sha256(f"ralup-rng-v1:{seed}:{name}".encode()).digest()[:8],"little")
+    rng_streams = {"initialization":initialization,
+                   "quantizer":torch.Generator(device=device).manual_seed(stream_seed("quantization")),
+                   "meta":random.Random(stream_seed("meta")),"timing":random.Random(stream_seed("timing"))}
     model.configure_quantization({"name":config["training"]["recipe"],
                                   "rotation":"full_hadamard" if config["quantization"]["rotation"] == "hadamard" else "identity"})
     optimizer = config["optimizer_probe"]
     method = MethodAdapter(dict(model.named_parameters()),default_parameter_groups(model),
                            AdamWUpdateRule(betas=tuple(optimizer["betas"]),eps=optimizer["epsilon"]))
-    run_id = "h06-"+uuid.uuid4().hex
+    run_id = "h07-"+uuid.uuid4().hex
     output = Path(envelope.get("output",f"artifacts/runs/{run_id}"))
     commit = subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
     diff = subprocess.check_output(["git","diff","HEAD"])
@@ -213,14 +231,32 @@ def _run_explore(path):
         "resolved_config":config,"resolved_config_sha256":resolved.sha256,
         "method":"adamw_original_W_byte_adapter","adaptation":"project_H06_bootstrap",
         "seeds":{"model":seed,"data":seed},"data_sha256":None if config["synthetic"] else config["data"]["manifest"]["sha256"],
-        "warm_start_sha256":None,"policy_sha256":None,"lineage":{"parent":None,"resume":None},
+        "warm_start_sha256":None,"policy_sha256":None,"lineage":{"parent":None if resumed_state is None or resumed_state.ledger.run_ledger is None else resumed_state.ledger.run_ledger.run_id,
+        "resume":None if resumed_state is None else envelope["resume"]["sha256"]},
         "endpoint":{"pilot_target_budget":budget,"disposition":disposition,"final_scientific_duration":False}})
     state = TrainingState(model,method,cursor=cursor,ledger=WorkLedger(ledger),microbatch=config["training"]["microbatch"],
-                          schedule={"step":0,"point":SchedulePoint(optimizer["learning_rate"],optimizer["decay"],0.)})
+                          schedule={"step":0,"point":SchedulePoint(optimizer["learning_rate"],optimizer["decay"],0.)},
+                          configuration=scientific_configuration,rng_streams=rng_streams,
+                          process_audit=[{"kind":"launch","pid":os.getpid(),"process_elapsed_seconds":0.}])
+    if resumed_state is not None:
+        state = resumed_state
+        state.ledger.run_ledger = ledger
+        cursor = state.cursor
+    checkpoint = None
+    launch_step = state.schedule["step"]
+    interrupted = False
     ledger.record_status("running",disposition=disposition)
     try:
         while cursor.remaining_run_targets:
             train_step(state,select_logical_batch(state))
+            if checkpoint_directory is not None:
+                state.process_audit[-1]["process_elapsed_seconds"] = time.perf_counter()-project_start
+                checkpoint = save_snapshot(capture_snapshot(state),Path(checkpoint_directory))
+            if stop_after is not None and state.schedule["step"]-launch_step >= stop_after:
+                interrupted = bool(cursor.remaining_run_targets)
+                break
+        if checkpoint_directory is not None and checkpoint is None:
+            checkpoint = save_snapshot(capture_snapshot(state),Path(checkpoint_directory))
     except Exception as error:
         ledger.record_status("failed",disposition=str(error))
         raise
@@ -228,10 +264,13 @@ def _run_explore(path):
         project_elapsed = time.perf_counter()-project_start
         ledger.record({"step":state.schedule["step"],"stream":0,"unique":0,"additional_loss":0,"backward":0,"query":0,
                        "elapsed_seconds":0.,"status":"project_elapsed_observation","project_elapsed_seconds":project_elapsed})
-    ledger.record_status("completed",disposition=disposition)
+    state.process_audit[-1]["process_elapsed_seconds"] = project_elapsed
+    ledger.record_status("interrupted" if interrupted else "completed",disposition=disposition)
     return {"path":str(output),"synthetic":config["synthetic"],"disposition":disposition,
             "stream_targets":state.ledger.stream["targets"],"steps":state.schedule["step"],
-            "checkpoint_published":False,"scientific_gate":None,"project_elapsed_seconds":project_elapsed}
+            "checkpoint_published":checkpoint is not None,
+            "checkpoint":None if checkpoint is None else {"path":str(checkpoint.path),"sha256":checkpoint.sha256},
+            "interrupted":interrupted,"scientific_gate":None,"project_elapsed_seconds":project_elapsed}
 
 
 if __name__ == "__main__":

@@ -75,6 +75,9 @@ class TrainingState:
     microbatch: int = 1
     clip_norm: float | None = None
     failed: bool = False
+    configuration: dict = field(default_factory=dict)
+    identities: dict = field(default_factory=dict)
+    process_audit: list = field(default_factory=list)
     _pending: object = field(default=None,init=False,repr=False)
     _work: dict | None = field(default=None,init=False,repr=False)
 
@@ -168,7 +171,7 @@ def _snapshot(state):
             'model_context':{name:_clone(getattr(state.model,name)) for name in ('_contexts','_context_step','_runtime','_recipe')},
             'method':{name:_clone(value) for name,value in state.method.__dict__.items()
                       if name not in ('parameters','groups','rule')},
-            'state':{name:_clone(getattr(state,name)) for name in ('quantizer_state','histories','schedule','rng_streams')},
+            'state':{name:_clone(getattr(state,name)) for name in ('quantizer_state','histories','schedule','rng_streams','configuration','identities')},
             'cursor':_stage_cursor(state.cursor),'cursor_object':state.cursor,
             'rule_object':state.method.rule,'rule_state':_clone(vars(state.method.rule)),
             'groups':state.method.groups,'ledger_object':state.ledger,
@@ -281,6 +284,9 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
         if state.histories.keys() != before_history.keys() or any(
                 not _equal(state.histories[k],before_history[k]) for k in before_history):
             raise ValueError('Adapter changed shared history before its single commit')
+        for name in ('configuration','identities'):
+            if not _equal(getattr(state,name),snapshot['state'][name]):
+                raise ValueError('Adapter changed snapshot configuration/identity during commit')
         if not _equal(state.schedule,snapshot['state']['schedule']):
             raise ValueError('Adapter advanced the shared schedule before transaction commit')
         if _cursor_marker(state.cursor) != _cursor_marker(snapshot['cursor']):
