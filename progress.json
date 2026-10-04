@@ -20,7 +20,7 @@
     "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS",
     "H03 implementation: exact byte tiling, fixed-context score-mask carries, compact authenticated indexed cursors, named data RNG/JSON restoration and logical packing invariance; bounded real data correctness recorded in docs/data/h03-indexed-evidence.json; independent review pending",
     "H08 infrastructure: explicit bounded calibration purpose, disposable state restoration, synchronized full transactions, independent memory views, empirical packing fit, charged query/reset/checkpoint/failed work, and authenticated partition-isolated model-only warmstarts; actual measured evidence in docs/harness/h08-evidence.json; independent review pending",
-    "N01 shared ordered token/position gather derivative and restricted authenticated historical model-only parent import; actual MPS covering suite559passed, frozen72-step all-owner exact duplicate/fresh-interpreter resume and one8192-byte matched whole-model QuEST parity passed; source-specific finite seven-step capacity recovery gives provisional64 observations; docs/harness/n01-evidence.json; independent review pending"
+    "N01 shared ordered token/position gather derivative and restricted authenticated historical model-only parent import; actual MPS covering suite559passed, frozen72-step all-owner exact duplicate/fresh-interpreter resume and one8192-byte matched whole-model QuEST parity passed; source-specific finite seven-step capacity recovery gives provisional64 observations; docs/harness/n01-evidence-fix1.json; early focused execution/cost receipts missing and complete engineering expenditure unknown; independent review pending"
   ],
   "tasks": {
     "F01": "complete",
@@ -43,7 +43,7 @@
     "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate",
     "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
     "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
-    "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement"
+    "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
   ],
   "next_command": ".venv/bin/python -m ralup test-harness --suite data"
 }

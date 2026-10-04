@@ -1,0 +1,66 @@
+{
+  "accounting": {
+    "classification": "Engineering verification work, not scientific scored corpus bytes. Missing receipt/count/inventory/full elapsed prevents claiming complete recorded charging; unresolved residual accounting limitation for controller adjudication.",
+    "complete_n01_engineering_elapsed_seconds": null,
+    "enclosing_wall_limit": "No retained complete N01 project wall encloses these early focused attempts. The known1343.973819s replay union starts later and does not cover them. Persisted covering output reports pytest62.90s, not full interpreter/process or all engineering cost.",
+    "focused_attempt_full_process_elapsed_seconds": null,
+    "focused_attempt_total_work": null,
+    "unknown_attempt_expenditure_upper_bound": null
+  },
+  "attempt_inventory_complete": false,
+  "correction_base_commit": "22f486f",
+  "historical_test_revision": {
+    "coverage_limit": "Historical559 output does not authenticate execution of the final strengthened control. That focused execution is session-only; no later run is substituted as the original.",
+    "covering_suite_exact_test_source_bytes": null,
+    "final_source_commit": "ffcd4bb",
+    "final_strengthened_test_source": {
+      "path": "tests/unit/test_ordered_embedding.py",
+      "sha256": "91828a9a52f7774c5008c8649b2e2c9abbc06b482252ee0d8de8f838ceb23221"
+    },
+    "strengthening_as_reported": "Changed simple wrong-gradient control to actual WrongDerivative autograd Function rejected by gradcheck after historical covering run. No product source changed."
+  },
+  "observations": [
+    {
+      "reported_pytest_count": null,
+      "reported_pytest_seconds": null,
+      "result_as_reported": "FAILED on native embedding owner",
+      "scope_as_reported": "Initial TDD owner test before shared primitive implementation"
+    },
+    {
+      "reported_pytest_count": 8,
+      "reported_pytest_seconds": 7.55,
+      "result_as_reported": "8 passed",
+      "scope_as_reported": "Focused CPU ordered-embedding coverage"
+    },
+    {
+      "reported_pytest_count": 23,
+      "reported_pytest_seconds": 12.62,
+      "reported_pytest_skipped": 2,
+      "result_as_reported": "23 passed, 2 skipped",
+      "scope_as_reported": "Focused CPU coverage including warmstart compatibility; MPS unavailable in sandbox"
+    },
+    {
+      "reported_pytest_count": 8,
+      "reported_pytest_seconds": 2.16,
+      "result_as_reported": "8 passed",
+      "scope_as_reported": "Focused actual fallback-disabled MPS ordered-embedding coverage"
+    },
+    {
+      "reported_pytest_count": 1,
+      "reported_pytest_seconds": 0.99,
+      "result_as_reported": "1 passed",
+      "scope_as_reported": "Focused strengthened wrong-autograd-derivative control after covering suite"
+    }
+  ],
+  "per_attempt_cost_receipts": null,
+  "persisted_covering_output": {
+    "path": "artifacts/checks/n01-covering-suite.txt",
+    "sha256": "ca2dce7fb75af5896b82b372930a0ddbd99b6802c6ddc30b4e9a429f6961935a"
+  },
+  "provenance": "Implementer session observations retained in conversation/compacted working context, transcribed after review I1/C1. Original terminal output, exact invocation/source revision and per-attempt accounting were not saved. This file authenticates the transcription, not the historical executions.",
+  "raw_stdout_artifact": null,
+  "record_kind": "retrospective_worker_session_observations_not_execution_receipts",
+  "schema_version": 1,
+  "task": "N01",
+  "timing_semantics": "Reported pytest elapsed observations only; not authenticated full process elapsed or measured complete engineering expenditure. Do not sum them into an exact total or infer an upper bound."
+}

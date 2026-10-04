@@ -9,6 +9,8 @@ import statistics
 import time
 
 ROOT=Path('artifacts/calibration/n01-v1')
+EVIDENCE=Path('docs/harness/n01-evidence-fix1.json')
+SESSION_OBSERVATIONS=Path('docs/harness/n01-session-observations-fix1.json')
 
 
 def ref(path):return {'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
@@ -119,10 +121,25 @@ def run():
     records=list(ROOT.glob('*.json'))+list(ROOT.glob('*/result.json'))+list(ROOT.glob('*/canonical*-*.json'))+memory_paths
     # Publication stdout is still open here; do not record its unfinished hash.
     logs=[p for p in Path('artifacts/checks').glob('n01-*.txt') if not p.name.startswith('n01-consolidate')]
-    evidence={'schema_version':1,'task':'N01','status':'implemented_pending_independent_review','product_commit':'ffcd4bb','preimplementation_amendment_commit':'46bb509',
+    session=read(SESSION_OBSERVATIONS)
+    assert session['record_kind']=='retrospective_worker_session_observations_not_execution_receipts'
+    auth(session['persisted_covering_output'])
+    auth(session['historical_test_revision']['final_strengthened_test_source'])
+    original=Path('docs/harness/n01-evidence.json')
+    archived_generator=Path('docs/harness/n01-consolidate-v1.py')
+    assert ref(archived_generator)['sha256']==read(original)['storage']['resolution_helper']['sha256']
+    evidence={'schema_version':2,'task':'N01','status':'implemented_pending_independent_review','product_commit':'ffcd4bb','preimplementation_amendment_commit':'46bb509',
+              'accounting_correction':{'finding':'N01 review I1/C1','base_commit':'22f486f','historical_evidence':ref(original),
+                                     'historical_generator_archive':ref(archived_generator),
+                                     'meaning':'Original evidence remains historical with overstated focused-attempt charging/execution-retention strings; this version supersedes those claims. The original resolution-helper identity now resolves to the byte-identical archived generator, not the revised current helper.',
+                                     'session_transcription':ref(SESSION_OBSERVATIONS),'complete_engineering_expenditure':'UNKNOWN; missing focused receipts and incomplete attempt inventory; no invented upper bound'},
               'primitive':design['primitive'],'producer':design['producer'],'designs':[ref(Path(p)) for p in milestones],
-              'gates':{'covering_actual_mps_suite':{'tests':559,'passed':559,'seconds':62.90,'log':ref(Path('artifacts/checks/n01-covering-suite.txt'))},
-                       'wrong_derivative_control':'actual wrongautograd derivative rejected by finite-difference oracle; subsequentfocused1passed0.99s after fullsuite, no productchange',
+              'gates':{'covering_actual_mps_suite':{'tests':559,'passed':559,'seconds':62.90,'log':ref(Path('artifacts/checks/n01-covering-suite.txt')),
+                                                   'timing_scope':'persisted pytest-reported elapsed, not complete process or engineering total',
+                                                   'test_revision_scope':session['historical_test_revision']['coverage_limit']},
+                       'wrong_derivative_control':{'final_test_source':session['historical_test_revision']['final_strengthened_test_source'],
+                                                   'reported_execution':'Worker session-only observation:1passed/pytest0.99s; raw output/full cost receipt unavailable, not independently authenticated execution',
+                                                   'observation_record':ref(SESSION_OBSERVATIONS),'historical559_covers_final_strengthening':False},
                        'components':ref(ROOT/'components.json'),'replay':ref(ROOT/'wave.json'),'whole_model_composition_parity':ref(ROOT/'parity-supplement/report.json'),
                        'capacity_direct_revised':ref(ROOT/'capacity-recovery/report.json')},
               'capacity':{'original_attempt':'FAILED; searchreport/selection/exactcounts unavailable; no searchsuccess relabel',
@@ -139,7 +156,12 @@ def run():
                        'replay_chronological_union_seconds':wave['full_project_union_seconds_original_start_through_recovery'],
                        'replay_original_2400s_envelope_exceeded':wave['total_envelope_exceeded'],'hold_elapsed_seconds':read(ROOT/'resource-release.json')['full_hold_elapsed_seconds'],
                        'clock_basis':'waveunion includes hold/rulingwait/originalfailedcontroller/recoveryonce; overlapping arm/canonicalization componentclocks remainclassified, not added twice. Independent parity/capacity process clocks include startup/retention/exit.',
-                       'engineering_tests':'allCPU/device/TDDfailediterations and complete559suite charged as engineeringwork; numericalfixtures are synthetic context work, not scientific scored corpusbytes'},
+                       'engineering_tests':{'classification':'engineering verification work; synthetic fixtures are not scientific scored corpusbytes',
+                                            'persisted_scope':'covering559 pytest output retained; independent numerical/orchestration receipts retained within their stated clocks',
+                                            'focused_attempt_observations':ref(SESSION_OBSERVATIONS),
+                                            'focused_raw_outputs_and_per_attempt_costs':'MISSING; session-reported results/timings are not raw receipts or exact full expenditure',
+                                            'complete_engineering_expenditure':'UNKNOWN; no complete attempt inventory/enclosing N01 wall or invented upper bound',
+                                            'replay_union_includes_early_focused_attempts':False}},
               'storage':{'retained_task_artifact_bytes_before_evidence':sum(p.stat().st_size for p in ROOT.rglob('*') if p.is_file()),'free_bytes':shutil.disk_usage(ROOT).free,
                          'new_cap_bytes':2*2**30,'free_floor_bytes':2**30,'canonical_full_steps_retained':24,'canonical_aliases':48,
                          'alias_audits':[ref(ROOT/r/'canonical-alias-audit.json') for r in design['recipes']],
@@ -151,8 +173,8 @@ def run():
               'downstream':'M01/M02/M07/M08/M10/M11/E01/E02/E03/E07 receive selectedprimitive/runtime/limitedreplay and provisional64 observations. Newmethod/core/longer/otherpacking scopes require risk-based prospective validation. ScientificB0/duration/confirmation budgets unresolved; protectedtestdenied.',
               'records':[ref(p) for p in sorted(set(records))],'logs':[ref(p) for p in sorted(logs)],'read_only_consolidation_seconds_before_publication':time.perf_counter()-start}
     assert evidence['storage']['retained_task_artifact_bytes_before_evidence']<2*2**30 and evidence['storage']['free_bytes']>2**30
-    Path('docs/harness/n01-evidence.json').write_text(json.dumps(evidence,sort_keys=True,indent=2)+'\n')
-    print(json.dumps({'evidence':ref(Path('docs/harness/n01-evidence.json')),'project_coverage':ref(Path('docs/harness/n01-project-coverage.json')),'n01_unique':n01_unique,'incremental_unique':total_unique-old_unique,'seconds':time.perf_counter()-start}))
+    EVIDENCE.write_text(json.dumps(evidence,sort_keys=True,indent=2)+'\n')
+    print(json.dumps({'evidence':ref(EVIDENCE),'project_coverage':ref(Path('docs/harness/n01-project-coverage.json')),'n01_unique':n01_unique,'incremental_unique':total_unique-old_unique,'seconds':time.perf_counter()-start}))
 
 
 if __name__=='__main__':run()
