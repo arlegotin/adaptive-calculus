@@ -193,3 +193,7 @@
 ## Stage exit
 
 `test-harness` and complete resume must pass before comparisons. H08 produces measured calibration and warm-start tools; M07 resolves scientific durations/backbone after strong ordinary optimizer ports. Protected test scoring remains unavailable. No successful neural comparison is required to finish the harness implementation.
+
+## Accepted 2026-10-04 N01 correction
+
+[Shared ordered embedding backward and bounded numerical requalification](../specs/2026-10-04-n01-ordered-embedding-amendment.md) is an appended correction after clean H08 review and before M01. Original drafting text and all H08 failures remain historical. N01 changes shared derivative realization and requires its own prospective source, replay and capacity gates.

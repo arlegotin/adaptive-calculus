@@ -315,3 +315,7 @@ References retain the brief's IDs for auditability. URLs/revision descriptions a
 - Evidence-dependent settings are deliberate runtime gates with owners and artifacts (§9), not values for an implementer to guess. No source revision, n, continuation horizon, or MPS tolerance has been invented.
 - Review must check requirements against the plan coverage table, exact parameter/export arithmetic, identity behavior, matched-control capacity, logical-step ordering, baseline adaptation labels, and two-comparison multiplicity before execution.
 - Documentation self-review on 3 October 2026 checked local links, unique S01–S39 coverage, 31 task contracts, code-fence balance, placeholder absence, all three model counts, 45/49 controller counts, and the 2,416,640-byte derived payload. These are documentation/arithmetic checks, not experimental validation. The review clarified fixed scales in the TRS source fixture and scientific-state versus wall-clock equality in replay tests.
+
+## Accepted 2026-10-04 N01 correction
+
+[Shared ordered embedding backward and bounded numerical requalification](2026-10-04-n01-ordered-embedding-amendment.md) is an appended correction after clean H08 review and before M01. Original drafting text and all H08 failures remain historical. N01 changes shared derivative realization and requires its own prospective source, replay and capacity gates.

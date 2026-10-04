@@ -29,7 +29,8 @@
     "F05": "complete",
     "H01": "implemented_pending_review",
     "H03": "implemented_pending_review",
-    "H08": "implemented_pending_review"
+    "H08": "implemented_pending_review",
+    "N01": "in_progress"
   },
   "last_valid_checkpoint": null,
   "blocks": [
@@ -40,7 +41,8 @@
     "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate",
     "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate",
     "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
-    "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization"
+    "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
+    "N01 candidate awaiting derivative, prospective bounded actual-MPS replay and new-source capacity gates; H08 historical failures remain closed"
   ],
   "next_command": ".venv/bin/python -m ralup test-harness --suite data"
 }
