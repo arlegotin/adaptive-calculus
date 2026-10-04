@@ -50,6 +50,8 @@ def estimate_delta(loss_fn: Callable, quantized_leaf: Tensor, probes: Tensor, *,
 
     loss_fn is responsible for a declared physical 6*s map and mean reduction.
     The optional launch recorder charges real attempts before each derivative.
+    Constant graph-free gradients infer a zero Hessian without HVP launches;
+    requested probes remain distinct from actual backward counts.
     """
     if probes.ndim!=quantized_leaf.ndim+1 or probes.shape[1:]!=quantized_leaf.shape or not probes.shape[0] or probes.device!=quantized_leaf.device:
         raise ValueError('Probes must be nonempty [P,*leaf.shape] on leaf device')
@@ -61,10 +63,15 @@ def estimate_delta(loss_fn: Callable, quantized_leaf: Tensor, probes: Tensor, *,
     if loss.ndim!=0 or not bool(torch.isfinite(loss)):raise ValueError('Estimator needs finite scalar loss')
     if work_recorder:work_recorder('extra_loss_backward')
     g=torch.autograd.grad(loss,leaf,create_graph=True)[0]
-    traces=[]
+    traces=[];hvp_backward_passes=0
+    zero_hessian_inferred=not g.requires_grad
     for probe in probes:
-        if work_recorder:work_recorder('hvp')
-        hv=torch.autograd.grad(g,leaf,probe,retain_graph=True)[0] if g.requires_grad else torch.zeros_like(leaf)
+        if zero_hessian_inferred:
+            hv=torch.zeros_like(leaf)
+        else:
+            if work_recorder:work_recorder('hvp')
+            hvp_backward_passes+=1
+            hv=torch.autograd.grad(g,leaf,probe,retain_graph=True)[0]
         traces.append((probe*hv).sum().detach())
     trace=torch.stack(traces).mean();std=g.detach().std(correction=0)
     delta=(trace/leaf.numel()/(3*std+1e-12)).clamp_min(0)
@@ -72,7 +79,8 @@ def estimate_delta(loss_fn: Callable, quantized_leaf: Tensor, probes: Tensor, *,
     if leaf.device.type=='mps':torch.mps.synchronize()
     return {'delta':float(delta),'estimated_trace':float(trace),'population_std':float(std),'elements':leaf.numel(),
         'probes':probes.shape[0],'coordinates':'detached_normalized_quantized_leaf',
-        'extra_forward_passes':1,'extra_backward_passes':1+probes.shape[0],
+        'extra_forward_passes':1,'extra_backward_passes':1+hvp_backward_passes,
+        'hvp_backward_passes':hvp_backward_passes,'zero_hessian_inferred':zero_hessian_inferred,
         'leaf_bytes':leaf.numel()*leaf.element_size(),'probe_bytes':probes.numel()*probes.element_size(),
         'elapsed_seconds':time.perf_counter()-start}
 
@@ -101,7 +109,7 @@ class EwgsAdapter(MethodAdapter):
         rule=AdamWUpdateRule() if rule is None else rule
         if type(rule) is not AdamWUpdateRule:raise ValueError('EWGS owns original-W AdamW only')
         MethodAdapter.__init__(self,parameters,groups,rule)
-        self.snapshot_schema['adapter_mutable_state']='ewgs.normalized_leaf_probes_cadence.v1'
+        self.snapshot_schema['adapter_mutable_state']='ewgs.normalized_leaf_probes_cadence.v2'
         return self
 
     @property
@@ -163,10 +171,14 @@ def validate_owned_state(method,groups,step,contexts):
     for name,delta in method['deltas'].items():
         if type(delta) not in (float,int) or not math.isfinite(delta) or delta<0:raise ValueError('Invalid EWGS delta')
         estimate=method['refresh_telemetry'][name]
-        required={'delta','estimated_trace','population_std','elements','probes','coordinates','extra_forward_passes','extra_backward_passes','leaf_bytes','probe_bytes','elapsed_seconds'}
+        required={'delta','estimated_trace','population_std','elements','probes','coordinates','extra_forward_passes','extra_backward_passes','hvp_backward_passes','zero_hessian_inferred','leaf_bytes','probe_bytes','elapsed_seconds'}
         if type(estimate) is not dict or set(estimate)!=required or estimate['delta']!=delta or estimate['probes']!=config['probes'] or estimate['coordinates']!='detached_normalized_quantized_leaf':raise ValueError('Invalid EWGS estimator telemetry')
+        inferred=estimate['zero_hessian_inferred']
+        if type(inferred) is not bool:raise ValueError('Invalid EWGS zero-Hessian inference flag')
+        hvp_passes=0 if inferred else config['probes']
+        if inferred and (estimate['estimated_trace']!=0 or delta!=0):raise ValueError('Inferred zero Hessian requires zero trace/delta')
         elements=contexts[name].storage_values.numel()
-        for key,expected_value in {'elements':elements,'probes':config['probes'],'extra_forward_passes':1,'extra_backward_passes':1+config['probes'],'leaf_bytes':elements*4,'probe_bytes':elements*4*config['probes']}.items():
+        for key,expected_value in {'elements':elements,'probes':config['probes'],'extra_forward_passes':1,'extra_backward_passes':1+hvp_passes,'hvp_backward_passes':hvp_passes,'leaf_bytes':elements*4,'probe_bytes':elements*4*config['probes']}.items():
             if type(estimate[key]) is not int or estimate[key]!=expected_value:raise ValueError('EWGS estimator geometry/pass mismatch')
         for key in ('estimated_trace','population_std','elapsed_seconds'):
             if type(estimate[key]) not in (int,float) or not math.isfinite(estimate[key]) or (key!='estimated_trace' and estimate[key]<0):raise ValueError('Invalid EWGS measurement')

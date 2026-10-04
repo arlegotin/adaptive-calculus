@@ -66,3 +66,19 @@ def test_ewgs_rule_owner_rejects_matrix_optimizer():
     from ralup.optim.muon import MuonUpdateRule
     with pytest.raises(ValueError,match='AdamW'):
         m.EwgsAdapter(m.FIXTURE_CONFIG).bind({'w':torch.nn.Parameter(torch.ones(2,2))},(ParameterGroup('internal_projection',('w',)),),MuonUpdateRule({}))
+
+
+def test_constant_gradient_records_only_actual_derivative_launch(monkeypatch):
+    m=ewgs();actual_grad_calls=[];launches=[];original=torch.autograd.grad
+    def observed_grad(*args,**kwargs):
+        actual_grad_calls.append(1)
+        return original(*args,**kwargs)
+    monkeypatch.setattr(torch.autograd,'grad',observed_grad)
+    result=m.estimate_delta(lambda leaf:leaf.sum(),torch.tensor([.2,.8]),
+        torch.tensor([[1.,1.],[-1.,1.]]),work_recorder=launches.append)
+    assert len(actual_grad_calls)==1
+    assert launches==['extra_loss','extra_loss_backward']
+    assert result['extra_backward_passes']==1
+    assert result['probes']==2 and result['hvp_backward_passes']==0
+    assert result['zero_hessian_inferred'] is True
+    assert result['estimated_trace']==0 and result['delta']==0

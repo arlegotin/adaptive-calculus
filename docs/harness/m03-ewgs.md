@@ -50,7 +50,7 @@ and measured elapsed time; no dense Hessian is formed. Peak retained autograd
 graph allocation remains unmeasured, not zero. Whole-step time includes context,
 probe construction/transfer, snapshot/rollback and ordinary work.
 
-Trusted `ewgs_adapter.v1` owns explicit config, projection deltas, CPU probe RNG
+Trusted `ewgs_adapter.v2` owns explicit config, projection deltas, CPU probe RNG
 bytes, last refresh step, complete estimator telemetry, original-W AdamW moments,
 proposals and snapshot schemas. Reconstruction rejects unknown owners/rules,
 forged estimator geometry/cost/delta conventions, missing projections and stale
@@ -65,3 +65,27 @@ Data-store attempts with startup sources, commands, raw stdout, outcome/status,
 measured costs and inventories. Storage ceilings/reserves are engineering safety
 only; no science budget, protected outcome, calibration winner, baseline defeat,
 release reproduction or full Cartesian neural gate is claimed.
+
+## Review fix I1: actual HVP launches
+
+For graph-free constant first derivatives, the zero Hessian is inferred without
+a higher-order autograd call. Requested `probes` and allocated `probe_bytes`
+remain explicit; `hvp_backward_passes` is zero, `extra_backward_passes` is one,
+and `zero_hessian_inferred` is true. No HVP exposure ID or backward target bytes
+are charged. For a higher-order graph, the HVP recorder runs immediately before
+each actual derivative launch; finite trusted counts are exactly P HVPs and
+1+P backwards, with the inference flag false. Inferred zero requires zero
+trace/delta. Paired extra-loss forward/first-gradient IDs remain one exposure.
+
+Trusted adapter and owned telemetry schemas are v2 because the complete nested
+inventory now includes actual HVP count and zero-Hessian inference. Exact source
+identity and finite constructors remain mandatory; no v1 compatibility waiver
+or migration is supplied. The original v1 source, startup receipts and accepted
+nonlinear/MPS outcomes remain immutable historical evidence.
+
+[m03-fix1-evidence.json](m03-fix1-evidence.json) retains the narrow CPU affine
+accounting/safe reconstruction/rejection regression and nonlinear analytic
+branch sanity, including RED and GREEN startup helpers/product/tests/lock/F02,
+stdout/status and scoped time. No accepted neural wave, MPS gate, full covering
+or CLI suite was repeated for this accounting fix. Earlier startup dependency
+omission, pilot relevance and saved-graph/cost unknowns retain their old scopes.

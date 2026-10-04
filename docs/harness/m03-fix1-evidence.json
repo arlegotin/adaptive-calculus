@@ -1,0 +1,336 @@
+{
+  "affine_work_verified": {
+    "actual_extra_backward_passes_per_projection": 1,
+    "actual_hvp_backward_passes_per_projection": 0,
+    "extra_launch_events": 12,
+    "gradient_only_target_bytes": 0,
+    "hvp_target_bytes": 0,
+    "paired_extra_loss_exposure_ids": 6,
+    "projections": 6,
+    "raw_additional_loss": 42,
+    "raw_backward_with_ordinary": 49,
+    "raw_loss_targets_with_ordinary": 49,
+    "requested_probes_per_projection": 2,
+    "target_bytes": 7,
+    "zero_hessian_inferred": true
+  },
+  "attempts": [
+    {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_ewgs.py",
+        "tests/integration/test_ewgs_hvp.py",
+        "-k",
+        "constant_gradient_records or affine_hvp_accounting"
+      ],
+      "exit_code": 1,
+      "name": "11-fix1-red",
+      "startup": {
+        "bytes": 15399,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/11-fix1-red/startup.json",
+        "sha256": "760eb5c28937637413fbc7b3cde7e07a62e27992d49b57b812afd1ff7a09161b"
+      },
+      "status": {
+        "bytes": 19150,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/11-fix1-red/status.json",
+        "sha256": "ee25b6fb476a9dd44e8df5cae03f1b787f447606f88110d5c67e68aa48318f22"
+      },
+      "stdout": {
+        "bytes": 3272,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/11-fix1-red/stdout.txt",
+        "sha256": "84b2acc207e9124e6822b411febf20912a3ee2a376a7b1afbfcd879b2cdfee6e"
+      },
+      "subprocess_elapsed_seconds": 1.3015848328359425
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_ewgs.py",
+        "tests/integration/test_ewgs_hvp.py",
+        "-k",
+        "constant_gradient_records or affine_hvp_accounting or detached_leaf_exhaustive"
+      ],
+      "exit_code": 0,
+      "name": "12-fix1-green",
+      "startup": {
+        "bytes": 15427,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/12-fix1-green/startup.json",
+        "sha256": "671d37bfe3e015f75c8e0e7497917dd74ffd9f512405b519c8a4c82c3effa8fb"
+      },
+      "status": {
+        "bytes": 19345,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/12-fix1-green/status.json",
+        "sha256": "5073631be9216f49e815080b82fcf02ce64fc351ff302038da8ecb916c048645"
+      },
+      "stdout": {
+        "bytes": 113,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m03-ewgs/12-fix1-green/stdout.txt",
+        "sha256": "fa642879fe09311c8b2ef1743375cb051f3018664300141ef393634325974261"
+      },
+      "subprocess_elapsed_seconds": 1.6543744173832238
+    }
+  ],
+  "cost_scope": {
+    "complete_project_cost_seconds": null,
+    "per_fixture_extra_seconds_exported": false,
+    "science_budget": null,
+    "subprocess_elapsed_seconds": 2.9559592502191663,
+    "wrapper_setup_seconds": null
+  },
+  "data_free_floor_bytes": 68719476736,
+  "fix_base": "b1e209f",
+  "fix_round": 1,
+  "git_free_before_final_small_write_bytes": 1040396288,
+  "git_retained_floor_bytes": 536870912,
+  "historical_neural_mps_or_cli_checks_repeated": false,
+  "issue": "I1 constant-gradient phantom HVP work",
+  "original_evidence_immutable": {
+    "bytes": 12709,
+    "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/m03-evidence.json",
+    "sha256": "776477e6699c2eb0c24168217d9b90af81783bf95d2152540d98807e998ded1f"
+  },
+  "remaining_concerns": [
+    "C1 earlier startup omission remains historical; new attempts capture lock/F02",
+    "C2 future pilot relevance/configuration-specific operation unknown",
+    "C3 saved-graph peak and complete project/setup costs unknown"
+  ],
+  "schema_version": 1,
+  "small_git_transaction_forecast_max_bytes": 16777216,
+  "source_hashes": {
+    "src/ralup/__init__.py": {
+      "bytes": 99,
+      "sha256": "ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd"
+    },
+    "src/ralup/__main__.py": {
+      "bytes": 22091,
+      "sha256": "aff2de53869812e06152cf6737b2611d451885000ba163d39a350d57123728df"
+    },
+    "src/ralup/baselines/__init__.py": {
+      "bytes": 180,
+      "sha256": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f"
+    },
+    "src/ralup/baselines/checks.py": {
+      "bytes": 6136,
+      "sha256": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b"
+    },
+    "src/ralup/baselines/ewgs.py": {
+      "bytes": 16994,
+      "sha256": "00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff"
+    },
+    "src/ralup/baselines/muon_checks.py": {
+      "bytes": 5880,
+      "sha256": "ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11"
+    },
+    "src/ralup/baselines/references/__init__.py": {
+      "bytes": 1135,
+      "sha256": "6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f"
+    },
+    "src/ralup/baselines/references/soap_reference.py": {
+      "bytes": 19180,
+      "sha256": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b"
+    },
+    "src/ralup/baselines/registry.py": {
+      "bytes": 12632,
+      "sha256": "af2b1885be9f9bde19c676ee0200bf392fa481160252f1a3028179e25ed866fb"
+    },
+    "src/ralup/baselines/soap_madam_checks.py": {
+      "bytes": 6647,
+      "sha256": "d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b"
+    },
+    "src/ralup/calibrate.py": {
+      "bytes": 43506,
+      "sha256": "74f0d33bcf2c08eb924aa0772bcad5455dcafe47519e239330b1309c5978e97e"
+    },
+    "src/ralup/config.py": {
+      "bytes": 20386,
+      "sha256": "96bf4a3ee4ffe8a3c27dfdefbd7679ae804a41c8243357857b7ef39da085a350"
+    },
+    "src/ralup/data/__init__.py": {
+      "bytes": 463,
+      "sha256": "6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0"
+    },
+    "src/ralup/data/articles.py": {
+      "bytes": 6255,
+      "sha256": "1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c"
+    },
+    "src/ralup/data/batches.py": {
+      "bytes": 1772,
+      "sha256": "5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750"
+    },
+    "src/ralup/data/blocks.py": {
+      "bytes": 2402,
+      "sha256": "c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe"
+    },
+    "src/ralup/data/checks.py": {
+      "bytes": 4200,
+      "sha256": "cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f"
+    },
+    "src/ralup/data/cursor.py": {
+      "bytes": 16418,
+      "sha256": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af"
+    },
+    "src/ralup/data/dedup.py": {
+      "bytes": 8360,
+      "sha256": "c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f"
+    },
+    "src/ralup/data/partitions.py": {
+      "bytes": 12449,
+      "sha256": "551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9"
+    },
+    "src/ralup/data/source.py": {
+      "bytes": 9400,
+      "sha256": "fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f"
+    },
+    "src/ralup/diagnostics/__init__.py": {
+      "bytes": 164,
+      "sha256": "ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00"
+    },
+    "src/ralup/diagnostics/quadratics.py": {
+      "bytes": 9349,
+      "sha256": "3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840"
+    },
+    "src/ralup/environment.py": {
+      "bytes": 15978,
+      "sha256": "0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160"
+    },
+    "src/ralup/evaluate.py": {
+      "bytes": 6202,
+      "sha256": "d1050885478ef197a44b77551ee545ff9e05a1804662440ae4170649cc2c2189"
+    },
+    "src/ralup/models/__init__.py": {
+      "bytes": 179,
+      "sha256": "7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752"
+    },
+    "src/ralup/models/checks.py": {
+      "bytes": 7998,
+      "sha256": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a"
+    },
+    "src/ralup/models/embedding.py": {
+      "bytes": 1876,
+      "sha256": "11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1"
+    },
+    "src/ralup/models/linear.py": {
+      "bytes": 1398,
+      "sha256": "f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546"
+    },
+    "src/ralup/models/transformer.py": {
+      "bytes": 8493,
+      "sha256": "4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05"
+    },
+    "src/ralup/optim/__init__.py": {
+      "bytes": 341,
+      "sha256": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae"
+    },
+    "src/ralup/optim/adamw.py": {
+      "bytes": 3748,
+      "sha256": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c"
+    },
+    "src/ralup/optim/base.py": {
+      "bytes": 9984,
+      "sha256": "b1f8f1bff886dc7e68e4534297236f1500b56ebe3192f737bf3afb7c843f1c3d"
+    },
+    "src/ralup/optim/madam.py": {
+      "bytes": 3557,
+      "sha256": "afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6"
+    },
+    "src/ralup/optim/matrix_adapter.py": {
+      "bytes": 1953,
+      "sha256": "0c557b983b8345839757e0c8196af5d0be63a76ecf2a2c7a3cdd9761d436a1ad"
+    },
+    "src/ralup/optim/muon.py": {
+      "bytes": 4423,
+      "sha256": "c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35"
+    },
+    "src/ralup/optim/muon_plus.py": {
+      "bytes": 1987,
+      "sha256": "0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d"
+    },
+    "src/ralup/optim/soap.py": {
+      "bytes": 15878,
+      "sha256": "f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b"
+    },
+    "src/ralup/policy/__init__.py": {
+      "bytes": 238,
+      "sha256": "2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4"
+    },
+    "src/ralup/policy/actions.py": {
+      "bytes": 7500,
+      "sha256": "f4830341e79fb54c863fcbdf0d02d20a6f288e74f8918742b440b0808b5cf4f5"
+    },
+    "src/ralup/quantization/__init__.py": {
+      "bytes": 569,
+      "sha256": "733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16"
+    },
+    "src/ralup/quantization/checks.py": {
+      "bytes": 41221,
+      "sha256": "fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2"
+    },
+    "src/ralup/quantization/context.py": {
+      "bytes": 7381,
+      "sha256": "3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c"
+    },
+    "src/ralup/quantization/formats.py": {
+      "bytes": 6991,
+      "sha256": "a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896"
+    },
+    "src/ralup/quantization/fp32.py": {
+      "bytes": 5313,
+      "sha256": "ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5"
+    },
+    "src/ralup/quantization/oracle.py": {
+      "bytes": 1707,
+      "sha256": "78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c"
+    },
+    "src/ralup/quantization/rotation.py": {
+      "bytes": 3419,
+      "sha256": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d"
+    },
+    "src/ralup/quantization/scales.py": {
+      "bytes": 9154,
+      "sha256": "17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64"
+    },
+    "src/ralup/quantization/surrogates.py": {
+      "bytes": 2592,
+      "sha256": "a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614"
+    },
+    "src/ralup/records.py": {
+      "bytes": 12691,
+      "sha256": "243aeec2352531a03a695267b00e04b7a5675c687e1932f90058cc5f96702faf"
+    },
+    "src/ralup/state.py": {
+      "bytes": 44728,
+      "sha256": "b9fd8f8ea019cb30852e8da4744b5d9ff4ebd892fb7b0660e5adf311b57ab656"
+    },
+    "src/ralup/train.py": {
+      "bytes": 25338,
+      "sha256": "30b33f7d201ea1884c7958f4b89920e52ae729cae69c7b9c0193dabeb4191704"
+    },
+    "tests/integration/test_ewgs_hvp.py": {
+      "bytes": 12175,
+      "sha256": "fa62ce699231b1365cb9a453db8f303848d886e918f2fdabfba2251df2333fcd"
+    },
+    "tests/unit/test_ewgs.py": {
+      "bytes": 4096,
+      "sha256": "36f84d0d82958ecacd3aaf155fbc31d6bf67ccdafeb2b7cc0322ba3640a0881e"
+    }
+  },
+  "source_identity_migration_or_v1_compatibility_waiver": false,
+  "status": "narrow_checks_pass",
+  "store_ceiling_bytes": 34359738368,
+  "store_inventory_bytes": 8056756,
+  "store_marker": {
+    "bytes": 655,
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/store.json",
+    "sha256": "16f61f5f5425f0ea95d4416bab16fa47936abaf592844e358013519cb4255af2"
+  },
+  "task": "M03",
+  "trusted_method_schema": "ewgs_adapter.v2",
+  "trusted_mutable_schema": "ewgs.normalized_leaf_probes_cadence.v2",
+  "validation": "2 expected RED failures; GREEN 3 passed, 14 deselected; CPU affine launch counts, paired exposure accounting, safe v2 reconstruction/rejection, existing analytic nonlinear branch sanity"
+}

@@ -19,6 +19,8 @@ def test_detached_leaf_exhaustive_trace_population_std_and_hard_rounding_negativ
     result=m.estimate_delta(loss,code,probes)
     assert all(a and b is None and c for a,b,c in seen)
     assert result['estimated_trace']==pytest.approx(torch.trace(h).item())
+    assert result['hvp_backward_passes']==4 and result['extra_backward_passes']==5
+    assert result['zero_hessian_inferred'] is False
     g=h@code.detach();assert result['delta']==pytest.approx(4/(3*g.std(correction=0).item()+1e-12))
     assert result['delta']>=0 and shadow.grad is None
     wrong_g=torch.autograd.grad(.5*code@h@code,shadow,create_graph=True)[0]
@@ -164,3 +166,42 @@ def test_cli_ewgs_method_and_fixture_suite(tmp_path,capsys):
     assert report['status']=='pass'
     assert report['variants'][1]['fp4_dimensionless_residual_clipping']=='pass'
     assert report['variants'][1]['analytic_hessian_agreement']=='pass'
+
+
+def test_affine_hvp_accounting_and_trusted_v2_reconstruction(monkeypatch):
+    m=ewgs();state,batch=fixture({**m.FIXTURE_CONFIG,'mode':'adaptive','pilot_relevance':True,'operation_support':'pass'})
+    from ralup import evaluate
+    from ralup.train import train_step
+    from ralup.state import capture_snapshot,restore_snapshot,IntegrityError
+    # Scoped affine scorer fixture: no Transformer forward/neural wave executes.
+    # Estimator substitutes its real normalized leaf -> detached physical scale.
+    def affine_target_losses(model,batch,*,contexts=None):
+        if contexts is not None:
+            leaf_view=next(c for c in contexts.values() if type(c) is m.NormalizedLeafView)
+            return (100+leaf_view.storage_values.sum()).reshape(1)
+        return (100+sum(p.sum() for p in model.parameters())).reshape(1)
+    monkeypatch.setattr(evaluate,'_target_losses',affine_target_losses)
+    result=train_step(state,batch)
+    work=result.work;events=work['extra_pass_events']
+    assert work['additional_loss']==6*batch.target_count
+    assert work['backward']==7*batch.target_count # ordinary plus six extra-loss backwards
+    assert work['loss_targets']==7*batch.target_count
+    assert len(events)==12 and len({e['execution_id'] for e in events})==6
+    assert all(e['kind'] in ('extra_loss','extra_loss_backward') for e in events)
+    assert work['ewgs_work']['hvp_target_bytes']==0
+    assert work['ewgs_work']['gradient_only_target_bytes']==0
+    assert work['ewgs_work']['loss_backward_target_bytes']==6*batch.target_count
+    for telemetry in state.method.refresh_telemetry.values():
+        assert telemetry['probes']==2 and telemetry['hvp_backward_passes']==0
+        assert telemetry['extra_backward_passes']==1 and telemetry['zero_hessian_inferred'] is True
+        assert telemetry['estimated_trace']==0 and telemetry['delta']==0
+    snapshot=capture_snapshot(state);restored=restore_snapshot(snapshot,'cpu')
+    assert restored.method.snapshot_schema['adapter_mutable_state']=='ewgs.normalized_leaf_probes_cadence.v2'
+    assert restored.method.refresh_telemetry==state.method.refresh_telemetry
+    # Both representations of actual launches must agree with the inferred branch.
+    name=next(iter(restored.method.refresh_telemetry));telemetry=restored.method.refresh_telemetry[name]
+    telemetry['hvp_backward_passes']=2;telemetry['extra_backward_passes']=3
+    with pytest.raises(IntegrityError):capture_snapshot(restored)
+    telemetry['hvp_backward_passes']=0;telemetry['extra_backward_passes']=1
+    telemetry['zero_hessian_inferred']=False
+    with pytest.raises(IntegrityError):capture_snapshot(restored)

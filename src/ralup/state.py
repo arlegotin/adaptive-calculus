@@ -92,7 +92,7 @@ register_method_schema('matrix_adapter.v1',MatrixMethodAdapter,
                        ('optimizer_states','proposals','snapshot_schema'),MatrixMethodAdapter)
 
 
-register_method_schema('ewgs_adapter.v1',EwgsAdapter,ADAPTER_FIELDS,trusted_constructor)
+register_method_schema('ewgs_adapter.v2',EwgsAdapter,ADAPTER_FIELDS,trusted_constructor)
 
 
 def _rule_payload(rule):
@@ -389,7 +389,7 @@ def _validate_quantized_owners(payload,prototype):
     grouping = grouping_for(recipe['name'])
     rotation = recipe.get('rotation','identity')
     backward = recipe.get('backward','trust' if recipe['name'].startswith('quest') else 'ste')
-    if backward=='ewgs' and payload['method_schema']!='ewgs_adapter.v1':raise IntegrityError('EWGS backward requires trusted EWGS owner')
+    if backward=='ewgs' and payload['method_schema']!='ewgs_adapter.v2':raise IntegrityError('EWGS backward requires trusted EWGS owner')
     if rotation not in ('identity','full_hadamard') or backward not in BACKWARD_RULES: raise IntegrityError('Invalid context recipe')
     names = {item['name'] for item in prototype.quantized_matrix_manifest()}
     shared = _SHARED_FIELDS[payload['method_schema']]
@@ -513,7 +513,7 @@ def _validated(snapshot):
         _keys(payload['method'],names)
         if payload['method']['proposals']: raise IncompleteStep('Uncommitted proposals in snapshot')
         _validate_quantized_owners(payload,prototype)
-        if payload['method_schema']=='ewgs_adapter.v1':
+        if payload['method_schema']=='ewgs_adapter.v2':
             if type(rule) is not AdamWUpdateRule:raise IntegrityError('EWGS owns original-W AdamW only')
             if payload['model_cache']['_recipe'] is None or payload['model_cache']['_recipe'].get('backward')!='ewgs':raise IntegrityError('EWGS requires explicit backward recipe')
             if payload['groups']!=default_parameter_groups(prototype):raise IntegrityError('EWGS groups mismatch')
@@ -557,7 +557,7 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
         _,_,constructor = _METHODS[payload['method_schema']]
         method = constructor(parameters,payload['groups'],rule)
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
-        if payload['method_schema']=='ewgs_adapter.v1':method.probe_rng_state=payload['method']['probe_rng_state'].clone()
+        if payload['method_schema']=='ewgs_adapter.v2':method.probe_rng_state=payload['method']['probe_rng_state'].clone()
         # Noncapturable scalar counters stay CPU; moments remain original-W device.
         if set(method.optimizer_states) != set(parameters): raise IntegrityError('Optimizer manifest mismatch')
         for name,values in method.optimizer_states.items():
@@ -744,7 +744,7 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
     if payload['rule'].get('schema') == SoapUpdateRule.state_schema:
         for values in payload['method']['optimizer_states'].values():
             for name in TIMING_FIELDS: values.get('telemetry',{}).pop(name,None)
-    if payload['method_schema']=='ewgs_adapter.v1':
+    if payload['method_schema']=='ewgs_adapter.v2':
         for values in payload['method']['refresh_telemetry'].values():values.pop('elapsed_seconds',None)
     encoder = _Encoder()
     # _decode leaves RNG states as plain data, suitable for deterministic hashing.
