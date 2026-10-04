@@ -268,6 +268,8 @@ class BatchCursor:
         if self.permutation_position == self.block_count:
             self.epoch += 1
             self.permutation_position = 0
+            # Copy on rollover: staged cursors share the immutable current epoch.
+            self._permutation = array('I', self._permutation)
             self._rng.shuffle(self._permutation)
         ordinal = self._permutation[self.permutation_position]
         document, start, end = self._reference(ordinal)

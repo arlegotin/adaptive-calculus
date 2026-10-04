@@ -60,13 +60,15 @@ class ResolvedConfig:
         object.__setattr__(self, "sha256", hashlib.sha256(encoded).hexdigest())
 
 
-PURPOSES = ("doctor", "prepare-data", "smoke", "train", "meta", "confirm")
+PURPOSES = ("doctor", "prepare-data", "smoke", "pilot-bootstrap", "train", "meta", "confirm")
 _BASE_FIELDS = (
     "data.revision", "data.manifest", "runtime.device", "runtime.dependency_lock",
     "runtime.environment", "runtime.tolerances", "quantization.rotation",
     "training.microbatch", "training.warm_start_steps", "training.continuation_steps",
     "training.b0", "training.recipe",
 )
+_BOOTSTRAP_FIELDS = tuple(field for field in _BASE_FIELDS if field not in
+                          ("training.warm_start_steps", "training.continuation_steps", "training.b0"))
 _POLICY_FIELDS = ("policy.controller", "policy.normalizer", "policy.meta_sampling")
 _CONFIRM_FIELDS = ("confirmation.b_star", "confirmation.seeds", "confirmation.n",
                    "confirmation.analysis", "confirmation.manifest")
@@ -78,12 +80,13 @@ _PROBE_FIELDS = (
 )
 _REQUIRED = {
     "doctor": (), "prepare-data": ("runtime.dependency_lock", "runtime.environment"),
-    "smoke": _PROBE_FIELDS, "train": _BASE_FIELDS + _PROBE_FIELDS,
+    "smoke": _PROBE_FIELDS, "pilot-bootstrap": _BOOTSTRAP_FIELDS + _PROBE_FIELDS, "train": _BASE_FIELDS + _PROBE_FIELDS,
     "meta": _BASE_FIELDS + _POLICY_FIELDS + _PROBE_FIELDS,
     "confirm": _BASE_FIELDS + _POLICY_FIELDS + _CONFIRM_FIELDS + _PROBE_FIELDS,
 }
 _GATES = {
     "doctor": (), "smoke": (), "prepare-data": ("WP00",),
+    "pilot-bootstrap": ("WP00", "WP01", "H02", "H04", "H05"),
     "train": ("WP00", "WP01", "WP02", "WP04"),
     "meta": ("WP00", "WP01", "WP02", "WP04", "WP06"),
     "confirm": ("WP00", "WP01", "WP02", "WP04", "WP06", "WP07"),
@@ -331,6 +334,17 @@ def resolve_config(template: dict, evidence: dict, *, purpose: str) -> ResolvedC
             blockers.append(f"{name} is {gate.status} or has no hashed evidence")
     if blockers:
         raise UnresolvedConfig(blockers)
+    if purpose == "pilot-bootstrap":
+        # Bootstrap acceptance is engineering scope, never a fabricated full
+        # WP02/WP04/WP06 gate. Rehash all actual prerequisite artifacts at entry.
+        from .records import sha256_file
+        references = [_get(payload,name) for name in
+                      ("data.manifest","runtime.dependency_lock","runtime.environment")]
+        references += [item for name in _GATES[purpose] for item in gates[name]["evidence"]]
+        for item in references:
+            ref = ArtifactRef(**item)
+            if sha256_file(ref.path) != ref.sha256:
+                raise ValueError(f"Bootstrap artifact hash mismatch: {ref.path}")
     payload["purpose"] = purpose
     payload["evidence_gates"] = {name: gates[name] for name in _GATES[purpose]}
     return ResolvedConfig(payload)

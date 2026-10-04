@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "task": "H06",
+  "scope": "Engineering verification on synthetic byte fixtures only; no protected targets, full WP02, calibrated capacity or scientific gate claimed",
+  "scientific_gate": null,
+  "base_commit": "4a64e5635276968e167bc1cae12aac9b04bef708",
+  "source_hashes": {
+    "src/ralup/train.py": "b2d43481aff920e2558dae57d147c976ae9bb248f8ce3276bdcec17287d61001",
+    "src/ralup/evaluate.py": "c7f31375f419767351525ecdcffd81c38a0cc6d216a5fc59dace146f2572c9e3",
+    "src/ralup/__main__.py": "22af6b0b6a2bf114940df23d3b5f728363bf4fd9823533049cdc245d2bb60094",
+    "src/ralup/config.py": "30acef406b7000a04e2b06ec71d7ad1eb1e7082adbc76403f895c1ab2746e82e",
+    "src/ralup/records.py": "32bdcf4cffafa94d1f5ecb17f86c63daa02ef4639fca710ce8f42f0818c8f6ef",
+    "src/ralup/data/cursor.py": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af",
+    "tests/integration/test_logical_step.py": "b8c70fbbb343a347bd01d02427d72b100f9b750e4f7c246eef0e590766c9701e",
+    "tests/integration/test_scoring.py": "99fdb0688279fc4b3ffbd06fb58f0cdb228cd27ea0464d39bae9c49cd69b0ae0",
+    "docs/harness/h06-engine.md": "c8ad575ac3b3dc12d5e88d95235d72ec5c44163f6c94a9d14586fe21adcb3ba5"
+  },
+  "tdd": {
+    "initial_red": {
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py tests/integration/test_scoring.py -q",
+      "failed": 9,
+      "reason": "Missing ralup.train and ralup.evaluate modules before implementation"
+    },
+    "additional_red_observed": [
+      "fixed-scale field AttributeError",
+      "live cursor/ledger not restored after adapter failure",
+      "missing explicit pilot-bootstrap resolution/run/default harness",
+      "early history/schedule/cursor/ledger commits and nonfinite optimizer state not rejected",
+      "repeated direct fixture unique count 36 instead of 12"
+    ],
+    "green": {
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py tests/integration/test_scoring.py -q",
+      "passed": 22,
+      "warnings": 0,
+      "evidence": {
+        "path": "artifacts/checks/h06/focused-cpu.txt",
+        "sha256": "b3c867a196d208ca76f7d044a14cb9be4437b350f8b554d973b5a5c45f5bd426",
+        "bytes": 99
+      }
+    }
+  },
+  "negative_controls": {
+    "path": "docs/evidence/2026-10-04-h06-negative-controls.json",
+    "sha256": "41c4bfbe9093c645ba2143c82b907f5cbb3d33d085f24871a10941e48957d102",
+    "bytes": 2068
+  },
+  "full_suite": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
+    "execution": "actual local MPS; require_escalated; pinned .venv",
+    "exit_code": 0,
+    "passed": 431,
+    "skipped": 0,
+    "warnings": 0,
+    "elapsed_seconds": 20.74,
+    "evidence": {
+      "path": "artifacts/checks/h06/full-suite-mps.txt",
+      "sha256": "647638b21e92ef4003f948959a4b00742129320147bb5cc535906458c7158a79",
+      "bytes": 501
+    }
+  },
+  "harness": {
+    "cpu": {
+      "command": ".venv/bin/python -m ralup test-harness --output artifacts/checks/h06/harness-cpu.json",
+      "execution": "local sandbox CPU",
+      "status": "pass",
+      "evidence": {
+        "path": "artifacts/checks/h06/harness-cpu.json",
+        "sha256": "dbdf0f8d6d3fc64fe12b9c2872bd5909f959ef40ec9abf1cf0bb094432b422dc",
+        "bytes": 1540
+      },
+      "checks": {
+        "accumulation": {
+          "duplicate_trajectory_exact": true,
+          "gradient_max_error": 2.0489096641540527e-08,
+          "microbatches": [
+            1,
+            3
+          ],
+          "oracle": "one full-batch SUM/12, one clip, authoritative H05 update",
+          "parameter_max_error": 1.1920928955078125e-07,
+          "scored_targets_per_step": 12,
+          "status": "pass",
+          "steps": 3,
+          "synthetic": true,
+          "three_ledgers": {
+            "elapsed": {
+              "seconds": 0.021363123785704374
+            },
+            "passes": {
+              "additional_loss": 0,
+              "backward": 36,
+              "forward_context": 36,
+              "loss_targets": 36,
+              "query": 0
+            },
+            "stream": {
+              "targets": 36,
+              "unique": 12,
+              "updates": 3
+            }
+          },
+          "tolerances": {
+            "code_mismatches": 0,
+            "duplicate_gradient_atol": 0.0,
+            "duplicate_logits_atol": 0.0,
+            "duplicate_loss_atol": 0.0,
+            "gradient_atol": 0.0001,
+            "gradient_rtol": 0.0001,
+            "logits_atol": 0.0001,
+            "logits_rtol": 0.0001,
+            "loss_atol": 0.0001,
+            "loss_rtol": 0.0001,
+            "rotation_atol": 8e-06,
+            "rotation_rtol": 2e-06
+          }
+        },
+        "coverage": {
+          "evidence": {
+            "path": "artifacts/checks/h06/harness-cpu-coverage.json",
+            "sha256": "574f715f3cd129bcfad27b76706ed7354c7e29cd8937f2b0e2d56ab58723febf"
+          },
+          "status": "pass"
+        },
+        "model": {
+          "evidence": {
+            "path": "artifacts/checks/h06/harness-cpu-model.json",
+            "sha256": "1e41af98f64272c4b92b819603f2a093e41259397168c66c4e6bbcefacfd4f28"
+          },
+          "status": "pass"
+        },
+        "scoring": {
+          "bpb": 7.931193776300994,
+          "degraded_bpb": 28.85390081777927,
+          "duplicate_equal": true,
+          "nll_sum": 65.96981525421143,
+          "reduction": "per-block FP32 losses -> explicit host FP64 math.fsum; sorted document/interval/offset",
+          "status": "pass",
+          "target_count": 12
+        }
+      }
+    },
+    "mps": {
+      "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m ralup test-harness --device mps --output artifacts/checks/h06/harness-mps.json",
+      "execution": "actual local MPS; require_escalated; fallback=0",
+      "status": "pass",
+      "evidence": {
+        "path": "artifacts/checks/h06/harness-mps.json",
+        "sha256": "4e183be2551e8e7901a5da256711ad66002b6a29f014b5a5dc02bd5d38afc442",
+        "bytes": 1538
+      },
+      "checks": {
+        "accumulation": {
+          "duplicate_trajectory_exact": true,
+          "gradient_max_error": 1.1175870895385742e-08,
+          "microbatches": [
+            1,
+            3
+          ],
+          "oracle": "one full-batch SUM/12, one clip, authoritative H05 update",
+          "parameter_max_error": 1.3969838619232178e-08,
+          "scored_targets_per_step": 12,
+          "status": "pass",
+          "steps": 3,
+          "synthetic": true,
+          "three_ledgers": {
+            "elapsed": {
+              "seconds": 3.5311581660062075
+            },
+            "passes": {
+              "additional_loss": 0,
+              "backward": 36,
+              "forward_context": 36,
+              "loss_targets": 36,
+              "query": 0
+            },
+            "stream": {
+              "targets": 36,
+              "unique": 12,
+              "updates": 3
+            }
+          },
+          "tolerances": {
+            "code_mismatches": 0,
+            "duplicate_gradient_atol": 0.0,
+            "duplicate_logits_atol": 0.0,
+            "duplicate_loss_atol": 0.0,
+            "gradient_atol": 0.0001,
+            "gradient_rtol": 0.0001,
+            "logits_atol": 0.0001,
+            "logits_rtol": 0.0001,
+            "loss_atol": 0.0001,
+            "loss_rtol": 0.0001,
+            "rotation_atol": 8e-06,
+            "rotation_rtol": 2e-06
+          }
+        },
+        "coverage": {
+          "evidence": {
+            "path": "artifacts/checks/h06/harness-mps-coverage.json",
+            "sha256": "574f715f3cd129bcfad27b76706ed7354c7e29cd8937f2b0e2d56ab58723febf"
+          },
+          "status": "pass"
+        },
+        "model": {
+          "evidence": {
+            "path": "artifacts/checks/h06/harness-mps-model.json",
+            "sha256": "0cf8f4758b01c9533d2678d5299257fd4878aa6eb987f63880431e3fd2546be5"
+          },
+          "status": "pass"
+        },
+        "scoring": {
+          "bpb": 7.931193661645893,
+          "degraded_bpb": 28.85390081777927,
+          "duplicate_equal": true,
+          "nll_sum": 65.96981430053711,
+          "reduction": "per-block FP32 losses -> explicit host FP64 math.fsum; sorted document/interval/offset",
+          "status": "pass",
+          "target_count": 12
+        }
+      }
+    }
+  },
+  "trajectories": {
+    "cpu": {
+      "command": ".venv/bin/python -m ralup run --phase explore --config artifacts/checks/h06/cpu-envelope.json",
+      "execution": "local sandbox CPU",
+      "summary": {
+        "checkpoint_published": false,
+        "disposition": "synthetic_engineering_only",
+        "path": "artifacts/checks/h06/trajectory-cpu",
+        "project_elapsed_seconds": 0.2100550001487136,
+        "scientific_gate": null,
+        "steps": 2,
+        "stream_targets": 8193,
+        "synthetic": true
+      },
+      "logical_batch_targets": [
+        8192,
+        1
+      ],
+      "unique_targets": 8193,
+      "backward_targets": 8193,
+      "evidence": [
+        {
+          "path": "artifacts/checks/h06/trajectory-cpu-summary.json",
+          "sha256": "da5bdc26bf61d53a387133a0430d272bce0c28be9352606c9ca84c58e3f646b7",
+          "bytes": 236
+        },
+        {
+          "path": "artifacts/checks/h06/cpu-envelope.json",
+          "sha256": "3b10e5f1496c32daf8660c17608f6b6e6d9080d4f3e84dfac38ca224320fddc6",
+          "bytes": 3136
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-cpu/run.json",
+          "sha256": "8979ccae7690969713a7ec3e7f7d34d1bda726519c50bad3d1548bf812537ed9",
+          "bytes": 2695
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-cpu/metrics.jsonl",
+          "sha256": "25e5479c7958bf39367fd5ec85b86265126745698814d2f800f986a6c71bc291",
+          "bytes": 2774
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-cpu/status.jsonl",
+          "sha256": "bfe0879a37994f314cbb8e429b6b906cf9c96bd8ca0ca3542b6f43f5c5d02136",
+          "bytes": 464
+        }
+      ],
+      "source_patch": {
+        "path": "artifacts/checks/h06/run-source.patch",
+        "sha256": "19f1424dc8a42d61b52f531a24cef89f019b83aaf61d690b5207ac7986fcbf99",
+        "bytes": 67071
+      }
+    },
+    "mps": {
+      "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m ralup run --phase explore --config artifacts/checks/h06/mps-envelope.json",
+      "execution": "actual local MPS; require_escalated; fallback=0",
+      "summary": {
+        "checkpoint_published": false,
+        "disposition": "synthetic_engineering_only",
+        "path": "artifacts/checks/h06/trajectory-mps",
+        "project_elapsed_seconds": 2.5699225421994925,
+        "scientific_gate": null,
+        "steps": 2,
+        "stream_targets": 8193,
+        "synthetic": true
+      },
+      "logical_batch_targets": [
+        8192,
+        1
+      ],
+      "unique_targets": 8193,
+      "backward_targets": 8193,
+      "evidence": [
+        {
+          "path": "artifacts/checks/h06/trajectory-mps-summary.json",
+          "sha256": "dea59d2bc5fd4b8ad81e132c4d63bf48711f6241ce838a1d2de8b69bd9281f73",
+          "bytes": 236
+        },
+        {
+          "path": "artifacts/checks/h06/mps-envelope.json",
+          "sha256": "8f69c2f976d2ffced84182f66c600d7820215979df14119cba730aa0a9d5da41",
+          "bytes": 3136
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-mps/run.json",
+          "sha256": "a5a5f1c0aa4b0ce314d724c8ce3dc127e1de77bc009e6fddd88e4a1c818ea271",
+          "bytes": 2695
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-mps/metrics.jsonl",
+          "sha256": "fcf1df179e041693cdfbf0197f4807b3a1c79f1ffb08397505e4d5ae192093ee",
+          "bytes": 2774
+        },
+        {
+          "path": "artifacts/checks/h06/trajectory-mps/status.jsonl",
+          "sha256": "96ae64dabc492d753f3069dfbddc5ba13c4067430f196c4621652db2efdfe256",
+          "bytes": 464
+        }
+      ],
+      "source_patch": {
+        "path": "artifacts/checks/h06/run-source.patch",
+        "sha256": "19f1424dc8a42d61b52f531a24cef89f019b83aaf61d690b5207ac7986fcbf99",
+        "bytes": 67071
+      }
+    }
+  },
+  "restrictions": [
+    "explicit smoke or pilot-bootstrap explore envelope only",
+    "pilot-bootstrap prerequisites WP00/WP01/H02/H04/H05; engineering acceptance only",
+    "final train/meta resolution never falls back to bootstrap",
+    "no checkpoint publication until H07",
+    "official test loader/scoring command closed until E03",
+    "transaction overhead charged, H08 calibration pending"
+  ]
+}

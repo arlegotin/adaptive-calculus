@@ -14,7 +14,7 @@ from .config import _freeze, canonical_bytes, resolve_config
 
 
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
-_PHASE_PURPOSES = {"smoke": ("smoke",), "explore": ("train", "meta"), "confirm": ("confirm",)}
+_PHASE_PURPOSES = {"smoke": ("smoke",), "explore": ("pilot-bootstrap", "train", "meta"), "confirm": ("confirm",)}
 
 
 def _check_hash(value, name="sha256", *, nullable=False):
@@ -232,3 +232,36 @@ class RunLedger:
             "run_id": self.run_id, "recorded_utc": datetime.now(timezone.utc).isoformat(),
             "status": status, "disposition": disposition,
         })
+
+
+class WorkLedger:
+    """Three independent cost views, plus retained completed/failure events.
+
+    Stream advances only on a completed transaction. Pass counts and whole-step
+    elapsed time include failed work. Optional RunLedger writes durable events
+    before publishing these in-memory totals. H07 will snapshot deterministic
+    counts separately from wall-clock observations.
+    """
+    def __init__(self, run_ledger: RunLedger | None = None):
+        self.stream = {'targets':0,'unique':0,'updates':0}
+        self.coverage = {}  # Coalesced scored intervals for cursor-free fixtures only.
+        self.passes = {'loss_targets':0,'additional_loss':0,'backward':0,'query':0,'forward_context':0}
+        self.elapsed = {'seconds':0.}
+        self.events = []
+        self.run_ledger = run_ledger
+
+    def record(self, work: dict):
+        row = json.loads(canonical_bytes(work))
+        for key in (*_COUNTS,'loss_targets','forward_context','step'):
+            _integer(row[key],key)
+        _finite_nonnegative(row['elapsed_seconds'],'elapsed_seconds')
+        if self.run_ledger is not None:
+            self.run_ledger.record(row)
+        self.events.append(row)
+        if row['status'] == 'completed_step':
+            self.stream['targets'] += row['stream']
+            self.stream['unique'] += row['unique']
+            self.stream['updates'] += 1
+        for key in self.passes:
+            self.passes[key] += row[key]
+        self.elapsed['seconds'] += row['elapsed_seconds']

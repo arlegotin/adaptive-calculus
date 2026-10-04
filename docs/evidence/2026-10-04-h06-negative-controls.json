@@ -1,0 +1,44 @@
+{
+  "scope": "H06 deliberate integration mutations; restored before passing evidence",
+  "controls": [
+    {
+      "control": "unweighted_microbatch_mean",
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py -k test_sum_accumulation_matches_full_mean_and_single_clipped_update -q",
+      "exit_code": 1,
+      "detected": true,
+      "mutation": {
+        "file": "src/ralup/evaluate.py",
+        "from": "return _target_losses(model,batch).sum()",
+        "to": "return _target_losses(model,batch).mean()"
+      },
+      "log": "artifacts/checks/h06/mutation-unweighted_microbatch_mean.txt",
+      "log_sha256": "61daa40fe24c29298f725c6759277b2f20c5b494c3435ddbf972dc413bd94810"
+    },
+    {
+      "control": "repeated_history_commit",
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py -k test_sum_accumulation_matches_full_mean_and_single_clipped_update -q",
+      "exit_code": 1,
+      "detected": true,
+      "mutation": {
+        "file": "src/ralup/train.py",
+        "from": "state.histories.get('loss_updates',0)+1",
+        "to": "state.histories.get('loss_updates',0)+2"
+      },
+      "log": "artifacts/checks/h06/mutation-repeated_history_commit.txt",
+      "log_sha256": "9c38c0ab371c43bc55fcb36017ac58ce580c3c435f36d41165aa70cad4ba7ab7"
+    },
+    {
+      "control": "parameter_replacement",
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py -k test_authoritative_commit_is_exact_torch_scalar_order -q",
+      "exit_code": 1,
+      "detected": true,
+      "mutation": {
+        "file": "src/ralup/train.py",
+        "from": "updates = state.method.finish_step(state,state.schedule['point'])",
+        "to": "updates = state.method.finish_step(state,state.schedule['point'])\n        state.model.output.weight = torch.nn.Parameter(state.model.output.weight.detach().clone())"
+      },
+      "log": "artifacts/checks/h06/mutation-parameter_replacement.txt",
+      "log_sha256": "d423bf4081214642c6bb24312246b36eb4200e34cea95c74aba3204f1af8c4ca"
+    }
+  ]
+}
