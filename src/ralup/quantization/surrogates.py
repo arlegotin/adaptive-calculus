@@ -5,7 +5,7 @@ from torch import Tensor
 from .formats import _preserved_ratio
 from .fp32 import add_rescaled, bits
 
-BACKWARD_RULES = ('ste', 'trust', 'clipped_ste')
+BACKWARD_RULES = ('ste', 'trust', 'clipped_ste', 'ewgs')
 
 
 class _CachedSurrogate(torch.autograd.Function):
@@ -44,3 +44,23 @@ def backward_mask(u: Tensor, values: Tensor, scales: Tensor, rule: str) -> Tenso
     # Separately declared clipped STE: derivatives only inside representable range.
     # Division avoids 6*s overflow for caller-supplied large fixed scales.
     return (_preserved_ratio(bits(u), scale_bits).abs() <= 6.).to(torch.float32)
+
+
+class _EwgsSurrogate(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx,u,values,shadow,code,delta,mask):
+        ctx.save_for_backward(shadow,code,mask);ctx.delta=delta
+        return values.clone()
+
+    @staticmethod
+    def backward(ctx,upstream):
+        from ..baselines.ewgs import ewgs_backward
+        shadow,code,mask=ctx.saved_tensors
+        return ewgs_backward(upstream,shadow,code,ctx.delta,mask),None,None,None,None,None
+
+
+def ewgs_view(u,context):
+    shadow=(context.storage_u/context.scales/6).clamp(-1,1)
+    code=context.storage_values/context.scales/6
+    if 'ewgs_delta' not in context.metadata:raise ValueError('EWGS delta must be prepared by its adapter')
+    return _EwgsSurrogate.apply(u,context.storage_values,shadow,code,context.metadata['ewgs_delta'],context.gradient_mask)

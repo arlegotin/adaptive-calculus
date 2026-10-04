@@ -85,6 +85,7 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
             'adapter_mutable_state':'none.v1'},licenses=('PyTorch BSD-3-Clause; https://github.com/pytorch/pytorch/blob/main/LICENSE',),
         update_rule_settings=dict(rule.configuration),parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture'))
     register_matrix_methods(registry,groups)
+    register_ewgs_methods(registry,groups)
     return registry
 
 
@@ -160,3 +161,26 @@ def soap_madam_record(name, groups, rule, *, parity_status='unverified', operati
             'refresh_screening_candidates':(1,4,10) if soap else (),
             'scope':'bounded mechanics and local research only; no universal replay or scientific eligibility'},
         parity_status=parity_status,operations_status=operations_status,artifact_kind='project_adaptation',license_status='permitted')
+
+
+EWGS_NAMES=('ewgs_uniform_fixture','ewgs_fp4')
+
+
+def ewgs_record(name,groups,config,*,parity_status='unverified',operations_status='unverified'):
+    from .ewgs import validate_config
+    config=validate_config(config)
+    if name not in EWGS_NAMES:raise ValueError('Unknown EWGS method')
+    original=name=='ewgs_uniform_fixture'
+    return MethodRecord(name=name,family='EWGS',source_revision='arXiv:2104.00903v1;cvlab-yonsei/EWGS@56c654cb893d53563eb352dd591d1450c34bdd15;inspection-only',
+        adaptation_label='original_uniform_primitive_clean_equations' if original else 'project_FP4_population_std_detached_normalized_leaf',
+        required_operations=('sign','mul','clamp')+(() if config['mode']=='fixed' else ('normalized_leaf_gradient','higher_order_autograd','rademacher_hvp')),
+        ordered_parameter_groups=groups,state_schema={'optimizer_states':'named.original_W.adamw.v1','proposals':'named.proposal.v1','adapter_mutable_state':'ewgs.normalized_leaf_probes_cadence.v1'},
+        licenses=('Independent published equations; source GPL-v3 inspection only; no software grant or release parity inferred',),
+        update_rule_settings={**config,'source_copy_status':'blocked_GPL_inspection_only','source_inspection_sha256':{'CIFAR10/custom_modules.py':'8a823e02a8f84c0ec4828fde521e6c4a1d32dfa02b48d233d42dbae9f26e21d0','CIFAR10/utils.py':'16addc01e0e7bff6cec0092fe6b23c07ab04093cfd9cd814bbcac602e2abab21','LICENSE':'3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986'},'equation_implementation_status':'independent_local_research','release_reproduction_status':'unverified',
+            'source_primitive':'[0,1];round(x*(L-1))/(L-1)', 'departures':() if original else ('FP4 storage coordinates','population std instead of release sample std','epsilon 1e-12','detached normalized leaf','fixed-count probes; one logical batch instead of three release batches')},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture' if original else 'project_adaptation',extra_passes=() if config['mode']=='fixed' else ('extra_loss_and_its_backward','hvp'))
+
+
+def register_ewgs_methods(registry,groups):
+    from .ewgs import FIXTURE_CONFIG
+    for name in EWGS_NAMES:registry.register(ewgs_record(name,groups,FIXTURE_CONFIG))

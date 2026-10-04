@@ -13,7 +13,7 @@ from torch import Tensor
 from .formats import _fp32_pair, _preserved_reconstruction, quantize_e2m1
 from .rotation import to_storage
 from .scales import compute_scales, group_zero_flags, grouping_for
-from .surrogates import BACKWARD_RULES, backward_mask, surrogate_view
+from .surrogates import BACKWARD_RULES, backward_mask, surrogate_view, ewgs_view
 
 
 @dataclass(frozen=True)
@@ -131,4 +131,6 @@ def quantized_view(w: Tensor, context: QuantizationContext) -> Tensor:
     if w.shape != context.storage_u.shape or w.device != context.storage_u.device:
         raise ValueError('Weight view must match context shape/device')
     u = to_storage(w, context.rotation)
+    if context.backward == 'ewgs':
+        return ewgs_view(u,context)
     return surrogate_view(u, context.storage_values, context.gradient_mask)

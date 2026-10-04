@@ -29,6 +29,7 @@ from .optim.muon_plus import MuonPlusUpdateRule
 from .optim.soap import SoapUpdateRule,TIMING_FIELDS
 from .optim.madam import MadamUpdateRule
 from .optim.matrix_adapter import MatrixMethodAdapter
+from .baselines.ewgs import EwgsAdapter,ADAPTER_FIELDS,trusted_constructor,validate_owned_state
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
@@ -91,6 +92,9 @@ register_method_schema('matrix_adapter.v1',MatrixMethodAdapter,
                        ('optimizer_states','proposals','snapshot_schema'),MatrixMethodAdapter)
 
 
+register_method_schema('ewgs_adapter.v1',EwgsAdapter,ADAPTER_FIELDS,trusted_constructor)
+
+
 def _rule_payload(rule):
     if type(rule) is AdamWUpdateRule and set(vars(rule)) == {'betas','eps'}:
         # Preserve the historical AdamW representation and strict source boundary.
@@ -116,7 +120,7 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor is MatrixMethodAdapter:
+    if constructor in (MatrixMethodAdapter,trusted_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
@@ -385,6 +389,7 @@ def _validate_quantized_owners(payload,prototype):
     grouping = grouping_for(recipe['name'])
     rotation = recipe.get('rotation','identity')
     backward = recipe.get('backward','trust' if recipe['name'].startswith('quest') else 'ste')
+    if backward=='ewgs' and payload['method_schema']!='ewgs_adapter.v1':raise IntegrityError('EWGS backward requires trusted EWGS owner')
     if rotation not in ('identity','full_hadamard') or backward not in BACKWARD_RULES: raise IntegrityError('Invalid context recipe')
     names = {item['name'] for item in prototype.quantized_matrix_manifest()}
     shared = _SHARED_FIELDS[payload['method_schema']]
@@ -508,6 +513,11 @@ def _validated(snapshot):
         _keys(payload['method'],names)
         if payload['method']['proposals']: raise IncompleteStep('Uncommitted proposals in snapshot')
         _validate_quantized_owners(payload,prototype)
+        if payload['method_schema']=='ewgs_adapter.v1':
+            if type(rule) is not AdamWUpdateRule:raise IntegrityError('EWGS owns original-W AdamW only')
+            if payload['model_cache']['_recipe'] is None or payload['model_cache']['_recipe'].get('backward')!='ewgs':raise IntegrityError('EWGS requires explicit backward recipe')
+            if payload['groups']!=default_parameter_groups(prototype):raise IntegrityError('EWGS groups mismatch')
+            validate_owned_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'])
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
         return payload
     except IntegrityError: raise
@@ -547,6 +557,7 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
         _,_,constructor = _METHODS[payload['method_schema']]
         method = constructor(parameters,payload['groups'],rule)
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
+        if payload['method_schema']=='ewgs_adapter.v1':method.probe_rng_state=payload['method']['probe_rng_state'].clone()
         # Noncapturable scalar counters stay CPU; moments remain original-W device.
         if set(method.optimizer_states) != set(parameters): raise IntegrityError('Optimizer manifest mismatch')
         for name,values in method.optimizer_states.items():
@@ -729,9 +740,12 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
     for row in payload['ledger']['events']:
         row.pop('elapsed_seconds',None)
         for name in TIMING_FIELDS: row.get('optimizer_work',{}).pop(name,None)
+        row.get('ewgs_work',{}).pop('seconds',None)
     if payload['rule'].get('schema') == SoapUpdateRule.state_schema:
         for values in payload['method']['optimizer_states'].values():
             for name in TIMING_FIELDS: values.get('telemetry',{}).pop(name,None)
+    if payload['method_schema']=='ewgs_adapter.v1':
+        for values in payload['method']['refresh_telemetry'].values():values.pop('elapsed_seconds',None)
     encoder = _Encoder()
     # _decode leaves RNG states as plain data, suitable for deterministic hashing.
     metadata = encoder.encode(payload)

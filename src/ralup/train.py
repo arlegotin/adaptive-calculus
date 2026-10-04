@@ -94,7 +94,7 @@ class TrainingState:
     def checkpointable(self):
         return not self.failed and self._work is None and self._pending is None and not self.method.proposals
 
-    def record_work(self, *, additional_loss=0, backward=0, query=0, forward_context=0, optimizer_work=None):
+    def record_work(self, *, additional_loss=0, backward=0, query=0, forward_context=0, optimizer_work=None, loss_targets=0, extra_pass_event=None, ewgs_seconds=0.):
         """Charge actual launched extra work before an exceptional pass.
 
         Counts overlap and cannot be summed as a total. Ordinary forward/backward
@@ -102,6 +102,17 @@ class TrainingState:
         """
         if self._work is None:
             raise ValueError('Extra work requires an active logical transaction')
+        if extra_pass_event is not None:
+            if type(extra_pass_event) is not dict or set(extra_pass_event)!={'event_id','execution_id','kind','target_bytes'} or extra_pass_event['kind'] not in ('extra_loss','extra_loss_backward','gradient_only','hvp') or type(extra_pass_event['event_id']) is not str or type(extra_pass_event['execution_id']) is not str or type(extra_pass_event['target_bytes']) is not int or extra_pass_event['target_bytes']<=0:
+                raise ValueError('Invalid extra pass event')
+            events=self._work.setdefault('extra_pass_events',[])
+            if any(e['event_id']==extra_pass_event['event_id'] for e in events):raise ValueError('Duplicate extra pass event')
+            events.append(dict(extra_pass_event))
+            work=self._work.setdefault('ewgs_work',{'extra_loss_target_bytes':0,'loss_backward_target_bytes':0,'gradient_only_target_bytes':0,'hvp_target_bytes':0,'seconds':0.})
+            work[('loss_backward' if extra_pass_event['kind']=='extra_loss_backward' else extra_pass_event['kind'])+'_target_bytes']+=extra_pass_event['target_bytes']
+        if type(ewgs_seconds) not in (int,float) or not math.isfinite(ewgs_seconds) or ewgs_seconds<0:raise ValueError('Invalid EWGS seconds')
+        if ewgs_seconds:
+            self._work.setdefault('ewgs_work',{'extra_loss_target_bytes':0,'loss_backward_target_bytes':0,'gradient_only_target_bytes':0,'hvp_target_bytes':0,'seconds':0.})['seconds']+=ewgs_seconds
         if optimizer_work is not None:
             from .optim.soap import TELEMETRY_FIELDS,TIMING_FIELDS
             if type(optimizer_work) is not dict or set(optimizer_work) != set(TELEMETRY_FIELDS):
@@ -111,7 +122,7 @@ class TrainingState:
                     raise ValueError('Invalid optimizer work measurement')
             work = self._work.setdefault('optimizer_work',{k:0. if k in TIMING_FIELDS else 0 for k in TELEMETRY_FIELDS})
             for name,value in optimizer_work.items(): work[name] += value
-        for name,value in {'additional_loss':additional_loss,'backward':backward,'query':query,'forward_context':forward_context}.items():
+        for name,value in {'additional_loss':additional_loss,'backward':backward,'query':query,'forward_context':forward_context,'loss_targets':loss_targets}.items():
             if type(value) is not int or value < 0:
                 raise ValueError('Work counts must be nonnegative integers')
             self._work[name] += value

@@ -26,4 +26,6 @@ class QuantizedLinear(nn.Module):
         context = self.context if context is None else context
         if context is None:
             return F.linear(x, self.weight)
-        return F.linear(to_storage(x, context.rotation), quantized_view(self.weight, context))
+        from ..baselines.ewgs import NormalizedLeafView
+        values = context.storage_values if type(context) is NormalizedLeafView else quantized_view(self.weight, context)
+        return F.linear(to_storage(x, context.rotation), values)

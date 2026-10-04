@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam"), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
@@ -61,7 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            if args.suite == "soap-madam":
+            if args.suite == "ewgs":
+                from .baselines.ewgs import check_ewgs
+                ref = check_ewgs(args.device,args.output)
+            elif args.suite == "soap-madam":
                 from .baselines.soap_madam_checks import check_soap_madam
                 ref = check_soap_madam(args.device,args.output)
             elif args.suite == "muon":
@@ -272,8 +275,16 @@ def _run_explore(path):
     method_name, adaptation = 'adamw_original_W_byte_adapter','project_H06_bootstrap'
     if method_settings is not None:
         from .baselines.registry import build_matrix_method, matrix_record, MethodRegistry
-        method = build_matrix_method(method_settings['name'],dict(model.named_parameters()),default_parameter_groups(model),method_settings['config'])
-        registry = MethodRegistry();registry.register(matrix_record(method_settings['name'],method.groups,method.rule))
+        registry = MethodRegistry()
+        if method_settings['name']=='ewgs_fp4':
+            from .baselines.ewgs import EwgsAdapter
+            from .baselines.registry import ewgs_record
+            model.configure_quantization({**model._recipe,'backward':'ewgs'})
+            method=EwgsAdapter(method_settings['config']).bind(dict(model.named_parameters()),default_parameter_groups(model),method.rule)
+            registry.register(ewgs_record('ewgs_fp4',method.groups,method.config))
+        else:
+            method = build_matrix_method(method_settings['name'],dict(model.named_parameters()),default_parameter_groups(model),method_settings['config'])
+            registry.register(matrix_record(method_settings['name'],method.groups,method.rule))
         record = registry.require(method_settings['name'],adaptation_label=method_settings['adaptation_label'])
         method_name,adaptation = record.name,record.adaptation_label
         matrix_lr = method_settings['learning_rate']
