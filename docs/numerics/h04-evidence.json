@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "scope": "H04 reference model engineering; no capacity/quality/scientific gate",
+  "accepted_prior_bounds": [
+    "F02 FP32 1e-4 absolute/relative smoke bounds and zero duplicate variability",
+    "F04 8e-6/2e-6 context rotation bounds",
+    "F03-F05 zero ordinal mismatch allowance"
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/checks/h04-cpu.json",
+      "sha256": "8007940522e8d3cb8594f751db7115e923b5bc480a7077b16275e2157654f4aa",
+      "status": "pass",
+      "device": "cpu",
+      "role": "actual_device_engineering"
+    },
+    {
+      "path": "artifacts/checks/h04-mps.json",
+      "sha256": "980f7eb6f03ce71d64eed4596cda3f9c1c60e1473e5f11478bdd3bb2e08aa452",
+      "status": "pass",
+      "device": "mps",
+      "role": "actual_device_engineering"
+    },
+    {
+      "path": "artifacts/checks/h04-mps-sandbox-blocked.json",
+      "sha256": "32173d5e9d843d17cc3a1a46c1892fe68b633f578b06bf638655146e0ff73ad1",
+      "status": "blocked",
+      "device": "mps",
+      "role": "sandbox_device_unavailable_only"
+    },
+    {
+      "path": "artifacts/checks/h04-focused-sandbox.txt",
+      "sha256": "946b74a733cd1aea2e03dd148475f1a7b72f75511b222cf79c2d6a8b7f2e7582"
+    },
+    {
+      "path": "artifacts/checks/h04-focused-actual-mps.txt",
+      "sha256": "c7e76d3376feefcc3adccc5a4d54178719a6e2055349c9f8c8e5e0f3d4c74743"
+    },
+    {
+      "path": "artifacts/checks/h04-full-tests.txt",
+      "sha256": "e7c42e15d1216e82c898a34301c0de85d0eccbb861c7f2701849939fd60b2a23"
+    },
+    {
+      "path": "artifacts/checks/h04-red-missing-model.txt",
+      "sha256": "c5186569ffdc6b6323d6a17353ea5f2642143509d99a381f3d7035fb865500ee"
+    },
+    {
+      "path": "artifacts/checks/h04-red-checker.txt",
+      "sha256": "cf3f1bdd887f580200c3a2c8a2ed98a815ca5041ca5f9fdd5399c80f2c8993e9"
+    },
+    {
+      "path": "artifacts/checks/h04-red-missing-causal-mask.txt",
+      "sha256": "ef7936e9cf76f311b0028cf975d67bd67ca98c2cdd135474cdbcece0c0f73ec9"
+    },
+    {
+      "path": "artifacts/checks/h04-red-fused-qkv-manifest.txt",
+      "sha256": "59347943c6a270fcda78807976a5bd9b8d204059c5879e9d9e9fc40bcd5ad590"
+    },
+    {
+      "path": "artifacts/checks/h04-red-default-dtype.txt",
+      "sha256": "e6b81caa4e6d8be3f84d53e4b50b8e429dff18855b04bdb70037cd46550b48ee"
+    }
+  ],
+  "tolerances": {
+    "code_mismatches": 0,
+    "duplicate_gradient_atol": 0.0,
+    "duplicate_logits_atol": 0.0,
+    "duplicate_loss_atol": 0.0,
+    "gradient_atol": 0.0001,
+    "gradient_rtol": 0.0001,
+    "logits_atol": 0.0001,
+    "logits_rtol": 0.0001,
+    "loss_atol": 0.0001,
+    "loss_rtol": 0.0001,
+    "rotation_atol": 8e-06,
+    "rotation_rtol": 2e-06
+  },
+  "cpu_summary": {
+    "cases": 4,
+    "code_mismatches": 0,
+    "duplicate_gradient_max_error": 0.0,
+    "duplicate_logits_max_error": 0.0,
+    "duplicate_loss_max_error": 0.0,
+    "fixtures": [
+      {
+        "padding_includes_empty_row": true,
+        "recipe": null,
+        "scored_targets": 5,
+        "shape": [
+          2,
+          128,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "row_dynamic_max"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "row_dynamic_max",
+          "rotation": "full_hadamard"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "quest_fp4_row_reference",
+          "rotation": "full_hadamard"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      }
+    ],
+    "gradient_max_error": 0.0,
+    "logits_max_error": 0.0,
+    "loss_max_error": 0.0,
+    "rotation_max_error": 0.0
+  },
+  "mps_summary": {
+    "cases": 4,
+    "code_mismatches": 0,
+    "duplicate_gradient_max_error": 0.0,
+    "duplicate_logits_max_error": 0.0,
+    "duplicate_loss_max_error": 0.0,
+    "fixtures": [
+      {
+        "padding_includes_empty_row": true,
+        "recipe": null,
+        "scored_targets": 5,
+        "shape": [
+          2,
+          128,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "row_dynamic_max"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "row_dynamic_max",
+          "rotation": "full_hadamard"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      },
+      {
+        "padding_includes_empty_row": true,
+        "recipe": {
+          "name": "quest_fp4_row_reference",
+          "rotation": "full_hadamard"
+        },
+        "scored_targets": 5,
+        "shape": [
+          2,
+          32,
+          4
+        ]
+      }
+    ],
+    "gradient_max_error": 2.2649765014648438e-06,
+    "logits_max_error": 4.76837158203125e-07,
+    "loss_max_error": 1.9073486328125e-06,
+    "rotation_max_error": 0.0
+  },
+  "source_hashes": {
+    "src/ralup/models/checks.py": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a",
+    "src/ralup/models/linear.py": "01c2b161292e35a6dc7d7188a1fc5377360914aad8203199b1c3937ab4a6acf3",
+    "src/ralup/models/transformer.py": "e25aebbb2d0247bddaf6b988c161d37d3d070dc27d9281934a6c1c6193d793f5",
+    "src/ralup/quantization/context.py": "f53793dfd1fb1c92565be3cb627091d7f3fe54623c2b2291539cae86da51d599",
+    "src/ralup/quantization/rotation.py": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d"
+  },
+  "source_hashes_match_cpu_mps": true,
+  "current_source_hashes_verified": true,
+  "focused_tests": "21 passed in 6.00s; actual MPS; fallback=0",
+  "full_tests": "390 passed in 17.49s; actual MPS; fallback=0",
+  "raw_artifact_storage": "local ignored artifacts/checks; no weights/data/large artifacts committed",
+  "pending": [
+    "H05-H08",
+    "complete WP02",
+    "H06 empty logical optimizer batch rejection before mutation",
+    "scientific gates"
+  ],
+  "no_training_or_protected_scoring": true
+}

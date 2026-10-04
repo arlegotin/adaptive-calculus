@@ -26,7 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     numerics.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     numerics.add_argument("--output", type=Path, default=Path("artifacts/checks/results.json"))
     harness = subcommands.add_parser("test-harness", help="run implemented harness engineering checks")
-    harness.add_argument("--suite", choices=("data",), required=True)
+    harness.add_argument("--suite", choices=("data", "model"), required=True)
+    harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     args = parser.parse_args(argv)
     if args.command is None:
@@ -35,7 +36,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "test-harness":
         from .data.checks import check_data
         try:
-            ref = check_data(args.output)
+            if args.suite == "model":
+                from .models.checks import check_model
+                ref = check_model(args.device, args.output)
+            else:
+                ref = check_data(args.output)
             report = json.loads(ref.path.read_bytes())
             print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
                                    "status": report["status"], "blockers": report["blockers"]}).decode())
