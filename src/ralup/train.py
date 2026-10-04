@@ -231,7 +231,10 @@ def _restore(state, snapshot):
 
 
 def _contexts(state, step):
-    contexts = state.model.prepare_quantized_views(step,state.rng_streams.get('quantizer'))
+    # Exceptional endpoint/noise preparation is within snapshot/rollback/time.
+    prepare = getattr(state.method,'prepare_contexts',None)
+    contexts = (prepare(state,step) if prepare is not None else
+                state.model.prepare_quantized_views(step,state.rng_streams.get('quantizer')))
     for name,context in contexts.items():
         if 'fixed' in context.recipe:
             handoff = {'previous_scales':context.scales.clone(),

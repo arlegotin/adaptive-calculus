@@ -31,6 +31,8 @@ from .optim.madam import MadamUpdateRule
 from .optim.matrix_adapter import MatrixMethodAdapter
 from .baselines.ewgs import EwgsAdapter,ADAPTER_FIELDS,trusted_constructor,validate_owned_state
 from .baselines.trs import TrsState,TrsBackboneAdapter,ADAPTER_FIELDS as TRS_FIELDS,trusted_constructor as trs_constructor,validate_owned_state as validate_trs_state
+from .baselines.qar import QarAdjacentAdapter,ADAPTER_FIELDS as QAR_FIELDS,trusted_constructor as qar_constructor,validate_owned_state as validate_routing_state
+from .baselines.rounding import RoundingAdapter,trusted_constructor as rounding_constructor
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
@@ -96,6 +98,8 @@ register_method_schema('matrix_adapter.v1',MatrixMethodAdapter,
 register_method_schema('ewgs_adapter.v2',EwgsAdapter,ADAPTER_FIELDS,trusted_constructor)
 register_state_schema('trs_state.v1',TrsState,('r','K','previous_codes','observations'))
 register_method_schema('trs_adapter.v1',TrsBackboneAdapter,TRS_FIELDS,trs_constructor)
+register_method_schema('qar_adapter.v1',QarAdjacentAdapter,QAR_FIELDS,qar_constructor)
+register_method_schema('rounding_adapter.v1',RoundingAdapter,QAR_FIELDS,rounding_constructor)
 
 
 def _rule_payload(rule):
@@ -123,7 +127,7 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor):
+    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
@@ -523,6 +527,8 @@ def _validated(snapshot):
             validate_owned_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'])
         if payload['method_schema']=='trs_adapter.v1':
             validate_trs_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule)
+        if payload['method_schema'] in ('qar_adapter.v1','rounding_adapter.v1'):
+            validate_routing_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule,payload['weights'],payload['rng_streams'],payload['model_cache']['_recipe'],rounding=payload['method_schema']=='rounding_adapter.v1')
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
         return payload
     except IntegrityError: raise
@@ -746,6 +752,8 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
         row.pop('elapsed_seconds',None)
         for name in TIMING_FIELDS: row.get('optimizer_work',{}).pop(name,None)
         row.get('ewgs_work',{}).pop('seconds',None)
+        for name in ('context_seconds','probability_seconds'):
+            row.get('routing_rounding_work',{}).pop(name,None)
     if payload['rule'].get('schema') == SoapUpdateRule.state_schema:
         for values in payload['method']['optimizer_states'].values():
             for name in TIMING_FIELDS: values.get('telemetry',{}).pop(name,None)

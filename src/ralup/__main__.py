@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs"), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs", "routing-rounding"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
@@ -61,7 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            if args.suite == "trs":
+            if args.suite == "routing-rounding":
+                from .baselines.rounding import check_routing_rounding
+                ref = check_routing_rounding(args.device,args.output)
+            elif args.suite == "trs":
                 from .baselines.trs import check_trs
                 ref = check_trs(args.device,args.output)
             elif args.suite == "ewgs":
@@ -267,7 +270,7 @@ def _run_explore(path):
         initialization.set_state(torch.get_rng_state())
     stream_seed = lambda name: int.from_bytes(hashlib.sha256(f"ralup-rng-v1:{seed}:{name}".encode()).digest()[:8],"little")
     rng_streams = {"initialization":initialization,
-                   "quantizer":torch.Generator(device=device).manual_seed(stream_seed("quantization")),
+                   "quantizer":torch.Generator(device="cpu" if method_settings is not None and method_settings["name"] in ("qar_fp4_adjacent","stochastic_shadow_forward","stochastic_endpoint") else device).manual_seed(stream_seed("quantization")),
                    "meta":random.Random(stream_seed("meta")),"timing":random.Random(stream_seed("timing"))}
     model.configure_quantization({"name":config["training"]["recipe"],
                                   "rotation":"full_hadamard" if config["quantization"]["rotation"] == "hadamard" else "identity"})
@@ -279,7 +282,14 @@ def _run_explore(path):
     if method_settings is not None:
         from .baselines.registry import build_matrix_method, matrix_record, MethodRegistry
         registry = MethodRegistry()
-        if method_settings['name']=='trs_backbone_adapter':
+        if method_settings['name'] in ('qar_fp4_adjacent','stochastic_shadow_forward','stochastic_endpoint'):
+            from .baselines.qar import QarAdjacentAdapter
+            from .baselines.rounding import RoundingAdapter
+            from .baselines.registry import routing_record
+            method=(QarAdjacentAdapter(method_settings['config']) if method_settings['name']=='qar_fp4_adjacent' else RoundingAdapter(method_settings['config'])).bind(dict(model.named_parameters()),default_parameter_groups(model))
+            model.configure_quantization({'name':method.config['scale_recipe'],'rotation':method.config['rotation'],'backward':method.config['backward']})
+            registry.register(routing_record(method_settings['name'],method.groups,method.config))
+        elif method_settings['name']=='trs_backbone_adapter':
             from .baselines.trs import TrsBackboneAdapter,construct_backbone,validate_config
             from .baselines.registry import trs_record
             trs_config=validate_config(method_settings['config'])

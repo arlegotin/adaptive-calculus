@@ -87,6 +87,7 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
     register_matrix_methods(registry,groups)
     register_ewgs_methods(registry,groups)
     register_trs_methods(registry,groups)
+    register_routing_methods(registry,groups)
     return registry
 
 
@@ -217,3 +218,40 @@ def trs_record(name,groups,config,*,parity_status='unverified',operations_status
 def register_trs_methods(registry,groups):
     from .trs import FIXTURE_CONFIG
     for name in TRS_NAMES:registry.register(trs_record(name,groups,FIXTURE_CONFIG))
+
+
+ROUTING_NAMES=('qar_uniform_fixture','qar_fp4_adjacent','stochastic_shadow_forward','stochastic_endpoint')
+
+
+def routing_record(name,groups,config,*,parity_status='unverified',operations_status='unverified'):
+    from .qar import validate_config,SOURCE_CLARIFICATION
+    if name not in ROUTING_NAMES:raise ValueError('Unknown routing/rounding method')
+    rounding=name.startswith('stochastic_');c=validate_config(config,rounding=rounding)
+    if rounding and c['mode']!=('shadow_forward' if name=='stochastic_shadow_forward' else 'endpoint'):raise ValueError('Method name must match persistent state mode')
+    original=name=='qar_uniform_fixture';shadow=name=='stochastic_shadow_forward'
+    return MethodRecord(name=name,family='stochastic_rounding' if rounding else 'QAR',
+        source_revision='arXiv:2609.21834v1;2026-09-18;Eq8 and Algorithm1;independent equations' if not rounding else 'S24 adjacent-level expectation equation;independent implementation',
+        adaptation_label='source_masked_uniform_endpoint_clean_equations' if original else 'project_FP4_shadow_forward_stochastic' if shadow else 'project_FP4_endpoint_stochastic' if rounding else 'project_FP4_adjacent_endpoint_original_W',
+        required_operations=('group_power_normalization','directional_neighbor','uniform_bernoulli','original_W_backbone') if not rounding else ('adjacent_bracket','uniform_draw','original_W_backbone'),
+        ordered_parameter_groups=groups,state_schema={'optimizer_states':'named.original_W.wrapped_backbone+auxiliary.adamw.v1','proposals':'named.proposal.v1',
+            'adapter_mutable_state':'none; caller owns uniform codes+spacing+moments' if original else 'rounding.explicit_endpoint_or_shadow.v1' if rounding else 'qar.endpoint_codes_scales.v1'},
+        licenses=('Independent published equations; author software reuse grant unresolved; arXiv distribution grant is not a software grant; no source copying or legal assurance',),
+        update_rule_settings={**c,'persistent_authority':'uniform_codes+spacing' if original else 'original_W_FP32_shadow' if shadow else 'FP4_codes+fixed_scales;W_reconstructed_mirror',
+            'moment_coordinates':'original_W','source_clarification':SOURCE_CLARIFICATION,'source_copy_status':'no_author_code_copied;author_software_grant_unresolved',
+            'equation_implementation_status':'independent_local_research','release_reproduction_status':'unverified','fp4_uniform_theory_transfer':False,
+            'supported_backbone_families':['AdamW','Muon','Muon+'],'unsupported_compositions':['SOAP','Madam','arbitrary unregistered rule'],
+            'compatibility_scope':'current explicit compositions only; no restriction on future B0 selection; no blocked comparator defeat',
+            'context_choices':['fixed row-max pre-conversion warm grid','last-axis-row normalization','identity','full_hadamard power-of-two width','STE'],
+            'rng':'independent named CPU quantizer stream; explicit uniform transfer; one sample per logical batch',
+            'primary_evaluation':'deterministic nearest-even, read-only; stochastic expectation secondary only',
+            'departures':[] if original else ['nonuniform FP4 physical adjacent gaps' if not rounding else 'FP4 level brackets','fixed row-max scale','original-W selectable backbone and decoupled decay','logical batch context cache','optional full-last-axis Hadamard'],
+            'scope':'bounded equation, synthetic-engine and same-device replay engineering only; no universal MPS/model/horizon/science eligibility'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture' if original else 'project_adaptation')
+
+
+def register_routing_methods(registry,groups):
+    from .qar import FIXTURE_CONFIG
+    for name in ROUTING_NAMES:
+        c={**FIXTURE_CONFIG}
+        if name.startswith('stochastic_'):c['mode']='shadow_forward' if name=='stochastic_shadow_forward' else 'endpoint'
+        registry.register(routing_record(name,groups,c))

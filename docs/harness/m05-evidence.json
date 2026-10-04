@@ -1,0 +1,33 @@
+{
+  "active_publication_stdout": "omitted; final completed publication/commit refs will be recorded in the subsequent task report",
+  "completed_consolidation": {
+    "finish.json": {
+      "bytes": 18807,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m05-20261004/consolidate/finish.json",
+      "sha256": "d20754a0cd580169196d800e8d5fd271f6381eafe65d2105159e2689c7d52bd9"
+    },
+    "startup.json": {
+      "bytes": 1574085,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m05-20261004/consolidate/startup.json",
+      "sha256": "1c16c36f9d3e4510e068ddc4145acfa2e2a16088a516e64fbec6e3c5b8b5ea07"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m05-20261004/consolidate/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.txt": {
+      "bytes": 223,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m05-20261004/consolidate/stdout.txt",
+      "sha256": "cf00d226a735239b5f102a8f60b4d51c6548847d99993fb281a6ee748b15bed4"
+    }
+  },
+  "evidence": {
+    "bytes": 25198,
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m05-20261004/consolidate/evidence.json",
+    "sha256": "c4db699cfcef2e25b3fc49bc1cf81724c83412f716d6e00b5995fe9d6148b3e4"
+  },
+  "history": "no earlier artifacts rewritten or relabeled",
+  "scope": "source-stable task+affected-boundary covering; cold-parent earlier attempts remain historical; no scientific gate or theory transfer",
+  "task": "M05"
+}
