@@ -13,6 +13,7 @@ import torch
 from torch.nn import functional as F
 
 from .data.batches import LogicalBatch
+from .data.blocks import TARGET_BYTES
 from .quantization.context import prepare_context
 
 
@@ -27,6 +28,9 @@ class ScoreResult:
 def validate_batch(batch: LogicalBatch) -> None:
     count = 0
     for block in batch.block_slices:
+        if (type(block.target_start) is not int or type(block.target_end) is not int
+                or block.target_start < 0 or not 0 < block.target_end-block.target_start <= TARGET_BYTES):
+            raise ValueError('Invalid original target interval: require a positive span <=128 bytes')
         length = len(block.inputs)
         if not 0 < length <= 256 or any(len(v) != length for v in (block.labels,block.positions,block.score_mask)):
             raise ValueError('Invalid byte block dimensions')
@@ -38,6 +42,8 @@ def validate_batch(batch: LogicalBatch) -> None:
             raise ValueError('Targets must be raw bytes only')
         if any(type(v) is not bool for v in block.score_mask):
             raise ValueError('Loss masks must be boolean')
+        if any(not block.target_start <= offset < block.target_end for offset in block.scored_offsets()):
+            raise ValueError('Selected byte offset lies outside the original target interval')
         count += sum(block.score_mask)
     if type(batch.target_count) is not int or batch.target_count != count:
         raise ValueError('Declared selected-target count differs from masks')

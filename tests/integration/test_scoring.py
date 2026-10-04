@@ -84,3 +84,31 @@ def test_evaluation_hashes_complete_training_state_unchanged():
     before = state_hash(state)
     score_blocks(state.model,batch().block_slices,evaluation_context={'partition':'fixture','seed':3})
     assert state_hash(state) == before
+
+
+@pytest.mark.parametrize('device',['cpu','mps'])
+def test_partial_carry_and_short_final_block_preserve_original_offset_semantics(device):
+    from dataclasses import replace
+    import os
+    from ralup.evaluate import score_blocks
+    from ralup.data.batches import LogicalBatch
+    from ralup.train import train_step
+    if device == 'mps':
+        if not torch.backends.mps.is_available():
+            pytest.skip('Actual MPS unavailable')
+        assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') == '0'
+    blocks = tile_article(article(b'a'*260))
+    original = blocks[1]  # Full context and original interval128..256.
+    offsets = {155,156,157,158,159,160,161}
+    mask = tuple(selected and offset in offsets for selected,offset in
+                 zip(original.score_mask,range(1,256)))
+    carried = replace(original,score_mask=mask)
+    assert carried.scored_offsets() == tuple(sorted(offsets))
+    assert carried.inputs == original.inputs and carried.positions == original.positions
+    short = blocks[2]
+    assert short.scored_offsets() == (256,257,258,259)
+    state = fixture(device=device)
+    result = train_step(state,LogicalBatch([carried,short],11))
+    score = score_blocks(state.model,[carried,short],evaluation_context={'partition':'fixture'})
+    assert result.target_count == score.target_count == 11
+    assert state.ledger.stream['unique'] == 11

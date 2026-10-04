@@ -286,3 +286,42 @@ def test_cursor_free_repeated_fixture_counts_only_new_scored_intervals():
         train_step(state,batch())
     assert state.ledger.stream == {'targets':36,'unique':12,'updates':3}
     assert len(state.ledger.coverage) == 3
+
+
+@pytest.mark.parametrize('device',['cpu','mps'])
+@pytest.mark.parametrize('invalid',['overlong','empty_span','negative_start','context_offset','past_end'])
+def test_invalid_original_target_interval_rejected_before_optimizer_mutation(device,invalid):
+    from dataclasses import replace
+    import os
+    from ralup.data.blocks import TargetBlock
+    from ralup.train import train_step
+    if device == 'mps':
+        if not torch.backends.mps.is_available():
+            pytest.skip('Actual MPS unavailable')
+        assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') == '0'
+    if invalid == 'overlong':
+        block = TargetBlock('fixture',0,129,(256,)+(0,)*128,(0,)*129,
+                            tuple(range(129)),(True,)*129,'fixture:oversize')
+    else:
+        block = tile_article(article(b'a'*132))[1]  # Original interval128..132, with127 context labels.
+        if invalid == 'empty_span':
+            block = replace(block,target_end=block.target_start)
+        elif invalid == 'negative_start':
+            block = replace(block,target_start=-1)
+        elif invalid == 'context_offset':
+            block = replace(block,score_mask=(True,)+block.score_mask[1:])
+        else:
+            block = replace(block,target_end=131)  # Last selected offset131 lies beyond the shortened interval.
+    state = fixture(device=device)
+    before = {n:p.detach().clone() for n,p in state.model.named_parameters()}
+    with pytest.raises(ValueError,match='target interval'):
+        train_step(state,LogicalBatch([block],sum(block.score_mask)))
+    from ralup.evaluate import score_blocks
+    with pytest.raises(ValueError,match='target interval'):
+        score_blocks(state.model,[block],evaluation_context={'partition':'fixture'})
+    assert state.checkpointable and not state.failed
+    assert state.schedule['step'] == 0 and not state.model.quantization_contexts
+    assert not state.histories and not state.ledger.events
+    assert all(not v for v in state.method.optimizer_states.values())
+    for name,p in state.model.named_parameters():
+        assert torch.equal(p,before[name]) and p.grad is None

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "task": "H06",
+  "fix_round": 1,
+  "finding": "I1 shared target-block invariant",
+  "scope": "Validate original positive target span<=128 and selected byte offsets inside that original interval; preserve partial carry and short scoring. Engineering fixtures only.",
+  "base_commit": "3c4e512cdb194f607f11135abe7c5b5e9c6719f1",
+  "changed_sources": [
+    "src/ralup/evaluate.py",
+    "tests/integration/test_logical_step.py",
+    "tests/integration/test_scoring.py"
+  ],
+  "final_snapshot": {
+    "source_hashes": {
+      "src/ralup/train.py": "b2d43481aff920e2558dae57d147c976ae9bb248f8ce3276bdcec17287d61001",
+      "src/ralup/evaluate.py": "d1050885478ef197a44b77551ee545ff9e05a1804662440ae4170649cc2c2189",
+      "src/ralup/__main__.py": "22af6b0b6a2bf114940df23d3b5f728363bf4fd9823533049cdc245d2bb60094",
+      "src/ralup/config.py": "30acef406b7000a04e2b06ec71d7ad1eb1e7082adbc76403f895c1ab2746e82e",
+      "src/ralup/records.py": "32bdcf4cffafa94d1f5ecb17f86c63daa02ef4639fca710ce8f42f0818c8f6ef",
+      "src/ralup/data/cursor.py": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af",
+      "tests/integration/test_logical_step.py": "cf8ced09ad3c801d78e0ac61dd1c07af1278ed35a07301f2aa17675df2c078cf",
+      "tests/integration/test_scoring.py": "7ec2c2e9c6723abf83bb6517da669d055a2ae05362e02cc38196e8b45294256f"
+    },
+    "patch": {
+      "path": "artifacts/checks/h06/fix-round-1/source-diff.patch",
+      "sha256": "588dbf9ddab277d21497425eb898fb3fdc16d47f53e94f63a732787edb0d1b72",
+      "bytes": 6132
+    }
+  },
+  "historical_original_verification": {
+    "path": "docs/evidence/2026-10-04-h06-verification.json",
+    "sha256": "cc5f8bb328fed666183e6dfe5aa7e560b05dfd8dc6a5ddd2335c37388f1145df",
+    "bytes": 12552
+  },
+  "historical_full_suite_note": "The original 431-test full-suite result predates this fix. No whole-suite or separate CLI/harness rerun was performed for fix round1; covering boundary files were run as directed.",
+  "tdd_red": {
+    "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py tests/integration/test_scoring.py -k 'invalid_original_target or partial_carry_and_short' -q",
+    "exit_code": 1,
+    "failed": 5,
+    "passed": 1,
+    "skipped": 6,
+    "deselected": 22,
+    "execution": "local sandbox CPU; MPS unavailable here",
+    "reason": "Expected ValueError was not raised for overlong/empty/negative original intervals or selected context/past-end offsets",
+    "evidence": {
+      "path": "artifacts/checks/h06/fix-round-1/red-cpu.txt",
+      "sha256": "1eac30c08b682bcecf3010490bc73ab2d413e710b91363e789b2c947dc4b90e1",
+      "bytes": 10383
+    }
+  },
+  "covering_runs": [
+    {
+      "command": ".venv/bin/python -m pytest tests/integration/test_logical_step.py tests/integration/test_scoring.py -q",
+      "exit_code": 0,
+      "passed": 28,
+      "skipped": 6,
+      "warnings": 0,
+      "elapsed_seconds": 2.44,
+      "execution": "local sandbox CPU",
+      "evidence": {
+        "path": "artifacts/checks/h06/fix-round-1/green-cpu.txt",
+        "sha256": "49d4c1c60b46efb1a6366ba3a3de756ca950f12b424385d3d77af30075b0e45e",
+        "bytes": 110
+      }
+    },
+    {
+      "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/integration/test_logical_step.py tests/integration/test_scoring.py -q",
+      "exit_code": 0,
+      "passed": 34,
+      "skipped": 0,
+      "warnings": 0,
+      "elapsed_seconds": 3.88,
+      "execution": "actual local MPS via require_escalated; pinned .venv; fallback disabled before interpreter",
+      "evidence": {
+        "path": "artifacts/checks/h06/fix-round-1/green-actual-mps.txt",
+        "sha256": "be5daa442b9a889b4aabf3ab4b0237868393ff3f71611d8cdebd78da7fd3a97f",
+        "bytes": 99
+      }
+    }
+  ],
+  "self_review": "Range checks use TargetBlock.scored_offsets original-context semantics, not mask count alone. Every invalid block is rejected by train_step before optimizer/model/context/history/cursor/ledger advancement, and by score_blocks. Positive carry offsets155..161 from original128..256 and final short offsets256..259 still train/score11 bytes. No other product behavior changed."
+}
