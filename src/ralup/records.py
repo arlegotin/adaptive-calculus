@@ -14,7 +14,7 @@ from .config import _freeze, canonical_bytes, resolve_config
 
 
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
-_PHASE_PURPOSES = {"smoke": ("smoke",), "explore": ("pilot-bootstrap", "train", "meta"), "confirm": ("confirm",)}
+_PHASE_PURPOSES = {"smoke": ("smoke", "calibration"), "explore": ("pilot-bootstrap", "calibration", "train", "meta"), "confirm": ("confirm",)}
 
 
 def _check_hash(value, name="sha256", *, nullable=False):

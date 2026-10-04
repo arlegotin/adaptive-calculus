@@ -36,13 +36,25 @@ def main(argv: list[str] | None = None) -> int:
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
     run.add_argument("--phase", choices=("explore",), required=True)
     run.add_argument("--config", type=Path, required=True)
+    run.add_argument('--suite', choices=('warmstart',), help='separate bounded partition warmstarts')
+    calibration = subcommands.add_parser('calibrate', help='bounded measured engineering capacity; no scientific duration selection')
+    calibration.add_argument('--config', type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
     if args.command == "run":
         try:
-            print(canonical_bytes(_run_explore(args.config)).decode())
+            print(canonical_bytes(_run_warmstarts(args.config) if args.suite == 'warmstart' else _run_explore(args.config)).decode())
+            return 0
+        except (OSError, TypeError, ValueError, RuntimeError) as error:
+            parser.error(str(error))
+    if args.command == 'calibrate':
+        from .calibrate import calibrate
+        try:
+            resolved, envelope = _calibration_config(args.config)
+            ref = calibrate(resolved, envelope.get('microbatches', [1, 2, 4]))
+            print(canonical_bytes({'path': str(ref.path), 'sha256': ref.sha256}).decode())
             return 0
         except (OSError, TypeError, ValueError, RuntimeError) as error:
             parser.error(str(error))
@@ -137,6 +149,29 @@ def _check_harness(device, output):
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_bytes(canonical_bytes(report)+b"\n")
     return ArtifactRef(output,sha256_file(output))
+
+
+def _calibration_config(path):
+    envelope = json.loads(Path(path).read_bytes())
+    if set(envelope) - {'config', 'evidence', 'purpose', 'microbatches'}:
+        raise ValueError('Unknown calibration envelope field')
+    if envelope.get('purpose') != 'calibration':
+        raise ValueError('Explicit calibration purpose required')
+    template = dict(envelope['config'])
+    evidence = envelope.get('evidence', {})
+    if 'purpose' in template:
+        if template.pop('purpose') != 'calibration' or evidence:
+            raise ValueError('Resolved calibration purpose/provenance mismatch')
+        evidence = {'gates': template.pop('evidence_gates')}
+    return resolve_config(template, evidence, purpose='calibration'), envelope
+
+
+def _run_warmstarts(path):
+    from .calibrate import train_warmstart
+    resolved, _ = _calibration_config(path)
+    seed = resolved.payload['calibration']['seed']
+    refs = {partition: train_warmstart(resolved, partition, seed) for partition in ('meta_train', 'target_train')}
+    return {key: {'path': str(ref.path), 'sha256': ref.sha256} for key, ref in refs.items()}
 
 
 def _run_explore(path):

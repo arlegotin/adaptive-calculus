@@ -60,7 +60,7 @@ class ResolvedConfig:
         object.__setattr__(self, "sha256", hashlib.sha256(encoded).hexdigest())
 
 
-PURPOSES = ("doctor", "prepare-data", "smoke", "pilot-bootstrap", "train", "meta", "confirm")
+PURPOSES = ("doctor", "prepare-data", "smoke", "pilot-bootstrap", "calibration", "train", "meta", "confirm")
 _BASE_FIELDS = (
     "data.revision", "data.manifest", "runtime.device", "runtime.dependency_lock",
     "runtime.environment", "runtime.tolerances", "quantization.rotation",
@@ -84,6 +84,7 @@ _REQUIRED = {
     "meta": _BASE_FIELDS + _POLICY_FIELDS + _PROBE_FIELDS,
     "confirm": _BASE_FIELDS + _POLICY_FIELDS + _CONFIRM_FIELDS + _PROBE_FIELDS,
 }
+_REQUIRED['calibration'] = _BOOTSTRAP_FIELDS + _PROBE_FIELDS
 _GATES = {
     "doctor": (), "smoke": (), "prepare-data": ("WP00",),
     "pilot-bootstrap": ("WP00", "WP01", "H02", "H04", "H05"),
@@ -91,6 +92,7 @@ _GATES = {
     "meta": ("WP00", "WP01", "WP02", "WP04", "WP06"),
     "confirm": ("WP00", "WP01", "WP02", "WP04", "WP06", "WP07"),
 }
+_GATES['calibration'] = (*_GATES['pilot-bootstrap'], 'H07')
 
 
 def _get(value, dotted):
@@ -137,9 +139,20 @@ def _validate_schema(payload):
         "schema_version", "profile", "synthetic", "data", "model", "quantization",
         "optimizer_probe", "runtime", "training", "policy", "meta", "confirmation",
     }
-    if (set(payload) != sections or type(payload["schema_version"]) is not int
+    if (set(payload) - {'calibration'} != sections or type(payload["schema_version"]) is not int
             or payload["schema_version"] != 1):
         raise ValueError("Expected schema_version 1 and exactly the documented sections")
+    if 'calibration' in payload:
+        settings = payload['calibration']
+        keys = {'output', 'seed', 'repeats', 'pilot_target_budget', 'warmstart_target_budget', 'continuation_target_budget', 'doublings'}
+        if not isinstance(settings, dict) or set(settings) != keys:
+            raise ValueError('Invalid calibration settings')
+        if not isinstance(settings['output'], str) or not settings['output'].strip():
+            raise ValueError('Calibration output must be a nonempty path')
+        for field in keys - {'output'}:
+            _positive_integer(settings[field], 'calibration.' + field, minimum=0 if field == 'seed' else 2 if field == 'repeats' else 1)
+        if settings['doublings'] > 16:
+            raise ValueError('Calibration duration jobs must be bounded by 16 doublings')
     if payload["profile"] not in ("smoke", "proxy", "core", "meta"):
         raise ValueError("Unknown configuration profile")
     if type(payload["synthetic"]) is not bool:
@@ -304,7 +317,7 @@ def resolve_config(template: dict, evidence: dict, *, purpose: str) -> ResolvedC
     _validate_schema(payload)
     if purpose == "smoke" and not payload["synthetic"]:
         raise ValueError("Smoke purpose requires an explicitly synthetic smoke profile")
-    if payload["synthetic"] and purpose not in ("smoke", "doctor"):
+    if payload["synthetic"] and purpose not in ("smoke", "doctor", "calibration"):
         raise ValueError("Synthetic smoke cannot be used for scientific runs")
     gates = measured.pop("gates", {})
     if not isinstance(gates, dict):
@@ -318,8 +331,18 @@ def resolve_config(template: dict, evidence: dict, *, purpose: str) -> ResolvedC
                 and 1 <= training["continuation_steps"] <= 16
                 and training["warm_start_steps"] == 0 and training["microbatch"] == 1):
             raise ValueError("Smoke requires microbatch one, no warm start, and 1..16 finite steps")
-    blockers = [f"missing {field}" for field in _REQUIRED[purpose] if _get(payload, field) is None]
-    for name in _GATES[purpose]:
+    if purpose == 'calibration':
+        if 'calibration' not in payload:
+            raise ValueError('Calibration requires explicit finite pilot settings')
+        if payload['synthetic'] and max(payload['calibration']['pilot_target_budget'], payload['calibration']['warmstart_target_budget']) > 16*8192:
+            raise ValueError('Synthetic calibration exceeds bounded engineering horizon')
+        if not payload['synthetic'] and payload['calibration']['pilot_target_budget'] < 8192*payload['calibration']['repeats']:
+            raise ValueError('Real sustained calibration requires full 8192-byte logical steps')
+    required = (_PROBE_FIELDS + ('runtime.device', 'training.recipe', 'training.microbatch')
+                if purpose == 'calibration' and payload['synthetic'] else _REQUIRED[purpose])
+    required_gates = () if purpose == 'calibration' and payload['synthetic'] else _GATES[purpose]
+    blockers = [f"missing {field}" for field in required if _get(payload, field) is None]
+    for name in required_gates:
         record = gates.get(name)
         if record is None:
             blockers.append(f"missing {name} gate")
@@ -334,17 +357,17 @@ def resolve_config(template: dict, evidence: dict, *, purpose: str) -> ResolvedC
             blockers.append(f"{name} is {gate.status} or has no hashed evidence")
     if blockers:
         raise UnresolvedConfig(blockers)
-    if purpose == "pilot-bootstrap":
+    if purpose == "pilot-bootstrap" or (purpose == 'calibration' and not payload['synthetic']):
         # Bootstrap acceptance is engineering scope, never a fabricated full
         # WP02/WP04/WP06 gate. Rehash all actual prerequisite artifacts at entry.
         from .records import sha256_file
         references = [_get(payload,name) for name in
                       ("data.manifest","runtime.dependency_lock","runtime.environment")]
-        references += [item for name in _GATES[purpose] for item in gates[name]["evidence"]]
+        references += [item for name in required_gates for item in gates[name]["evidence"]]
         for item in references:
             ref = ArtifactRef(**item)
             if sha256_file(ref.path) != ref.sha256:
                 raise ValueError(f"Bootstrap artifact hash mismatch: {ref.path}")
     payload["purpose"] = purpose
-    payload["evidence_gates"] = {name: gates[name] for name in _GATES[purpose]}
+    payload["evidence_gates"] = {name: gates[name] for name in required_gates}
     return ResolvedConfig(payload)

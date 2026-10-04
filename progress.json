@@ -18,7 +18,8 @@
     "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
     "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending",
     "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS",
-    "H03 implementation: exact byte tiling, fixed-context score-mask carries, compact authenticated indexed cursors, named data RNG/JSON restoration and logical packing invariance; bounded real data correctness recorded in docs/data/h03-indexed-evidence.json; independent review pending"
+    "H03 implementation: exact byte tiling, fixed-context score-mask carries, compact authenticated indexed cursors, named data RNG/JSON restoration and logical packing invariance; bounded real data correctness recorded in docs/data/h03-indexed-evidence.json; independent review pending",
+    "H08 infrastructure: explicit bounded calibration purpose, disposable state restoration, synchronized full transactions, independent memory views, empirical packing fit, charged query/reset/checkpoint/failed work, and authenticated partition-isolated model-only warmstarts; actual measured evidence in docs/harness/h08-evidence.json; independent review pending"
   ],
   "tasks": {
     "F01": "complete",
@@ -27,7 +28,8 @@
     "F04": "complete",
     "F05": "complete",
     "H01": "implemented_pending_review",
-    "H03": "implemented_pending_review"
+    "H03": "implemented_pending_review",
+    "H08": "implemented_pending_review"
   },
   "last_valid_checkpoint": null,
   "blocks": [
@@ -36,7 +38,9 @@
     "All later scientific gates remain pending; protected targets/model scoring stays closed until E03",
     "Pinned source card license version discrepancy and unspecified GFDL version remain unresolved; local research only; no corpus redistribution authorized",
     "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate",
-    "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate"
+    "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate",
+    "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
+    "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization"
   ],
   "next_command": ".venv/bin/python -m ralup test-harness --suite data"
 }
