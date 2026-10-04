@@ -88,6 +88,8 @@ def _finite(value) -> bool:
         return bool(torch.isfinite(value).all())
     if isinstance(value,Mapping):
         return all(_finite(item) for item in value.values())
+    if isinstance(value,(list,tuple)):
+        return all(_finite(item) for item in value)
     return math.isfinite(value)
 
 
@@ -144,7 +146,7 @@ class MethodAdapter:
     def schedule_for_group(self, group: ParameterGroup, schedule: SchedulePoint) -> SchedulePoint:
         return SchedulePoint(schedule.lr,schedule.weight_decay if group.weight_decay is None else group.weight_decay,schedule.progress)
 
-    def collect_proposals(self, schedule: SchedulePoint) -> dict[str,Proposal]:
+    def collect_proposals(self, schedule: SchedulePoint, *, work_recorder=None) -> dict[str,Proposal]:
         if self.proposals:
             raise ValueError('Uncommitted proposals must be resolved before another collection')
         proposals = {}
@@ -155,7 +157,19 @@ class MethodAdapter:
                 if parameter.grad is not None:
                     if not _finite(parameter.grad):
                         raise ValueError(f'Gradient must be finite: {name}')
-                    proposals[name] = self.rule_for_parameter(name).propose(parameter,parameter.grad,self.optimizer_states[name],point)
+                    rule = self.rule_for_parameter(name)
+                    old = self.optimizer_states[name]
+                    try:
+                        proposal = rule.propose(parameter,parameter.grad,old,point)
+                    except Exception as error:
+                        if work_recorder is not None and hasattr(error,'optimizer_work'):
+                            work_recorder(optimizer_work=error.optimizer_work)
+                        raise
+                    if work_recorder is not None and hasattr(rule,'state_inventory'):
+                        current = proposal.new_optimizer_state['telemetry']
+                        previous = old.get('telemetry',{})
+                        work_recorder(optimizer_work={key:value-previous.get(key,0) for key,value in current.items()})
+                    proposals[name] = proposal
         self.proposals = proposals
         return proposals
 

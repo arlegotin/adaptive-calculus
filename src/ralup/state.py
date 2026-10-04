@@ -26,6 +26,8 @@ from .models.transformer import ByteTransformer, ModelConfig
 from .optim.adamw import AdamWUpdateRule
 from .optim.muon import MuonUpdateRule
 from .optim.muon_plus import MuonPlusUpdateRule
+from .optim.soap import SoapUpdateRule,TIMING_FIELDS
+from .optim.madam import MadamUpdateRule
 from .optim.matrix_adapter import MatrixMethodAdapter
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
@@ -93,7 +95,7 @@ def _rule_payload(rule):
     if type(rule) is AdamWUpdateRule and set(vars(rule)) == {'betas','eps'}:
         # Preserve the historical AdamW representation and strict source boundary.
         return dict(vars(rule))
-    if type(rule) in (MuonUpdateRule,MuonPlusUpdateRule) and set(vars(rule)) == {'config'}:
+    if type(rule) in (MuonUpdateRule,MuonPlusUpdateRule,SoapUpdateRule,MadamUpdateRule) and set(vars(rule)) == {'config'}:
         value = {'schema':rule.state_schema,'config':dict(rule.configuration)}
         _construct_rule(value)
         return value
@@ -104,7 +106,7 @@ def _construct_rule(payload):
     if set(payload) == {'betas','eps'}:
         return AdamWUpdateRule(**payload)
     _keys(payload,('schema','config'))
-    constructors = {MuonUpdateRule.state_schema:MuonUpdateRule,MuonPlusUpdateRule.state_schema:MuonPlusUpdateRule}
+    constructors = {MuonUpdateRule.state_schema:MuonUpdateRule,MuonPlusUpdateRule.state_schema:MuonPlusUpdateRule,SoapUpdateRule.state_schema:SoapUpdateRule,MadamUpdateRule.state_schema:MadamUpdateRule}
     if payload['schema'] not in constructors:
         raise IntegrityError('Unknown update rule requires registered schema')
     constructor = constructors[payload['schema']]
@@ -118,7 +120,7 @@ def _validated_adapter(payload, prototype, rule):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
-        raise IntegrityError('Muon rules require the registered matrix adapter')
+        raise IntegrityError('Matrix rules require the registered matrix adapter')
     adapter = constructor(dict(prototype.named_parameters()),payload['groups'],rule)
     if payload['method']['snapshot_schema'] != adapter.snapshot_schema:
         raise IntegrityError('Method state schema mismatch')
@@ -492,6 +494,9 @@ def _validated(snapshot):
             if values:
                 parameter_rule = adapter.rule_for_parameter(name)
                 _keys(values,parameter_rule.optimizer_state_fields)
+                if type(parameter_rule) in (SoapUpdateRule,MadamUpdateRule):
+                    parameter_rule.validate_state(values,payload['weights'][name])
+                    continue
                 if type(parameter_rule) is AdamWUpdateRule:
                     counter = values['step']
                     if counter.shape != torch.Size([]) or counter.dtype != torch.float32 or counter.item() < 0 or counter.item() != int(counter.item()):
@@ -548,6 +553,8 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
             if values:
                 parameter_rule = method.rule_for_parameter(name)
                 _keys(values,parameter_rule.optimizer_state_fields)
+                if type(parameter_rule) is SoapUpdateRule:
+                    parameter_rule.restore_basis_layout(values)
                 if type(parameter_rule) is AdamWUpdateRule:
                     values['step'] = values['step'].cpu().clone()
         streams = {}
@@ -719,7 +726,12 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
     payload = _validated(capture_snapshot(state))
     payload.pop('process_audit'); payload.pop('run_ledger'); payload.pop('cursor_audit')
     payload['ledger'].pop('elapsed')
-    for row in payload['ledger']['events']: row.pop('elapsed_seconds',None)
+    for row in payload['ledger']['events']:
+        row.pop('elapsed_seconds',None)
+        for name in TIMING_FIELDS: row.get('optimizer_work',{}).pop(name,None)
+    if payload['rule'].get('schema') == SoapUpdateRule.state_schema:
+        for values in payload['method']['optimizer_states'].values():
+            for name in TIMING_FIELDS: values.get('telemetry',{}).pop(name,None)
     encoder = _Encoder()
     # _decode leaves RNG states as plain data, suitable for deterministic hashing.
     metadata = encoder.encode(payload)

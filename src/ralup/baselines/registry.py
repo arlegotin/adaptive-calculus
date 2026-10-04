@@ -94,6 +94,10 @@ MATRIX_NAMES = ('muon_project_fp32',) + tuple(f'muon_plus_{order}_fp32' for orde
 def matrix_rule(name, config):
     from ..optim.muon import MuonUpdateRule
     from ..optim.muon_plus import MuonPlusUpdateRule
+    from ..optim.soap import SoapUpdateRule
+    from ..optim.madam import MadamUpdateRule
+    if name == 'soap_pinned_fp32': return SoapUpdateRule(config)
+    if name == 'madam_clean_fp32': return MadamUpdateRule(config)
     if name == 'muon_project_fp32': return MuonUpdateRule(config)
     if name not in MATRIX_NAMES: raise ValueError(f'Unregistered matrix method: {name}')
     order = name.removeprefix('muon_plus_').removesuffix('_fp32')
@@ -103,6 +107,7 @@ def matrix_rule(name, config):
 
 
 def matrix_record(name, groups, rule, *, parity_status='unverified', operations_status='unverified'):
+    if name in SOAP_MADAM_NAMES: return soap_madam_record(name,groups,rule,parity_status=parity_status,operations_status=operations_status)
     plus = name != 'muon_project_fp32'
     order = rule.configuration.get('normalization')
     return MethodRecord(name=name,family='Muon+' if plus else 'Muon',
@@ -123,10 +128,35 @@ def matrix_record(name, groups, rule, *, parity_status='unverified', operations_
 
 
 def register_matrix_methods(registry, groups):
-    for name in MATRIX_NAMES:
+    for name in (*MATRIX_NAMES,*SOAP_MADAM_NAMES):
         registry.register(matrix_record(name,groups,matrix_rule(name,{})))
 
 
 def build_matrix_method(name, parameters, groups, config):
     from ..optim.matrix_adapter import MatrixMethodAdapter
     return MatrixMethodAdapter(parameters,groups,matrix_rule(name,config))
+
+
+SOAP_MADAM_NAMES = ('soap_pinned_fp32','madam_clean_fp32')
+
+
+def soap_madam_record(name, groups, rule, *, parity_status='unverified', operations_status='unverified'):
+    soap=name=='soap_pinned_fp32'
+    return MethodRecord(name=name,family='SOAP' if soap else 'Madam',
+        source_revision='nikhilvyas/SOAP@a1e553530fde97d0e6b307d7c82ac6d38b072340;sha256=9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b' if soap else 'arXiv:2006.14560v2;independent equations;release settings c2d23592c5e18d6c9e6fcb2a5213ac288a6153cc',
+        adaptation_label='pinned_SOAP_CPU_factorization_original_W' if soap else 'clean_Madam_sign_restricted_original_W',
+        required_operations=('tensordot','eigh_cpu','qr_cpu','argsort','index_select','cpu_device_transfer','auxiliary_scalar_adamw') if soap else ('square','mean','sqrt','exp','clamp','auxiliary_scalar_adamw'),
+        ordered_parameter_groups=groups,state_schema={'optimizer_states':f'named.original_W.{rule.state_schema}+auxiliary.adamw.v1',
+            'proposals':'named.proposal.v1:reference_after_decay,gradient_displacement,new_optimizer_state,authoritative_update',
+            'adapter_mutable_state':'none.v1'},
+        licenses=('MIT; Copyright (c) 2024 Nikhil Vyas; licenses/methods/soap/LICENSE',) if soap else ('Independent mathematical implementation; author source CC BY-NC-SA 4.0 not copied; no legal assurance',),
+        update_rule_settings={**rule.configuration,
+            'source_copy_status':'permitted_MIT' if soap else 'blocked',
+            'release_reproduction_status':'unverified',
+            'equation_implementation_status':'pinned_mechanics' if soap else 'independent_local_research',
+            'first_observation':'initialize factors/basis only; no decay/moment/update' if soap else 'fixed initial p_scale*RMS(W)',
+            'decay':'post-displacement; initialization skips; auxiliary no decay' if soap else 'none; matrix schedule decay disabled; auxiliary no decay',
+            'factorization':'explicit CPU eig/QR with timed and byte-counted transfers' if soap else 'none',
+            'refresh_screening_candidates':(1,4,10) if soap else (),
+            'scope':'bounded mechanics and local research only; no universal replay or scientific eligibility'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='project_adaptation',license_status='permitted')

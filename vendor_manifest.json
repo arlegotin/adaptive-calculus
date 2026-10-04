@@ -1902,6 +1902,69 @@
       "normalization_epsilon": 1e-08,
       "epsilon_placement": "inside sqrt at each serial stage",
       "parity_scope": "paper equation fixtures; no author implementation release identified"
+    },
+    {
+      "family": "SOAP",
+      "revision": "a1e553530fde97d0e6b307d7c82ac6d38b072340",
+      "source_url": "https://github.com/nikhilvyas/SOAP/blob/a1e553530fde97d0e6b307d7c82ac6d38b072340/soap.py",
+      "implementation": "permitted exact source oracle plus faithful H05 proposal adaptation; explicit CPU eig/QR transport",
+      "source": {
+        "path": "src/ralup/baselines/references/soap_reference.py",
+        "sha256": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b",
+        "bytes": 19180
+      },
+      "license": "MIT",
+      "license_notice": {
+        "path": "licenses/methods/soap/LICENSE",
+        "sha256": "c77e3df866b9eed32fa87976d0d9f1912d8a6fb697ce522cecdc0d5dee309188"
+      },
+      "rights_status": "permitted MIT reuse; full notice also packaged in references/__init__.py; no publication authorization",
+      "preserved_mechanics": [
+        "first observation initializes only",
+        "effective Adam bias correction and denominator epsilon placement",
+        "post-displacement native decay rounding",
+        "first moment transported through original W",
+        "second moments permuted at QR refresh",
+        "source dimension/merge/1D policy",
+        "source column-major square basis layout"
+      ],
+      "departures": [
+        "explicit timed CPU eig/QR on MPS",
+        "projection manifest with independent no-decay auxiliary AdamW",
+        "pure detached proposals with native authoritative candidate"
+      ],
+      "parity_scope": "bounded untouched pinned CPU source and fixed-gradient CPU/MPS fixture; later actual-shape/horizon validation required",
+      "refresh_screening_candidates": [
+        1,
+        4,
+        10
+      ],
+      "scientific_gate": null
+    },
+    {
+      "family": "Madam",
+      "revision": "arXiv:2006.14560v2;release choices c2d23592c5e18d6c9e6fcb2a5213ac288a6153cc",
+      "source_url": "https://arxiv.org/html/2006.14560v2",
+      "implementation": "independent mathematical equations; no author software/snippet copied",
+      "author_software_license": "CC BY-NC-SA 4.0",
+      "inspected_author_license_sha256": "1349a4b6148492b44f629e64eed676612e234fe9a839e4f3b277c1482c8849f1",
+      "source_copy_status": "blocked; no restricted-source reuse decision",
+      "equation_implementation_status": "independent local research comparator; does not imply software grant or legal assurance",
+      "release_reproduction_status": "unverified",
+      "settings": {
+        "beta": 0.999,
+        "fixed_initial_bound": "3*RMS(Winitial)",
+        "g_bound": 10,
+        "epsilon": null,
+        "zero_over_zero": 0,
+        "initial_learning_rate": 0.01,
+        "decay": "none"
+      },
+      "departures": [
+        "declared projection-only LM comparator; configured auxiliary scalar AdamW with no decay"
+      ],
+      "parity_scope": "independent scalar equations, bound/zero/sign and bounded CPU/MPS replay fixtures; no scientific or competitiveness claim",
+      "scientific_gate": null
     }
   ]
 }

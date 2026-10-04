@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw", "muon"), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
@@ -61,7 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            if args.suite == "muon":
+            if args.suite == "soap-madam":
+                from .baselines.soap_madam_checks import check_soap_madam
+                ref = check_soap_madam(args.device,args.output)
+            elif args.suite == "muon":
                 from .baselines.muon_checks import check_muon
                 ref = check_muon(args.device,args.output)
             else:

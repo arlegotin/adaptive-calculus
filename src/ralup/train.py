@@ -94,7 +94,7 @@ class TrainingState:
     def checkpointable(self):
         return not self.failed and self._work is None and self._pending is None and not self.method.proposals
 
-    def record_work(self, *, additional_loss=0, backward=0, query=0, forward_context=0):
+    def record_work(self, *, additional_loss=0, backward=0, query=0, forward_context=0, optimizer_work=None):
         """Charge actual launched extra work before an exceptional pass.
 
         Counts overlap and cannot be summed as a total. Ordinary forward/backward
@@ -102,9 +102,16 @@ class TrainingState:
         """
         if self._work is None:
             raise ValueError('Extra work requires an active logical transaction')
-        for name,value in locals().copy().items():
-            if name == 'self':
-                continue
+        if optimizer_work is not None:
+            from .optim.soap import TELEMETRY_FIELDS,TIMING_FIELDS
+            if type(optimizer_work) is not dict or set(optimizer_work) != set(TELEMETRY_FIELDS):
+                raise ValueError('Unknown optimizer work inventory')
+            for name,value in optimizer_work.items():
+                if type(value) not in (int,float) or not math.isfinite(value) or value < 0 or (name not in TIMING_FIELDS and type(value) is not int):
+                    raise ValueError('Invalid optimizer work measurement')
+            work = self._work.setdefault('optimizer_work',{k:0. if k in TIMING_FIELDS else 0 for k in TELEMETRY_FIELDS})
+            for name,value in optimizer_work.items(): work[name] += value
+        for name,value in {'additional_loss':additional_loss,'backward':backward,'query':query,'forward_context':forward_context}.items():
             if type(value) is not int or value < 0:
                 raise ValueError('Work counts must be nonnegative integers')
             self._work[name] += value
