@@ -24,7 +24,7 @@ def fixture(device,recipe):
     raw = b'abcdefghijklmnopq'
     cursor = BatchCursor.from_articles([Article(raw,[],hashlib.sha256(raw).hexdigest())],seed=33)
     method = MethodAdapter(dict(model.named_parameters()),default_parameter_groups(model),AdamWUpdateRule(betas=(.8,.95)))
-    streams = {'initialization':torch.Generator().manual_seed(60),'data':random.Random(61),
+    streams = {'initialization':torch.Generator().manual_seed(60),
                'quantizer':torch.Generator(device=device).manual_seed(62),'meta':random.Random(63),'timing':random.Random(64)}
     return TrainingState(model,method,cursor=cursor,rng_streams=streams,microbatch=2,clip_norm=.2,
                          schedule={'step':0,'point':SchedulePoint(.001,.02,0.)})
@@ -36,6 +36,7 @@ def advance(state,count):
         state.schedule['point'] = SchedulePoint(.001/(1+step),.02,step/10)
         # Draw all named/global streams to expose missing restoration independently
         # of today's deterministic quantizer (future stochastic methods own draws).
+        state.cursor._rng.random()  # The sole authoritative named data stream.
         for rng in state.rng_streams.values():
             if isinstance(rng,random.Random): rng.random()
             else: torch.rand(2,generator=rng,device=rng.device)
@@ -88,7 +89,8 @@ def test_weight_only_restore_fails_trajectory_equivalence():
     weights_only.cursor = BatchCursor(interrupted.cursor.state)
     weights_only.schedule = interrupted.schedule.copy()
     advance(weights_only,3)
-    assert exact_cpu_state_hash(weights_only) != exact_cpu_state_hash(uninterrupted)
+    from ralup.state import IntegrityError
+    with pytest.raises(IntegrityError): exact_cpu_state_hash(weights_only)
     assert any(not torch.equal(p,dict(uninterrupted.model.named_parameters())[n]) for n,p in weights_only.model.named_parameters())
 
 

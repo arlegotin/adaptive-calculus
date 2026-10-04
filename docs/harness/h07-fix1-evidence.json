@@ -1,0 +1,103 @@
+{
+  "base_commit": "71aa32a",
+  "commands": {
+    "actual_mps": {
+      "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q tests/unit/test_checkpoint_integrity.py tests/integration/test_resume.py",
+      "failures": 0,
+      "fallback_disabled_before_startup": true,
+      "result": "83 passed in 23.77s",
+      "skips": 0,
+      "warnings": 0
+    },
+    "cpu": {
+      "command": ".venv/bin/python -m pytest -q tests/unit/test_checkpoint_integrity.py tests/integration/test_resume.py",
+      "result": "79 passed, 4 skipped in 8.09s",
+      "scope": "CPU sandbox; four actual-MPS cases unavailable"
+    }
+  },
+  "f02_environment_sha256": "abe2687e6601c284a4927b853788266fc360564e85eeaa109ef9266dc3319a20",
+  "findings": {
+    "I1": "exact producer source/lock/environment archive; load authenticates archive independently; default restore checks exact current identity",
+    "I2": "required completed EMA/matrix histories/contexts/fixed handoffs, geometry/types and cross-owner agreement",
+    "I3": "reject hooks/unknown child state/settings; preserve supported child training modes; trusted declared extension schemas",
+    "I4": "reserve root data name; cursor owns sole named data RNG; replay draws authoritative cursor"
+  },
+  "fix_round": 1,
+  "historical_full_suite": {
+    "commit": "71aa32a",
+    "log_sha256": "40e3fff2495b56f957776a3054601085431112d2dc814e9a3af2b7d196f49589",
+    "result": "489 passed in 41.79s",
+    "scope": "initial implementation; no whole-suite rerun for fix1"
+  },
+  "limits": [
+    "No implicit v1 migration or arbitrary full-state compatibility record.",
+    "No H08 restricted model-only warm-start import.",
+    "Synthetic engineering fixtures; no capacity/calibration/controller/protected score.",
+    "No shared H06 transaction-code amendment; requested covering tests only."
+  ],
+  "lock_sha256": "488142a35a4b1a6abe132f08b5895621ca30bb535b0326e82516446903fcb32b",
+  "log_hashes": {
+    "artifacts/checks/h07-fix1-focused-actual-mps.txt": "af6092792b5a5ba8cb575c5b14f19d6ef4564e7724b1e936e237285e961e0b18",
+    "artifacts/checks/h07-fix1-focused-cpu.txt": "45ec44afffaf34ff60faeba971b2f9efcd23f43e7a94f06bbd0f719d0a661bde",
+    "artifacts/checks/h07-fix1-green-archive.txt": "3e2e191b8621fea33db99d5a050b32b12baac96ff060bf23d38a5068e8a4acf3",
+    "artifacts/checks/h07-fix1-green-owners.txt": "c22514e08fc4845b3b671ee6b8bec2c38b2fe10d472b3b8b201ea78a4717679b",
+    "artifacts/checks/h07-fix1-green-quantization.txt": "f4ee7b5e877cf125e8cec37f54a7f61171b0104f517c67c590036e822268fd22",
+    "artifacts/checks/h07-fix1-red-initial.txt": "c164ea975d4bdd13e912bd3c8cbb50903eb5ffcdc82135c595cad1e43b8dce35",
+    "artifacts/checks/h07-fix1-red-relative-archive.txt": "168f5cc6e5ce371d18b1cb4b534ce53bd257f79af92bec219551587eefcd5ae5",
+    "artifacts/checks/h07-fix1-red.txt": "87e11945d198de2e1ffb205510cf1179653887228d50a8a937ad0c97a745aa79"
+  },
+  "same_device_bounds": {
+    "cpu": "exact",
+    "mps": "inherited H04 zero duplicate variation; never loosened"
+  },
+  "schema": "ralup.h07_review_fix_evidence.v1",
+  "snapshot_schema": "ralup.training_snapshot.v2",
+  "source_hashes": {
+    "src/ralup/__init__.py": "ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd",
+    "src/ralup/__main__.py": "4e53f25e962615622d877deff4352a463632f2e5ea0bfd5fbe7c3f9555f315c2",
+    "src/ralup/baselines/__init__.py": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f",
+    "src/ralup/baselines/checks.py": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b",
+    "src/ralup/baselines/registry.py": "f28bbe19803cc22649c5dff79de3865711f417e6cf46a6e84fdab73ea455602e",
+    "src/ralup/config.py": "30acef406b7000a04e2b06ec71d7ad1eb1e7082adbc76403f895c1ab2746e82e",
+    "src/ralup/data/__init__.py": "6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0",
+    "src/ralup/data/articles.py": "1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c",
+    "src/ralup/data/batches.py": "5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750",
+    "src/ralup/data/blocks.py": "c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe",
+    "src/ralup/data/checks.py": "cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f",
+    "src/ralup/data/cursor.py": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af",
+    "src/ralup/data/dedup.py": "c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f",
+    "src/ralup/data/partitions.py": "551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9",
+    "src/ralup/data/source.py": "fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f",
+    "src/ralup/diagnostics/__init__.py": "ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00",
+    "src/ralup/diagnostics/quadratics.py": "3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840",
+    "src/ralup/environment.py": "0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160",
+    "src/ralup/evaluate.py": "d1050885478ef197a44b77551ee545ff9e05a1804662440ae4170649cc2c2189",
+    "src/ralup/models/__init__.py": "7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752",
+    "src/ralup/models/checks.py": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a",
+    "src/ralup/models/linear.py": "01c2b161292e35a6dc7d7188a1fc5377360914aad8203199b1c3937ab4a6acf3",
+    "src/ralup/models/transformer.py": "e25aebbb2d0247bddaf6b988c161d37d3d070dc27d9281934a6c1c6193d793f5",
+    "src/ralup/optim/__init__.py": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae",
+    "src/ralup/optim/adamw.py": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c",
+    "src/ralup/optim/base.py": "5e3830cfcce048838b0bae643f426bd6dfb5aa8c4130f525223faa2ca93ebb9b",
+    "src/ralup/policy/__init__.py": "2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4",
+    "src/ralup/policy/actions.py": "f4830341e79fb54c863fcbdf0d02d20a6f288e74f8918742b440b0808b5cf4f5",
+    "src/ralup/quantization/__init__.py": "733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16",
+    "src/ralup/quantization/checks.py": "fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2",
+    "src/ralup/quantization/context.py": "f53793dfd1fb1c92565be3cb627091d7f3fe54623c2b2291539cae86da51d599",
+    "src/ralup/quantization/formats.py": "a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896",
+    "src/ralup/quantization/fp32.py": "ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5",
+    "src/ralup/quantization/oracle.py": "78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c",
+    "src/ralup/quantization/rotation.py": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d",
+    "src/ralup/quantization/scales.py": "17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64",
+    "src/ralup/quantization/surrogates.py": "78999f808c02322049ec0437b105e2103043f244e62a77a476615fc06c371ac1",
+    "src/ralup/records.py": "32bdcf4cffafa94d1f5ecb17f86c63daa02ef4639fca710ce8f42f0818c8f6ef",
+    "src/ralup/state.py": "483930e9613532c26d8e458b86ed425552955c2120b02fe23a724f956144e8d4",
+    "src/ralup/train.py": "f7b9aa5705d77efe4b8e0d5a23b48855eb5dc7dc52167f009d510228eb8e5c6d"
+  },
+  "source_inventory_sha256": "f5e122e14c25e2ad562063099cbd76e6cd1497dca7d86e37be3e01a3eb3444cd",
+  "status": "implemented_pending_review",
+  "test_hashes": {
+    "tests/integration/test_resume.py": "f4db834bb773f7cf84669a2310e9ce1d0368a839678d8bc24eacab234f809a22",
+    "tests/unit/test_checkpoint_integrity.py": "e802c28f55a1597ae581b4264bfa07210aa8c0dc72cc0f83435be292261f6682"
+  }
+}

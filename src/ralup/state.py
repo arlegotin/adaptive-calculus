@@ -3,10 +3,11 @@
 Only trusted code registers constructors. Artifacts contain data, never imports,
 callables or pickle opcodes. All captured mutable payloads own CPU storage.
 """
-from dataclasses import dataclass, fields, is_dataclass
+from dataclasses import dataclass, field, fields, is_dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import random
@@ -24,11 +25,13 @@ from .data.cursor import BatchCursor
 from .models.transformer import ByteTransformer, ModelConfig
 from .optim.adamw import AdamWUpdateRule
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint
+from .quantization.scales import grouping_for
+from .quantization.surrogates import BACKWARD_RULES
 from .quantization.context import QuantizationContext
 from .records import ArtifactRef, RunLedger, WorkLedger, sha256_file
 from .train import TrainingState, _rng_state, _restore_rng
 
-SCHEMA = 'ralup.training_snapshot.v1'
+SCHEMA = 'ralup.training_snapshot.v2'
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -43,6 +46,7 @@ class IncompleteStep(IntegrityError):
 # Exact fields bind schema versions: adding scientific state must fail closed.
 _SCHEMAS = {}
 _METHODS = {}
+_SHARED_FIELDS = {}
 
 
 def register_state_schema(name, cls, field_names):
@@ -52,7 +56,7 @@ def register_state_schema(name, cls, field_names):
     _SCHEMAS[name] = (cls,tuple(field_names))
 
 
-def register_method_schema(name, cls, field_names, constructor):
+def register_method_schema(name, cls, field_names, constructor, *, shared_fields=None):
     """Declare every adapter attribute except parameters/groups/rule.
 
     constructor(parameters, groups, rule) is trusted local code; no constructor
@@ -63,7 +67,13 @@ def register_method_schema(name, cls, field_names, constructor):
     names = tuple(field_names)
     if len(set(names)) != len(names) or set(names)&{'parameters','groups','rule'}:
         raise IntegrityError('Invalid method state fields')
+    shared_fields = {} if shared_fields is None else shared_fields
+    if set(shared_fields)-{'histories','quantizer_state','runtime'} or any(
+            not isinstance(v,(tuple,list)) or any(type(n) is not str for n in v) or len(set(v)) != len(v)
+            for v in shared_fields.values()):
+        raise IntegrityError('Invalid declared shared state fields')
     _METHODS[name] = (cls,names,constructor)
+    _SHARED_FIELDS[name] = {key:tuple(shared_fields.get(key,())) for key in ('histories','quantizer_state','runtime')}
 
 
 for _name,_cls in [('model_config.v1',ModelConfig),('schedule_point.v1',SchedulePoint),
@@ -78,6 +88,7 @@ class TrainingSnapshot:
     metadata: dict
     tensors: dict[str,torch.Tensor]
     milestone: bool = False
+    producer_files: dict[str,bytes] = field(default_factory=dict)
 
 
 class _Encoder:
@@ -163,19 +174,94 @@ def _authenticate(ref):
     except OSError as error: raise IntegrityError(f'Artifact hash unavailable: {ref.path}') from error
 
 
-def _references(value):
-    if type(value) is ArtifactRef: _authenticate(value)
+def _references(value,producer=None):
+    if type(value) is ArtifactRef:
+        archived = None if producer is None else producer.get(str(value.path.resolve()))
+        if archived is None and producer is not None and not value.path.is_absolute():
+            archived = producer.get(value.path.as_posix())
+        if archived is not None:
+            if value.sha256 != archived: raise IntegrityError('Producer reference hash mismatch')
+        else: _authenticate(value)
     elif isinstance(value,(dict,MappingProxyType)):
-        if set(value) == {'path','sha256'}: _authenticate(ArtifactRef(**value))
+        if set(value) == {'path','sha256'}: _references(ArtifactRef(**value),producer)
         else:
-            for item in value.values(): _references(item)
+            for item in value.values(): _references(item,producer)
     elif isinstance(value,(list,tuple)):
-        for item in value: _references(item)
+        for item in value: _references(item,producer)
+
+
+def _source_paths():
+    return sorted((ROOT/'src/ralup').rglob('*.py')) + [ROOT/'requirements.lock',ROOT/'artifacts/environment/environment.json']
+
+
+def _archive_producer():
+    identities,files = {},{}
+    for path in _source_paths():
+        name = path.relative_to(ROOT).as_posix()
+        data = path.read_bytes()
+        files[name] = data
+        identities[name] = ArtifactRef(path,hashlib.sha256(data).hexdigest())
+    return identities,files
 
 
 def _automatic_identities():
-    paths = sorted((ROOT/'src/ralup').rglob('*.py')) + [ROOT/'requirements.lock',ROOT/'artifacts/environment/environment.json']
-    return {str(p.relative_to(ROOT)):ArtifactRef(p,sha256_file(p)) for p in paths}
+    return _archive_producer()[0]
+
+
+def _validate_producer(snapshot,identities):
+    _keys(identities,('automatic','declared'))
+    refs = identities['automatic']
+    if not refs or set(refs) != set(snapshot.producer_files): raise IntegrityError('Producer archive inventory mismatch')
+    if not {'requirements.lock','artifacts/environment/environment.json'} <= refs.keys():
+        raise IntegrityError('Producer lock/environment archive missing')
+    for name,ref in refs.items():
+        if type(ref) is not ArtifactRef or type(snapshot.producer_files[name]) is not bytes:
+            raise IntegrityError('Invalid producer archive identity/bytes')
+        if not (name in ('requirements.lock','artifacts/environment/environment.json') or
+                (name.startswith('src/ralup/') and name.endswith('.py') and '..' not in Path(name).parts)):
+            raise IntegrityError('Unknown producer archive path')
+        if hashlib.sha256(snapshot.producer_files[name]).hexdigest() != ref.sha256:
+            raise IntegrityError('Producer archive hash mismatch')
+    producer = {str(ref.path.resolve()):ref.sha256 for ref in refs.values()}
+    producer.update({name:ref.sha256 for name,ref in refs.items()})
+    _references(identities['declared'],producer)
+    return producer
+
+
+def _strict_runtime(payload):
+    try: current = _automatic_identities()
+    except OSError as error: raise IntegrityError('Current runtime identity unavailable') from error
+    producer = payload['identities']['automatic']
+    if current.keys() != producer.keys() or any(current[k].sha256 != producer[k].sha256 for k in current):
+        raise IntegrityError('Current runtime incompatible with archived producer identity; no migration is registered')
+
+
+def _validate_model_owners(model):
+    """The supported architecture admits numeric weights/cache, never callbacks."""
+    with torch.device('meta'):
+        prototype = ByteTransformer(model.config)
+    modules,expected = dict(model.named_modules()),dict(prototype.named_modules())
+    if modules.keys() != expected.keys(): raise IntegrityError('Unregistered model child modules')
+    caches = {'config','_recipe','_runtime','_contexts','_context_step'}
+    for name,module in modules.items():
+        reference = expected[name]
+        if type(module) is not type(reference) or vars(module).keys() != vars(reference).keys():
+            raise IntegrityError(f'Unregistered model child owner: {name}')
+        for field,value in vars(module).items():
+            if field == 'training':
+                if type(value) is not bool: raise IntegrityError('Invalid module training mode')
+            elif field in ('_parameters','_buffers','_modules'):
+                other = getattr(reference,field)
+                if value.keys() != other.keys(): raise IntegrityError('Unregistered model parameter/buffer/child owner')
+                if field == '_parameters' and any((v is None) != (other[k] is None) for k,v in value.items()):
+                    raise IntegrityError('Model Parameter ownership mismatch')
+            elif name == '' and field in caches:
+                continue
+            elif value != getattr(reference,field):
+                raise IntegrityError(f'Unregistered model setting or executable hook: {name}.{field}')
+    for parameter in model.parameters():
+        if parameter._backward_hooks or parameter._post_accumulate_grad_hooks:
+            raise IntegrityError('Executable Parameter hooks cannot be snapshotted')
 
 
 def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
@@ -185,6 +271,8 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
     if {f.name for f in fields(TrainingState)} != expected: raise IntegrityError('TrainingState schema registration is out of date')
     if set(vars(state))|{'_pending','_work'} != expected: raise IntegrityError('Unknown training state fields require registered schema')
     if type(state.model) is not ByteTransformer: raise IntegrityError('Unregistered model schema')
+    _validate_model_owners(state.model)
+    if 'data' in state.rng_streams: raise IntegrityError('Named data RNG belongs only to cursor.rng_states.data')
     model_fields = set(vars(torch.nn.Module()))|{'config','_recipe','_runtime','_contexts','_context_step'}
     if set(vars(state.model)) != model_fields: raise IntegrityError('Unknown model fields require registered schema')
     matches = [(n,entry) for n,entry in _METHODS.items() if type(state.method) is entry[0]]
@@ -202,12 +290,13 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
     if type(state.ledger) is not WorkLedger or set(vars(state.ledger)) != {'stream','coverage','passes','elapsed','events','run_ledger'}:
         raise IntegrityError('Unknown ledger fields require registered schema')
     _references(state.identities); _references(state.configuration)
-    identities = {'automatic':_automatic_identities(),'declared':state.identities}
+    producer,producer_files = _archive_producer()
+    identities = {'automatic':producer,'declared':state.identities}
     durable = state.ledger.run_ledger
     run = None if durable is None else {'path':str(durable.path.resolve()),'metadata':ArtifactRef(durable.path/'run.json',sha256_file(durable.path/'run.json'))}
     payload = {'model_config':state.model.config,'weights':dict(state.model.state_dict()),
         'gradients':{n:None if p.grad is None else p.grad for n,p in parameters.items()},
-        'model_training':state.model.training,
+        'model_training':state.model.training,'module_training':{n:m.training for n,m in state.model.named_modules()},
         'model_cache':{n:getattr(state.model,n) for n in ('_recipe','_runtime','_contexts','_context_step')},
         'method_schema':method_name,'groups':state.method.groups,'rule':vars(state.method.rule),
         'method':{n:getattr(state.method,n) for n in method_fields},
@@ -221,14 +310,101 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
         'identities':identities,'process_audit':state.process_audit}
     encoder = _Encoder()
     metadata = encoder.encode(payload)
-    snapshot = TrainingSnapshot(metadata,encoder.tensors)
+    snapshot = TrainingSnapshot(metadata,encoder.tensors,producer_files=producer_files)
     _validated(snapshot)
     return snapshot
 
 
-_PAYLOAD = {'model_config','weights','gradients','model_training','model_cache','method_schema','groups','rule','method',
+_PAYLOAD = {'model_config','weights','gradients','model_training','module_training','model_cache','method_schema','groups','rule','method',
             'quantizer_state','histories','schedule','cursor','cursor_audit','rng_streams','global_rng','ledger','run_ledger',
             'microbatch','clip_norm','configuration','configuration_sha256','identities','process_audit'}
+
+
+def _array(value,shape,dtype,label):
+    if not isinstance(value,torch.Tensor) or tuple(value.shape) != tuple(shape) or value.dtype != dtype:
+        raise IntegrityError(f'{label} shape/dtype mismatch')
+    if dtype == torch.uint8 and bool((value > 14).any()): raise IntegrityError(f'{label} invalid code ordinal')
+
+
+def _validate_quantized_owners(payload,prototype):
+    """Versioned H06 shared owners; future extras require method declarations."""
+    cache = payload['model_cache']
+    recipe = cache['_recipe']
+    shared = _SHARED_FIELDS[payload['method_schema']]
+    if recipe is None:
+        if payload['schedule']['step'] or cache['_contexts'] or cache['_context_step'] is not None:
+            raise IntegrityError('Completed/active context state requires a recipe')
+        for key,value in (('histories',payload['histories']),('quantizer_state',payload['quantizer_state']),('runtime',cache['_runtime'])):
+            if type(value) is not dict or set(value)-set(shared[key]): raise IntegrityError('Unconfigured initial owner has undeclared state')
+        return
+    if type(recipe) is not dict: raise IntegrityError('Quantization recipe must be explicit')
+    if set(recipe)-{'name','rotation','backward'} or 'name' not in recipe: raise IntegrityError('Unknown recipe fields')
+    grouping = grouping_for(recipe['name'])
+    rotation = recipe.get('rotation','identity')
+    backward = recipe.get('backward','trust' if recipe['name'].startswith('quest') else 'ste')
+    if rotation not in ('identity','full_hadamard') or backward not in BACKWARD_RULES: raise IntegrityError('Invalid context recipe')
+    names = {item['name'] for item in prototype.quantized_matrix_manifest()}
+    shared = _SHARED_FIELDS[payload['method_schema']]
+    histories,quantizer,runtime = payload['histories'],payload['quantizer_state'],cache['_runtime']
+    for owner,allowed in ((histories,names|{'loss_ema','loss_updates'}|set(shared['histories'])),
+                          (quantizer,names|set(shared['quantizer_state'])),(runtime,names|set(shared['runtime']))):
+        if type(owner) is not dict or set(owner)-allowed: raise IntegrityError('Unknown undeclared quantizer/history/runtime owner')
+    contexts = cache['_contexts']
+    if type(contexts) is not dict or set(contexts)-names: raise IntegrityError('Unknown matrix context owner')
+    step = payload['schedule']['step']
+    if step:
+        if set(contexts) != names or cache['_context_step'] != step-1: raise IntegrityError('Completed context cache missing or stale')
+        if not names|{'loss_ema','loss_updates'} <= histories.keys(): raise IntegrityError('Completed history/EMA owner missing')
+        if type(histories['loss_ema']) not in (float,int) or not math.isfinite(histories['loss_ema']) or histories['loss_ema'] < 0:
+            raise IntegrityError('Invalid completed loss EMA')
+        if type(histories['loss_updates']) is not int or histories['loss_updates'] != step: raise IntegrityError('Completed history update counter mismatch')
+    elif contexts:
+        if set(contexts) != names or cache['_context_step'] != 0: raise IntegrityError('Initial context cache is partial')
+    elif cache['_context_step'] is not None: raise IntegrityError('Initial context cache marker without contexts')
+    fixed = 'fixed' in recipe['name']
+    if step and fixed and (not names <= runtime.keys() or not names <= quantizer.keys()):
+        raise IntegrityError('Completed fixed-scale handoff owner missing')
+    if not fixed and set(quantizer)&names: raise IntegrityError('Nonfixed recipe has undeclared quantizer handoffs')
+    parameters = dict(prototype.named_parameters())
+    for name in names:
+        shape = parameters[name].shape
+        scale_shape = (1,1) if grouping == 'whole_tensor' else (shape[0],1)
+        context = contexts.get(name)
+        if context is not None:
+            if type(context) is not QuantizationContext: raise IntegrityError('Unregistered matrix context')
+            if (context.recipe,context.rotation,context.grouping,context.backward,context.step) != (
+                    recipe['name'],rotation,grouping,backward,step-1 if step else 0):
+                raise IntegrityError('Context recipe/step identity mismatch')
+            _array(context.scales,scale_shape,torch.float32,'Context scales')
+            if not bool((context.scales > 0).all()): raise IntegrityError('Context scales must be positive')
+            for field in ('storage_u','storage_values','gradient_mask'): _array(getattr(context,field),shape,torch.float32,field)
+            _array(context.codes,shape,torch.uint8,'Context codes')
+            _array(context.zero_groups,scale_shape,torch.bool,'Context zero groups')
+            if step or context.scale_zero_groups is not None: _array(context.scale_zero_groups,scale_shape,torch.bool,'Context initialization zero groups')
+        if name in histories:
+            history = histories[name]
+            _keys(history,('previous_codes','two_steps_ago_codes','cached_codes','scales'))
+            _array(history['previous_codes'],shape,torch.uint8,'History previous codes')
+            _array(history['cached_codes'],shape,torch.uint8,'History cached codes')
+            _array(history['scales'],scale_shape,torch.float32,'History scales')
+            if step > 1: _array(history['two_steps_ago_codes'],shape,torch.uint8,'History two-step codes')
+            elif history['two_steps_ago_codes'] is not None: raise IntegrityError('First-step two-step history must be null')
+            if context is None or not torch.equal(history['previous_codes'],context.codes) or not torch.equal(history['scales'],context.scales):
+                raise IntegrityError('Context/history cross-owner mismatch')
+        for owner in (runtime,quantizer):
+            if name not in owner: continue
+            handoff = owner[name]
+            if step and fixed:
+                _keys(handoff,('previous_scales','previous_zero_groups'))
+            elif type(handoff) is not dict or set(handoff)-{'previous_scales','previous_zero_groups','warm_start','codes'}:
+                raise IntegrityError('Unknown runtime handoff fields')
+            for field,value in handoff.items():
+                dtype = torch.bool if field == 'previous_zero_groups' else torch.uint8 if field == 'codes' else torch.float32
+                _array(value,shape if field in ('warm_start','codes') else scale_shape,dtype,'Runtime '+field)
+                if field == 'previous_scales' and (not fixed or not bool((value > 0).all())): raise IntegrityError('Invalid fixed scale handoff')
+            if step and fixed and (not torch.equal(handoff['previous_scales'],context.scales) or
+                                   not torch.equal(handoff['previous_zero_groups'],context.scale_zero_groups)):
+                raise IntegrityError('Fixed-scale cross-owner handoff mismatch')
 
 
 def _validated(snapshot):
@@ -245,7 +421,8 @@ def _validated(snapshot):
         _keys(payload,_PAYLOAD)
         if hashlib.sha256(canonical_bytes(payload['configuration'])).hexdigest() != payload['configuration_sha256']:
             raise IntegrityError('Configuration hash mismatch')
-        _references(payload['identities']); _references(payload['configuration']); _references(payload['run_ledger'])
+        producer = _validate_producer(snapshot,payload['identities'])
+        _references(payload['configuration'],producer); _references(payload['run_ledger'])
         _keys(payload['model_cache'],('_recipe','_runtime','_contexts','_context_step'))
         _keys(payload['rule'],('betas','eps'))
         _keys(payload['ledger'],('stream','coverage','passes','elapsed','events'))
@@ -254,6 +431,10 @@ def _validated(snapshot):
         with torch.device('meta'):
             prototype = ByteTransformer(payload['model_config'])
         expected = dict(prototype.named_parameters())
+        _keys(payload['module_training'],dict(prototype.named_modules()))
+        if any(type(v) is not bool for v in payload['module_training'].values()): raise IntegrityError('Invalid module training modes')
+        if payload['model_training'] != payload['module_training']['']: raise IntegrityError('Root module training mismatch')
+        if 'data' in payload['rng_streams']: raise IntegrityError('Named data RNG belongs only to cursor.rng_states.data')
         _keys(payload['weights'],expected)
         _keys(payload['gradients'],expected)
         for name,parameter in expected.items():
@@ -277,6 +458,7 @@ def _validated(snapshot):
         _,names,_ = _METHODS[payload['method_schema']]
         _keys(payload['method'],names)
         if payload['method']['proposals']: raise IncompleteStep('Uncommitted proposals in snapshot')
+        _validate_quantized_owners(payload,prototype)
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
         return payload
     except IntegrityError: raise
@@ -299,10 +481,12 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
     if device == 'mps' and (os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') != '0' or not torch.backends.mps.is_available()):
         raise IntegrityError('Actual MPS requires availability and fallback disabled before startup')
     payload = _validated(snapshot)
+    _strict_runtime(payload)
     try:
         model = ByteTransformer(payload['model_config']).to(device)
         model.load_state_dict(payload['weights'],strict=True)
         model.train(payload['model_training'])
+        for name,module in model.named_modules(): module.training = payload['module_training'][name]
         for name,value in payload['model_cache'].items(): setattr(model,name,_device_tree(value,device))
         parameters = dict(model.named_parameters())
         if set(parameters) != set(payload['gradients']): raise IntegrityError('Gradient manifest mismatch')
@@ -361,6 +545,9 @@ def _manifest(snapshot):
     data = tensor_bytes(snapshot.tensors)
     return {'schema':SCHEMA,'metadata':snapshot.metadata,'milestone':snapshot.milestone,
             'tensor_sha256':hashlib.sha256(data).hexdigest(),
+            'producer_files':{name:{'path':f'producer/{hashlib.sha256(raw).hexdigest()}.bin',
+                              'sha256':hashlib.sha256(raw).hexdigest(),'size':len(raw)}
+                              for name,raw in snapshot.producer_files.items()},
             'tensors':{key:{'shape':list(t.shape),'dtype':str(t.dtype)} for key,t in snapshot.tensors.items()}},data
 
 
@@ -383,6 +570,11 @@ def save_snapshot(snapshot, destination: Path) -> ArtifactRef:
         manifest_bytes = canonical_bytes(manifest)
         _flush_write(staging/'tensors.safetensors',data)
         _flush_write(staging/'manifest.json',manifest_bytes)
+        (staging/'producer').mkdir()
+        for name,entry in manifest['producer_files'].items():
+            archive = staging/entry['path']
+            if not archive.exists(): _flush_write(archive,snapshot.producer_files[name])
+        _fsync_directory(staging/'producer')
         _fsync_directory(staging)
         os.replace(staging,generation)
         _fsync_directory(destination)
@@ -411,7 +603,7 @@ def load_snapshot(reference: ArtifactRef) -> TrainingSnapshot:
     try:
         _authenticate(reference)
         manifest = json.loads(reference.path.read_bytes())
-        _keys(manifest,('schema','metadata','milestone','tensor_sha256','tensors'))
+        _keys(manifest,('schema','metadata','milestone','tensor_sha256','tensors','producer_files'))
         if manifest['schema'] != SCHEMA: raise IntegrityError('Unknown snapshot schema')
         data = (reference.path.parent/'tensors.safetensors').read_bytes()
         if hashlib.sha256(data).hexdigest() != manifest['tensor_sha256']: raise IntegrityError('Tensor payload hash mismatch')
@@ -421,7 +613,18 @@ def load_snapshot(reference: ArtifactRef) -> TrainingSnapshot:
             spec = manifest['tensors'][key]; _keys(spec,('shape','dtype'))
             if list(tensor.shape) != spec['shape'] or str(tensor.dtype) != spec['dtype']:
                 raise IntegrityError('Tensor shape/dtype mismatch')
-        snapshot = TrainingSnapshot(manifest['metadata'],tensors,manifest['milestone'])
+        producer_files = {}
+        for name,entry in manifest['producer_files'].items():
+            _keys(entry,('path','sha256','size'))
+            digest = entry['sha256']
+            ArtifactRef(reference.path,digest)  # Validate digest syntax before path use.
+            if entry['path'] != f'producer/{digest}.bin' or type(entry['size']) is not int or entry['size'] < 0:
+                raise IntegrityError('Invalid producer archive descriptor')
+            raw = (reference.path.parent/entry['path']).read_bytes()
+            if len(raw) != entry['size'] or hashlib.sha256(raw).hexdigest() != digest:
+                raise IntegrityError('Producer archive hash/length mismatch')
+            producer_files[name] = raw
+        snapshot = TrainingSnapshot(manifest['metadata'],tensors,manifest['milestone'],producer_files)
         _validated(snapshot)
         return snapshot
     except IntegrityError: raise

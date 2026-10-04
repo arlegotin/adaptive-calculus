@@ -26,6 +26,13 @@ def test_capture_owns_every_mutable_tensor_rng_and_metadata(tmp_path):
     from ralup.state import capture_snapshot, restore_snapshot, exact_cpu_state_hash
     import random
     state = fixture()
+    from ralup.optim.base import MethodAdapter
+    from ralup.state import register_method_schema
+    class ExtraHistoryMethod(MethodAdapter): pass
+    register_method_schema('fixture_extra_history.v1',ExtraHistoryMethod,
+        ('optimizer_states','proposals','snapshot_schema'),ExtraHistoryMethod,shared_fields={'histories':('nested',)})
+    state.method = ExtraHistoryMethod(dict(state.model.named_parameters()),state.method.groups,state.method.rule)
+    state.optimizer_state = state.method.optimizer_states
     state.histories['nested'] = {'tensor':torch.tensor([2.]),'values':[3]}
     state.rng_streams = {'meta':random.Random(17),'quantizer':torch.Generator().manual_seed(19)}
     snapshot = capture_snapshot(state)
@@ -214,24 +221,37 @@ def test_completed_step_cannot_omit_one_parameters_moments():
     with pytest.raises(IntegrityError,match='moment|completed'): capture_snapshot(state)
 
 
-@pytest.mark.parametrize('sync_number',[3,4,5,6,7,8,9])
-def test_fsync_interruption_at_each_publication_boundary_leaves_only_valid_recovery(tmp_path,monkeypatch,sync_number):
+@pytest.mark.parametrize('boundary',['archive','staging','generation_parent','pointer_file','pointer_parent','marker_file','marker_directory','retention'])
+def test_fsync_interruption_at_each_publication_boundary_leaves_only_valid_recovery(tmp_path,monkeypatch,boundary):
     import ralup.state as checkpoint
     root = tmp_path/'snapshots'
     first = checkpoint.save_snapshot(checkpoint.capture_snapshot(fixture()),root)
-    original = checkpoint.os.fsync
-    calls = 0
-    def interrupt(fd):
-        nonlocal calls
-        calls += 1
-        if calls == sync_number: raise OSError('interrupted durability boundary')
-        return original(fd)
-    monkeypatch.setattr(checkpoint.os,'fsync',interrupt)
+    original_write,original_sync = checkpoint._flush_write,checkpoint._fsync_directory
+    parent_syncs = 0
+    def interrupted_write(path,data):
+        original_write(path,data)
+        if ((boundary == 'archive' and path.suffix == '.bin') or
+            (boundary == 'pointer_file' and path.name.startswith('.latest-')) or
+            (boundary == 'marker_file' and path.name == 'published.json')):
+            raise OSError('interrupted file durability boundary')
+    def interrupted_directory(path):
+        nonlocal parent_syncs
+        original_sync(path)
+        if path == root: parent_syncs += 1
+        if ((boundary == 'staging' and path.name.startswith('.pending-')) or
+            (boundary == 'generation_parent' and path == root and parent_syncs == 1) or
+            (boundary == 'pointer_parent' and path == root and parent_syncs == 2) or
+            (boundary == 'marker_directory' and path.name.startswith('g-')) or
+            (boundary == 'retention' and path == root and parent_syncs == 3)):
+            raise OSError('interrupted directory durability boundary')
+    monkeypatch.setattr(checkpoint,'_flush_write',interrupted_write)
+    monkeypatch.setattr(checkpoint,'_fsync_directory',interrupted_directory)
     with pytest.raises(OSError): checkpoint.save_snapshot(checkpoint.capture_snapshot(fixture()),root)
-    monkeypatch.setattr(checkpoint.os,'fsync',original)
+    monkeypatch.setattr(checkpoint,'_flush_write',original_write)
+    monkeypatch.setattr(checkpoint,'_fsync_directory',original_sync)
     recovered = checkpoint.recover_snapshot(root)
     checkpoint.load_snapshot(recovered)
-    if sync_number <= 5: assert recovered == first
+    if boundary in ('archive','staging','generation_parent','pointer_file'): assert recovered == first
     else: assert recovered != first
 
 
@@ -268,3 +288,141 @@ def test_embedded_configuration_hash_is_checked_before_restore():
     snapshot = capture_snapshot(state)
     snapshot.metadata['items']['configuration']['items']['horizon'] = 8
     with pytest.raises(IntegrityError,match='Configuration hash'): restore_snapshot(snapshot,'cpu')
+
+
+def trained_fixture():
+    from ralup.data.articles import Article
+    from ralup.data.blocks import tile_article
+    from ralup.data.batches import LogicalBatch
+    from ralup.train import train_step
+    state = fixture()
+    raw = b'abc'
+    batch = LogicalBatch(tile_article(Article(raw,[],hashlib.sha256(raw).hexdigest())),3)
+    for _ in range(3): train_step(state,batch)
+    return state
+
+
+def test_producer_bytes_are_archived_independently_of_strict_runtime(tmp_path,monkeypatch):
+    import ralup.state as checkpoint
+    producer = tmp_path/'producer'
+    original_root = checkpoint.ROOT
+    for name in ('src/ralup/state.py','requirements.lock','artifacts/environment/environment.json'):
+        path = producer/name
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes((original_root/name).read_bytes())
+    monkeypatch.setattr(checkpoint,'ROOT',producer)
+    monkeypatch.chdir(producer)
+    state = fixture()
+    state.configuration = {'environment':{'path':'artifacts/environment/environment.json',
+        'sha256':sha256_file(producer/'artifacts/environment/environment.json')}}
+    snapshot = checkpoint.capture_snapshot(state)
+    assert snapshot.producer_files['src/ralup/state.py'] == (producer/'src/ralup/state.py').read_bytes()
+    ref = checkpoint.save_snapshot(snapshot,tmp_path/'snapshots')
+    (producer/'src/ralup/state.py').write_bytes(b'# new runtime source identity\n')
+    (producer/'artifacts/environment/environment.json').write_bytes(b'{}')
+    monkeypatch.chdir(tmp_path)  # Historical producer inspection has no live relative source path.
+    historical = checkpoint.load_snapshot(ref)
+    assert historical.producer_files == snapshot.producer_files
+    with pytest.raises(checkpoint.IntegrityError,match='runtime|compatib'):
+        checkpoint.restore_snapshot(historical,'cpu')
+    manifest = json.loads(ref.path.read_bytes())
+    archived = ref.path.parent/manifest['producer_files']['src/ralup/state.py']['path']
+    archived.write_bytes(b'corrupted historical source')
+    with pytest.raises(checkpoint.IntegrityError,match='producer|archive|hash'):
+        checkpoint.load_snapshot(ref)
+
+
+@pytest.mark.parametrize('omission',['ema','loss_updates','matrix_history','previous_codes','two_steps_ago_codes',
+    'contexts','context_step','runtime','fixed_scale','fixed_zero','quantizer','quantizer_scale'])
+def test_completed_quantization_owners_cannot_be_omitted(omission):
+    from ralup.state import capture_snapshot, IntegrityError
+    state = trained_fixture()
+    name = next(iter(state.model._contexts))
+    if omission == 'ema': del state.histories['loss_ema']
+    elif omission == 'loss_updates': del state.histories['loss_updates']
+    elif omission == 'matrix_history': del state.histories[name]
+    elif omission in ('previous_codes','two_steps_ago_codes'): del state.histories[name][omission]
+    elif omission == 'contexts': state.model._contexts.clear()
+    elif omission == 'context_step': state.model._context_step = None
+    elif omission == 'runtime': state.model._runtime.clear()
+    elif omission == 'fixed_scale': del state.model._runtime[name]['previous_scales']
+    elif omission == 'fixed_zero': del state.model._runtime[name]['previous_zero_groups']
+    elif omission == 'quantizer': state.quantizer_state.clear()
+    else: del state.quantizer_state[name]['previous_scales']
+    with pytest.raises(IntegrityError): capture_snapshot(state)
+
+
+@pytest.mark.parametrize('damage',['history_dtype','history_shape','history_scale','context_step','context_shape','context_type',
+    'fixed_scale_mismatch','zero_shape','ema_type','loss_updates'])
+def test_completed_quantization_owner_geometry_and_consistency_are_checked(damage):
+    from dataclasses import replace
+    from ralup.state import capture_snapshot, IntegrityError
+    state = trained_fixture()
+    name = next(iter(state.model._contexts))
+    if damage == 'history_dtype': state.histories[name]['previous_codes'] = state.histories[name]['previous_codes'].float()
+    elif damage == 'history_shape': state.histories[name]['cached_codes'] = torch.zeros(1,dtype=torch.uint8)
+    elif damage == 'history_scale': state.histories[name]['scales'] = state.histories[name]['scales']*2
+    elif damage == 'context_step': state.model._contexts[name] = replace(state.model._contexts[name],step=99)
+    elif damage == 'context_shape': state.model._contexts[name] = replace(state.model._contexts[name],storage_u=torch.zeros(1))
+    elif damage == 'context_type': state.model._contexts[name] = replace(state.model._contexts[name],zero_groups=torch.zeros(8,1))
+    elif damage == 'fixed_scale_mismatch': state.quantizer_state[name] = {**state.quantizer_state[name],'previous_scales':torch.ones_like(state.quantizer_state[name]['previous_scales'])}
+    elif damage == 'zero_shape': state.model._runtime[name]['previous_zero_groups'] = torch.zeros(1,dtype=torch.bool)
+    elif damage == 'ema_type': state.histories['loss_ema'] = '5.5'
+    else: state.histories['loss_updates'] = 2
+    with pytest.raises(IntegrityError): capture_snapshot(state)
+
+
+@pytest.mark.parametrize('owner',['forward_hook','backward_hook','parameter_hook','child_state','child_setting','child_context','child_buffer'])
+def test_model_hooks_and_unregistered_child_state_are_rejected(owner):
+    from ralup.state import capture_snapshot, IntegrityError
+    state = fixture()
+    if owner == 'forward_hook': state.model.output.register_forward_hook(lambda module,args,result:result*2)
+    elif owner == 'backward_hook': state.model.output.register_full_backward_hook(lambda module,inputs,outputs:inputs)
+    elif owner == 'parameter_hook': state.model.output.weight.register_hook(lambda grad:grad*2)
+    elif owner == 'child_state': state.model.blocks[0].q.future_state = {'refresh':11}
+    elif owner == 'child_setting': state.model.blocks[0].attention_norm.eps = .1
+    elif owner == 'child_context': state.model.blocks[0].q.context = object()
+    else: state.model.blocks[0].q.register_buffer('future_buffer',torch.ones(1))
+    with pytest.raises(IntegrityError): capture_snapshot(state)
+
+
+def test_snapshot_reserves_data_stream_to_cursor_owner():
+    from ralup.state import capture_snapshot, IntegrityError
+    import random
+    state = fixture()
+    state.rng_streams['data'] = random.Random(61)
+    with pytest.raises(IntegrityError,match='data'): capture_snapshot(state)
+
+
+@pytest.mark.parametrize('owner',['ema','runtime','quantizer'])
+def test_required_owner_omission_is_rejected_at_load_and_restore(tmp_path,owner):
+    from ralup.state import capture_snapshot, save_snapshot, load_snapshot, restore_snapshot, IntegrityError
+    snapshot = capture_snapshot(trained_fixture())
+    ref = save_snapshot(snapshot,tmp_path/'snapshots')
+    manifest = json.loads(ref.path.read_bytes())
+    items = manifest['metadata']['items']
+    if owner == 'ema': del items['histories']['items']['loss_ema']
+    elif owner == 'runtime': items['model_cache']['items']['_runtime']['items'].clear()
+    else: items['quantizer_state']['items'].clear()
+    snapshot.metadata = manifest['metadata']
+    with pytest.raises(IntegrityError): restore_snapshot(snapshot,'cpu')
+    ref.path.write_bytes(canonical_bytes(manifest))
+    with pytest.raises(IntegrityError): load_snapshot(ArtifactRef(ref.path,sha256_file(ref.path)))
+
+
+def test_initial_owner_absence_and_explicit_shared_extensions_are_preserved():
+    from ralup.state import capture_snapshot, restore_snapshot
+    state = fixture()
+    restored = restore_snapshot(capture_snapshot(state),'cpu')
+    assert restored.schedule['step'] == 0
+    assert restored.histories == restored.quantizer_state == restored.model._runtime == restored.model._contexts == {}
+    assert restored.model._context_step is None
+
+
+def test_initial_unconfigured_model_is_explicit_and_roundtrips():
+    from ralup.state import capture_snapshot, restore_snapshot
+    state = fixture()
+    state.model._recipe = None
+    restored = restore_snapshot(capture_snapshot(state),'cpu')
+    assert restored.model._recipe is None
+    assert not restored.model._contexts and not restored.histories
