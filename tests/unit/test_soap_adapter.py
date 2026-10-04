@@ -4,8 +4,9 @@ from pathlib import Path
 import pytest
 import torch
 from ralup.optim.base import SchedulePoint
+from ralup.baselines.references import soap_reference
 
-SOURCE=Path('.superpowers/sdd/2026-10-03-ralup/source-audit/nikhilvyas__SOAP/soap.py')
+SOURCE=Path(soap_reference.__file__).resolve()
 
 def oracle_type():
     assert hashlib.sha256(SOURCE.read_bytes()).hexdigest()=='9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b'

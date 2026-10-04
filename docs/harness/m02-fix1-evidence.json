@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "task": "M02",
+  "fix_round": 1,
+  "fix_base": "d1a2b76",
+  "review_issue": "Q1: durable SOAP tests depended on ignored scratch oracle",
+  "change": "resolve packaged soap_reference.__file__; preserve hash and fresh independent oracle module execution",
+  "changed_product_behavior": false,
+  "scope": "six existing CPU fixed-sequence regressions only in a tracked-source-only fixture with no .superpowers tree",
+  "attempts": [
+    {
+      "attempt": "17-fix1-red-clean-oracle",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        ".superpowers/sdd/2026-10-03-ralup/m02-fix1-clean-check.py"
+      ],
+      "receipt": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/17-fix1-red-clean-oracle/receipt.json",
+        "sha256": "10641f312db77f117cf3ec6167e76a54481d7869abe062e78e3ba2668c86532d"
+      },
+      "stdout": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/17-fix1-red-clean-oracle/stdout.txt",
+        "sha256": "009434f06822cf59162c8697495fb457da218f5b5b5bbe6ac4f8115ceda52998"
+      },
+      "stderr": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/17-fix1-red-clean-oracle/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copy_inventory": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/17-fix1-red-clean-oracle/clean-copy-inventory.json",
+        "sha256": "6e6924ce3b05b7f7ac5501c9e50bb4ec90655aa31b7dc4b13740afd4fdcb82cc"
+      },
+      "returncode": 1,
+      "process": {
+        "pid": 8126,
+        "pgid": 8126,
+        "returncode": 1,
+        "scope": "owned child and test subprocesses"
+      },
+      "start_utc": "2026-10-04T08:59:04.829059+00:00",
+      "end_utc": "2026-10-04T08:59:06.181640+00:00",
+      "elapsed_seconds": 1.3526189173571765,
+      "copied_bytes": 459626,
+      "retained_bytes": 1355740,
+      "producer_test_sha256": "b56e2db4ae540b30e02e0c3018335d3d547095035045fd5b0d81a0253e3d2c9d",
+      "launcher_sha256": "e3df4ba0e43d69737997abc86fc0c9b213e8bfc447a0ea4dc89d52cdc952f6fe"
+    },
+    {
+      "attempt": "18-fix1-green-clean-oracle",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        ".superpowers/sdd/2026-10-03-ralup/m02-fix1-clean-check.py"
+      ],
+      "receipt": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/18-fix1-green-clean-oracle/receipt.json",
+        "sha256": "324b1764ac43cd03650e1d5f4abb5873e6dca40f5f0f5d2f41a5ff266f970132"
+      },
+      "stdout": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/18-fix1-green-clean-oracle/stdout.txt",
+        "sha256": "ef81ea16f79200c63ad7340b9f967e58ab3708ae61a7513f8bbac3126823e77a"
+      },
+      "stderr": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/18-fix1-green-clean-oracle/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "copy_inventory": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/18-fix1-green-clean-oracle/clean-copy-inventory.json",
+        "sha256": "a33635356e0f3fcfc7fb82636ed4bcae3b5f25438edb3abf4ed27558367fb778"
+      },
+      "returncode": 0,
+      "process": {
+        "pid": 8181,
+        "pgid": 8181,
+        "returncode": 0,
+        "scope": "owned child and test subprocesses"
+      },
+      "start_utc": "2026-10-04T08:59:21.772208+00:00",
+      "end_utc": "2026-10-04T08:59:23.480912+00:00",
+      "elapsed_seconds": 1.7087370408698916,
+      "copied_bytes": 459640,
+      "retained_bytes": 1339736,
+      "producer_test_sha256": "7c1bdcd98d9795fcea23b7989a5ccc6db597290ad7384bb6f09460d5159504fe",
+      "launcher_sha256": "e3df4ba0e43d69737997abc86fc0c9b213e8bfc447a0ea4dc89d52cdc952f6fe"
+    }
+  ],
+  "results": {
+    "red": "6 FileNotFoundError failures in0.11s",
+    "green": "6 passed in0.68s",
+    "mps_replay_cli_covering_repeated": false
+  },
+  "original_sealed_proof": {
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/16-final-proof/proof.json",
+    "sha256": "49d4a240ac3e8837f92fdae185e83e9eaef5c37735c43ca8ab8dbf745029ac68"
+  },
+  "original_sealed_inventory": {
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/M02/16-final-proof/complete-inventory.json",
+    "sha256": "4d72e067a9f0cb94e6051dee2d464d30cf222f3247dd658a7d3485323754f71c"
+  },
+  "original_sealed_objects_unchanged": true,
+  "forecast": {
+    "new_fix_attempt_complete_artifacts_ceiling_bytes": 4194304,
+    "clean_source_copy_ceiling_bytes_per_attempt": 1048576,
+    "small_git_metadata_staging_commit_ceiling_bytes": 131072
+  },
+  "actual_new_artifact_bytes": 2695476,
+  "recorded_owned_child_seconds": 3.061355958227068,
+  "free_bytes_before_metadata_commit": {
+    "Git": 1105678336,
+    "Data": 153542651904
+  },
+  "git_free_floor_bytes": 1073741824,
+  "Data_free_floor_bytes": 68719476736,
+  "cost_limits": "owned launcher+source-copy+pytest subprocess elapsed retained; outer runner archival/tool/session overhead not completely timed, remains unknown and never zero",
+  "science_budgets": null,
+  "protected_scoring": "denied; not run",
+  "source_hash": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b",
+  "limitations": "isolated tracked package/test/config fixture uses the pinned existing .venv; this is scratch independence of the affected CPU tests, not a dependency-install or new native/scientific validation"
+}
