@@ -1,0 +1,38 @@
+{
+  "fixture_manifests": [
+    "2026-10-04-h05-adamw-cpu.json",
+    "2026-10-04-h05-adamw-mps.json"
+  ],
+  "full_suite": {
+    "command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
+    "elapsed_seconds": 18.32,
+    "execution": "actual MPS, escalated local process",
+    "exit_code": 0,
+    "passed": 409,
+    "skipped": 0,
+    "warnings": 0
+  },
+  "metadata_red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_method_registry.py -k metadata -q",
+    "failed": 1,
+    "reason": "default_registry lacks rule argument"
+  },
+  "negative_controls": "2026-10-04-h05-negative-controls.json",
+  "scope": "H05 engineering verification only; no scientific/test-data/performance claims",
+  "source_hashes": {
+    "src/ralup/__main__.py": "2b8854c4d4ef76dc0df6afd9ab9bdc2f9d864d93b443e8806bd07caa71caf811",
+    "src/ralup/baselines/__init__.py": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f",
+    "src/ralup/baselines/checks.py": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b",
+    "src/ralup/baselines/registry.py": "f28bbe19803cc22649c5dff79de3865711f417e6cf46a6e84fdab73ea455602e",
+    "src/ralup/optim/__init__.py": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae",
+    "src/ralup/optim/adamw.py": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c",
+    "src/ralup/optim/base.py": "5e3830cfcce048838b0bae643f426bd6dfb5aa8c4130f525223faa2ca93ebb9b",
+    "tests/unit/test_adamw_adapter.py": "0cb6e53c283b368d95be62dd8151cacefec5e8dabec050c6c3d7c0da8fdc3128",
+    "tests/unit/test_method_registry.py": "de10c8f2b25d404fd2a8ba84695f7ff3f23a04c5b3e3704e049a9f7e987ea35c"
+  },
+  "tdd_initial_red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_adamw_adapter.py tests/unit/test_method_registry.py -q",
+    "failed": 16,
+    "reason": "Missing optimizer/registry packages and CLI command"
+  }
+}

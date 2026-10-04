@@ -29,10 +29,24 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--suite", choices=("data", "model"), required=True)
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
+    baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
+    baselines.add_argument("--suite", choices=("adamw",), required=True)
+    baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
+    baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == "verify-baselines":
+        from .baselines.checks import check_adamw
+        try:
+            ref = check_adamw(args.device, args.output)
+            report = json.loads(ref.path.read_bytes())
+            print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
+                                   "status": report["status"], "blockers": report["blockers"]}).decode())
+            return 0 if report["status"] == "pass" else 1
+        except (OSError, TypeError, ValueError) as error:
+            parser.error(str(error))
     if args.command == "test-harness":
         from .data.checks import check_data
         try:
