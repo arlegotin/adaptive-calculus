@@ -17,10 +17,7 @@
     "F05 independent reviewer gate clean at bc1e4a8; bounded update geometry and mechanism diagnostics accepted on CPU and actual fallback-disabled MPS",
     "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
     "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending",
-    "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS",
-    "F05 independent reviewer gate clean at bc1e4a8; bounded update geometry and mechanism diagnostics accepted on CPU and actual fallback-disabled MPS",
-    "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
-    "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending"
+    "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS"
   ],
   "tasks": {
     "F01": "complete",

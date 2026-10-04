@@ -111,7 +111,7 @@ def test_cli_reports_incomplete_source_only_pipeline(tmp_path, capsys):
     assert main(["prepare-data", "--config", str(config)]) == 1
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "incomplete"
-    assert report["missing_stages"][0].startswith("H02")
+    assert report["missing_stages"][0].startswith("H03")
 
 
 def test_same_size_corrupt_asset_is_rejected(tmp_path):

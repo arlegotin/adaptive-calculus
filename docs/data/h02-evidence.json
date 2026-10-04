@@ -1,0 +1,302 @@
+{
+  "task": "H02",
+  "status": "implementation_complete_pending_independent_review",
+  "scientific_gate": null,
+  "authorization": "source-only_bootstrap_non_scoring",
+  "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "command": ".venv/bin/python -m ralup prepare-data --config configs/data.json",
+  "command_exit": 1,
+  "exit_reason": "H01/H02 completed; H03-H08 remain pending; WP02 not passed",
+  "manifest": {
+    "path": "data/processed/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/corpus/manifest-ce3efe14c116d9eae6ad5ea2a15160c27d850ae1692e2922eb7c55e856b747b9.json",
+    "sha256": "ce3efe14c116d9eae6ad5ea2a15160c27d850ae1692e2922eb7c55e856b747b9",
+    "bytes": 51162190
+  },
+  "preparation": {
+    "path": "data/processed/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/provenance/preparation.json",
+    "sha256": "146284ec18a1e3108c12ea3d99fece0689bcaec09289a9bdf950d4cd75e8f6a7"
+  },
+  "source": {
+    "kind": "pinned_source",
+    "path": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/source-manifest.json",
+    "sha256": "d8d950228a1213d849bfc9be893bf8103d3c37a878679a2d6aa8f5c35823030d"
+  },
+  "source_files": {
+    "test": [
+      {
+        "bytes": 1289123,
+        "path": "test.content.bin",
+        "sha256": "7952b062817620ac99b47296dc945942b55068d0e85baf1f95f300c7ad1480ef"
+      },
+      {
+        "bytes": 74086,
+        "path": "test.rows.bin",
+        "sha256": "a6e033805081a71db0d789e0b2b3574ff9e87859340b75a66e05027ca2a83de5"
+      },
+      {
+        "bytes": 13572,
+        "path": "test.articles.jsonl",
+        "sha256": "a81c88c50a762cf8d8420c6b16eff4b995f2ed71073478bc095b3257b4833351"
+      }
+    ],
+    "train": [
+      {
+        "bytes": 539931870,
+        "path": "train.content.bin",
+        "sha256": "d4f43c552ffd6ff64f71d37c8c7f0a5a2c38a1f9bc36d9471811479a2550ec6e"
+      },
+      {
+        "bytes": 30622950,
+        "path": "train.rows.bin",
+        "sha256": "0d6ca1d0460a94b9104abf200d7c76d2f40b95556bc16a78f7708dab8771f561"
+      },
+      {
+        "bytes": 6740873,
+        "path": "train.articles.jsonl",
+        "sha256": "19ea367671244ccb70147f2b63798396e58882a52afe7404e7484e3e5c464ce9"
+      }
+    ],
+    "validation": [
+      {
+        "bytes": 1145547,
+        "path": "validation.content.bin",
+        "sha256": "fbf387067edf87fc0f11e8cc1708be8ff6c944f6eeb98c1e34140c8a95629a00"
+      },
+      {
+        "bytes": 63920,
+        "path": "validation.rows.bin",
+        "sha256": "8c1ba3916597a1f865ec70373db35e4395890fef72c9cb3a00498572021c6b92"
+      },
+      {
+        "bytes": 13104,
+        "path": "validation.articles.jsonl",
+        "sha256": "8055b2815a305e3a1347b69dbed88f7a1b77e99a15ef360832f57e06f7776a3e"
+      }
+    ]
+  },
+  "source_config_sha256": "f8b525b772c8d62e480916aba74615bcc09340e2ea009962b874853a28e7becc",
+  "resolved_config_sha256": null,
+  "frozen_hashes": {
+    "encoding": "SHA256(canonical_bytes(object)), no final LF; corpus manifest includes final LF",
+    "source_sha256": "a64a66b512818b7328db4626d3eca846c6fa9bb7cc8994139091c0bffda9277b",
+    "exclusion_sha256": "74c2ed1f9d28f7502b590c9f7ea2473baa5f8591b595b24c15bca7046b525f2d",
+    "partition_sha256": "4f77cd1a2fcb2d9ee842b01d03dde5750b088b361088b3d1768b418d50ca505c",
+    "data_manifest_sha256": "ce3efe14c116d9eae6ad5ea2a15160c27d850ae1692e2922eb7c55e856b747b9",
+    "objects": {
+      "source_sha256": {
+        "preparation": "manifest.preparation",
+        "source": "manifest.source",
+        "source_files": "manifest.source_files",
+        "revision": "manifest.revision"
+      },
+      "exclusion_sha256": {
+        "documents": "manifest.audit.excluded_documents",
+        "hashes": "manifest.audit.excluded_component_hashes"
+      },
+      "partition_sha256": {
+        "partitions": "manifest.partitions",
+        "algorithm": "manifest.partition_algorithm"
+      }
+    }
+  },
+  "audit": {
+    "source_documents": 29568,
+    "training_documents": 29444,
+    "protected_documents": 124,
+    "protected_by_split": {
+      "validation": 61,
+      "test": 63
+    },
+    "raw_content_bytes": 542366540,
+    "retained_training_documents": 28996,
+    "retained_training_bytes": 534091242,
+    "excluded_training_documents": 448,
+    "excluded_training_bytes": 5840628,
+    "exclusion_reasons": {
+      "protected_component": 2,
+      "duplicate_component": 446
+    },
+    "raw_exact_groups": 299,
+    "near_candidates": 12,
+    "accepted_near_edges": 5,
+    "connected_components": 29119,
+    "exact_retained_protected_overlap": 0,
+    "candidates": [
+      {
+        "accepted": true,
+        "intersection": 2,
+        "jaccard": 1.0,
+        "left": "train:10",
+        "right": "train:2359",
+        "union": 2
+      },
+      {
+        "accepted": false,
+        "intersection": 839,
+        "jaccard": 0.5834492350486787,
+        "left": "train:20",
+        "right": "train:4366",
+        "union": 1438
+      },
+      {
+        "accepted": true,
+        "intersection": 1,
+        "jaccard": 1.0,
+        "left": "train:1639",
+        "right": "train:22926",
+        "union": 1
+      },
+      {
+        "accepted": true,
+        "intersection": 1,
+        "jaccard": 1.0,
+        "left": "train:2354",
+        "right": "train:13092",
+        "union": 1
+      },
+      {
+        "accepted": false,
+        "intersection": 790,
+        "jaccard": 0.4249596557288865,
+        "left": "train:2455",
+        "right": "train:4475",
+        "union": 1859
+      },
+      {
+        "accepted": false,
+        "intersection": 590,
+        "jaccard": 0.4631083202511774,
+        "left": "train:2634",
+        "right": "train:5045",
+        "union": 1274
+      },
+      {
+        "accepted": true,
+        "intersection": 3465,
+        "jaccard": 1.0,
+        "left": "train:4079",
+        "right": "test:62",
+        "union": 3465
+      },
+      {
+        "accepted": true,
+        "intersection": 1,
+        "jaccard": 1.0,
+        "left": "train:8591",
+        "right": "train:20876",
+        "union": 1
+      },
+      {
+        "accepted": false,
+        "intersection": 910,
+        "jaccard": 0.6899166034874905,
+        "left": "train:9132",
+        "right": "train:28711",
+        "union": 1319
+      },
+      {
+        "accepted": false,
+        "intersection": 774,
+        "jaccard": 0.4150134048257373,
+        "left": "train:17671",
+        "right": "train:20651",
+        "union": 1865
+      },
+      {
+        "accepted": false,
+        "intersection": 752,
+        "jaccard": 0.5067385444743935,
+        "left": "train:19315",
+        "right": "train:23494",
+        "union": 1484
+      },
+      {
+        "accepted": false,
+        "intersection": 710,
+        "jaccard": 0.48233695652173914,
+        "left": "train:19474",
+        "right": "train:19639",
+        "union": 1472
+      }
+    ]
+  },
+  "partitions": {
+    "meta-development": {
+      "documents": 1480,
+      "bytes": 26947536
+    },
+    "meta-train": {
+      "documents": 5779,
+      "bytes": 106490830
+    },
+    "target-training": {
+      "documents": 21737,
+      "bytes": 400652876
+    }
+  },
+  "algorithm": {
+    "band_key": "band ordinal and 8 consecutive uint64_le minima",
+    "coefficients": "SHA256(seed || uint32_le(i)), i=0..127; a=uint64_le(digest[0:8])|1, b=uint64_le(digest[8:16])",
+    "limitation": "LSH may miss near duplicates; affine permutations and 64-bit shingle hashing are candidate heuristics. Exact verification uses full tuples. No complete absence of public-data contamination is claimed.",
+    "permutation": "(a*x+b) modulo 2**64; odd a is a bijection; minimum per function",
+    "seed_hex": "72616c75702d6d696e686173682d7631",
+    "shingle_hash": "first uint64_le(SHA256(b\"ralup-shingle-v1\" || concat(uint32_le(UTF8_token_length), UTF8_token)))",
+    "verification": "exact normalized token-tuple set intersection/union; accept iff 5*intersection >= 4*union"
+  },
+  "contract": {
+    "bands": 16,
+    "jaccard_threshold": 0.8,
+    "minhash_functions": 128,
+    "normalization": [
+      "NFKC",
+      "lowercase",
+      "whitespace"
+    ],
+    "rows_per_band": 8,
+    "shingle_tokens": 13
+  },
+  "resources": {
+    "wall_seconds": 109.47,
+    "user_seconds": 107.49,
+    "system_seconds": 1.79,
+    "rss_sample_kib": 268560,
+    "rss_sample_elapsed_seconds": 95,
+    "peak_rss": null,
+    "limitation": "/usr/bin/time -l sysctl kern.clockrate denied by sandbox; RSS is one observed sample/lower bound, not a peak. No resource failure inferred; no rerun solely for peak."
+  },
+  "license_discrepancy": "Pinned card YAML: CC BY-SA 3.0 and GFDL (version unspecified); prose: CC BY-SA 4.0. Unresolved.",
+  "limitations": [
+    "LSH candidate misses possible; exact verification uses full normalized token tuples; no absence-of-contamination claim",
+    "Local research only; no redistribution; license-version/GFDL/article-history attribution unresolved",
+    "No byte targets or model scoring; protected gates remain closed",
+    "Allocation counts/bytes measured; learning/allocation sufficiency awaits later harness and pre-model assessment"
+  ],
+  "wp00_local_acceptance": {
+    "gate": {
+      "original_path": "artifacts/environment/wp00-local-gate.json",
+      "permanent_path": "docs/data/wp00-local-gate.json",
+      "sha256": "a22cd9e3d3c8414746072b5472f0788793e34eb75795beba91fcc2f081b0e8b9"
+    },
+    "acceptance": {
+      "original_path": "artifacts/environment/wp00-local-acceptance.json",
+      "permanent_path": "docs/data/wp00-local-acceptance.json",
+      "sha256": "75fe2b9798208569432ea2cc9ee94d2ee570cc6a8c0bf479d992b7b2a98f6c6c"
+    }
+  },
+  "resolved_research_config": {
+    "path": "docs/data/h02-resolved-prepare-config.json",
+    "sha256": "acf2a05eb122ab6f9d607148dce1345df922614dfd46979acb5b0b8466563e1f",
+    "purpose": "prepare-data",
+    "scope": "local research only; all gate/runtime refs authenticated; no expensive repeated corpus audit; real source-only manifest remains separately frozen"
+  },
+  "verification": {
+    "focused_command": ".venv/bin/python -m pytest tests/unit/test_dedup_partitions.py tests/integration/test_data_manifest.py tests/unit/test_articles.py -q",
+    "focused_result": "54 passed in 0.32s",
+    "full_command": ".venv/bin/python -m pytest -q",
+    "full_result": "283 passed, 54 skipped in 8.54s",
+    "skips": "Existing environment-dependent MPS tests; prior accepted actual-MPS numerical evidence remains separate.",
+    "mutation": "Pairwise-only exclusions fail protected→train-A→train-B chain; restored connected components pass.",
+    "manifest_postrun_sha_verified": true
+  },
+  "future_wp00_versioning": "Before M01 metadata extensions, coordinator preserves immutable hash-addressed vendor/ASSETS originals and creates NEW versioned gate/acceptance; historical original gate and seven refs remain unchanged."
+}

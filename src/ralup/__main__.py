@@ -12,7 +12,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ralup", description="RALUP research configuration and records")
     parser.add_argument("--version", action="version", version=f"ralup {__version__}")
     subcommands = parser.add_subparsers(dest="command")
-    preparation = subcommands.add_parser("prepare-data", help="authenticate sources and reconstruct non-scoring provenance")
+    preparation = subcommands.add_parser("prepare-data", help="authenticate sources, audit duplicates and freeze non-scoring partitions")
     preparation.add_argument("--config", type=Path, required=True)
     config = subcommands.add_parser("config", help="validate and resolve a configuration to stdout")
     config.add_argument("template", type=Path)
@@ -30,13 +30,13 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 0
     if args.command == "prepare-data":
-        from .data.source import prepare_data
+        from .data.partitions import prepare_bootstrap
         try:
-            ref = prepare_data(args.config)
+            ref = prepare_bootstrap(args.config)
             report = json.loads(ref.path.read_bytes())
             print(canonical_bytes({"path": str(ref.path), "sha256": ref.sha256,
                                    "status": report["status"], "missing_stages": report["missing_stages"]}).decode())
-            return 1  # H01 succeeds; the full preparation pipeline remains incomplete.
+            return 1  # H01/H02 succeed; H03-H08/full WP02 remain pending.
         except (OSError, TypeError, ValueError) as error:
             parser.error(str(error))
     if args.command == "check-numerics":
