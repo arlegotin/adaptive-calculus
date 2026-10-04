@@ -86,6 +86,7 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
         update_rule_settings=dict(rule.configuration),parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture'))
     register_matrix_methods(registry,groups)
     register_ewgs_methods(registry,groups)
+    register_trs_methods(registry,groups)
     return registry
 
 
@@ -184,3 +185,35 @@ def ewgs_record(name,groups,config,*,parity_status='unverified',operations_statu
 def register_ewgs_methods(registry,groups):
     from .ewgs import FIXTURE_CONFIG
     for name in EWGS_NAMES:registry.register(ewgs_record(name,groups,FIXTURE_CONFIG))
+
+
+TRS_NAMES=('trs_release_fixture','trs_backbone_adapter')
+
+
+def trs_record(name,groups,config,*,parity_status='unverified',operations_status='unverified'):
+    from .trs import validate_config
+    if name not in TRS_NAMES:raise ValueError('Unknown TRS method')
+    original=name=='trs_release_fixture';config=validate_config(config)
+    return MethodRecord(name=name,family='TRS',
+        source_revision='arXiv:2404.19248v4;cvlab-yonsei/TRS@958dedd1baeb60814cb4162ce794bc9f41cdf4a0;inspection-only',
+        adaptation_label='released_multiplicative_coupled_Adam_clean_equations' if original else 'project_FP4_logical_step_decoupled_backbone',
+        required_operations=('round','clamp','mean','mul','add','normalized_quantized_compare','original_W_backbone'),
+        ordered_parameter_groups=groups,state_schema={'optimizer_states':'named.original_W.coupled_adam.v1' if original else 'named.original_W.wrapped_backbone+auxiliary.adamw.v1',
+            'proposals':'named.proposal.v1','adapter_mutable_state':'fixed_scale+trs.normalized_codes_scalars.v1' if original else 'trs.normalized_codes_scalars.v1'},
+        licenses=('Independent mathematical implementation; GPL-v3 author source inspection only; no copying/software grant or release reproduction assurance',),
+        update_rule_settings={**config,'supported_backbone_families':['AdamW','Muon','Muon+'],'unsupported_backbone_families':['SOAP','Madam','arbitrary unregistered BaseUpdateRule'],'compatibility_scope':'explicit original-W families only; no restriction on future B0 selection; unsupported composition needs later owned implementation/evidence', 'release_feedback':'K=mu*K+(1-mu)*k; r=mu*r+(1-mu)*r*R/(K+1e-8); alpha*r',
+            'paper_feedback':'additive max(0,U+eta*(R-K)); not implemented as release',
+            'source_inspection_sha256':{'custom_optims.py':'a4f4195f4325cf65f84abab3e86960730699aab956531586c1264d9bd6d9e4cb','custom_modules.py':'efe995b17931b4f70e619aa0c51c730f1cc43c07e9a0989806595d1ac3b24413','train_quant.py':'fd5e92d427539e06e0ed58d6a657804671545d9c7a407a936f5f9a7fe1002aa2','LICENSE':'2a2973fb4c7b3129e05fe5f5746af28a8246ea706bf694994b8ceeec245cdb21'},
+            'source_copy_status':'blocked_GPL_inspection_only','equation_implementation_status':'independent_local_research','release_reproduction_status':'unverified',
+            'initialization':'r=1; K=first target_rate; previous normalized values zero; first rate ignored',
+            'scale_contract':'fixed 3*sample_std(W); normalization abs(sW)+1e-6; signed nonbinary round/clamp levels divided by 2**(bits-1)' if original else 'fixed row max initial scale cached by H06; normalized storage_values/scales/6; numerical signed zero merged; storage rotation follows context',
+            'decay':'coupled gradient before Adam moments' if original else 'ordinary lr pre-displacement reference decay; feedback applies to gradient displacement only',
+            'departures':[] if original else ['FP4 E2M1','fixed row-max scale instead of tensor sample-std scale','storage-coordinate normalized levels divided by 6','original-W selectable AdamW/Muon/Muon+ backbone','decoupled ordinary-LR decay','once per logical batch instead of per training forward'],
+            'scope':'bounded independently reproduced released equations; no copied release execution, author grant, pilot relevance or science selection'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture' if original else 'project_adaptation',
+        schedule_fields=('lr','weight_decay','progress','target_rate'))
+
+
+def register_trs_methods(registry,groups):
+    from .trs import FIXTURE_CONFIG
+    for name in TRS_NAMES:registry.register(trs_record(name,groups,FIXTURE_CONFIG))

@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs"), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
@@ -61,7 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            if args.suite == "ewgs":
+            if args.suite == "trs":
+                from .baselines.trs import check_trs
+                ref = check_trs(args.device,args.output)
+            elif args.suite == "ewgs":
                 from .baselines.ewgs import check_ewgs
                 ref = check_ewgs(args.device,args.output)
             elif args.suite == "soap-madam":
@@ -276,7 +279,14 @@ def _run_explore(path):
     if method_settings is not None:
         from .baselines.registry import build_matrix_method, matrix_record, MethodRegistry
         registry = MethodRegistry()
-        if method_settings['name']=='ewgs_fp4':
+        if method_settings['name']=='trs_backbone_adapter':
+            from .baselines.trs import TrsBackboneAdapter,construct_backbone,validate_config
+            from .baselines.registry import trs_record
+            trs_config=validate_config(method_settings['config'])
+            model.configure_quantization({**model._recipe,'name':trs_config['scale_recipe']})
+            method=TrsBackboneAdapter(construct_backbone(trs_config['backbone']),trs_config).bind(dict(model.named_parameters()),default_parameter_groups(model))
+            registry.register(trs_record('trs_backbone_adapter',method.groups,trs_config))
+        elif method_settings['name']=='ewgs_fp4':
             from .baselines.ewgs import EwgsAdapter
             from .baselines.registry import ewgs_record
             model.configure_quantization({**model._recipe,'backward':'ewgs'})

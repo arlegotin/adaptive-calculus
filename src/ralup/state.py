@@ -30,6 +30,7 @@ from .optim.soap import SoapUpdateRule,TIMING_FIELDS
 from .optim.madam import MadamUpdateRule
 from .optim.matrix_adapter import MatrixMethodAdapter
 from .baselines.ewgs import EwgsAdapter,ADAPTER_FIELDS,trusted_constructor,validate_owned_state
+from .baselines.trs import TrsState,TrsBackboneAdapter,ADAPTER_FIELDS as TRS_FIELDS,trusted_constructor as trs_constructor,validate_owned_state as validate_trs_state
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
@@ -93,6 +94,8 @@ register_method_schema('matrix_adapter.v1',MatrixMethodAdapter,
 
 
 register_method_schema('ewgs_adapter.v2',EwgsAdapter,ADAPTER_FIELDS,trusted_constructor)
+register_state_schema('trs_state.v1',TrsState,('r','K','previous_codes','observations'))
+register_method_schema('trs_adapter.v1',TrsBackboneAdapter,TRS_FIELDS,trs_constructor)
 
 
 def _rule_payload(rule):
@@ -120,7 +123,7 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor in (MatrixMethodAdapter,trusted_constructor):
+    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
@@ -518,6 +521,8 @@ def _validated(snapshot):
             if payload['model_cache']['_recipe'] is None or payload['model_cache']['_recipe'].get('backward')!='ewgs':raise IntegrityError('EWGS requires explicit backward recipe')
             if payload['groups']!=default_parameter_groups(prototype):raise IntegrityError('EWGS groups mismatch')
             validate_owned_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'])
+        if payload['method_schema']=='trs_adapter.v1':
+            validate_trs_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule)
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
         return payload
     except IntegrityError: raise
