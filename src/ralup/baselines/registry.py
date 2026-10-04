@@ -88,6 +88,7 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
     register_ewgs_methods(registry,groups)
     register_trs_methods(registry,groups)
     register_routing_methods(registry,groups)
+    register_scale_noise_methods(registry,groups)
     return registry
 
 
@@ -255,3 +256,41 @@ def register_routing_methods(registry,groups):
         c={**FIXTURE_CONFIG}
         if name.startswith('stochastic_'):c['mode']='shadow_forward' if name=='stochastic_shadow_forward' else 'endpoint'
         registry.register(routing_record(name,groups,c))
+
+
+SCALE_NOISE_NAMES=('lsq_uniform_fixture','learned_fp4_scale','damping_fp4','simple_matrix_mask','magma_matrix_mask')
+
+
+def scale_noise_record(name,groups,config,*,parity_status='unverified',operations_status='unverified'):
+    from .learned_scale import validate_config as scale_config,validate_view
+    from .noise import validate_config as noise_config
+    if name not in SCALE_NOISE_NAMES:raise ValueError('Unknown scale/noise method')
+    fixture=name=='lsq_uniform_fixture';learned=name=='learned_fp4_scale';damping=name=='damping_fp4'
+    c=validate_view(config) if fixture else scale_config(config) if learned else noise_config(config)
+    if fixture and c['format']!='uniform':raise ValueError('Uniform LSQ fixture must name uniform levels')
+    if not (fixture or learned) and c['mode']!={'damping_fp4':'damping','simple_matrix_mask':'simple','magma_matrix_mask':'magma'}[name]:raise ValueError('Noise method name/config mode mismatch')
+    label={'lsq_uniform_fixture':'original_uniform_LSQ_analytic_surrogate','learned_fp4_scale':'project_FP4_log_scale_original_W',
+           'damping_fp4':'project_FP4_stopgrad_damping','simple_matrix_mask':'project_matrix_SkipUpdate_gradient_only','magma_matrix_mask':'project_matrix_practical_Magma_gradient_only'}[name]
+    source='arXiv:1902.08153v3;2020-05-07;Eq3,section2.2;clean equations' if fixture or learned else 'S24 independent damping equation' if damping else 'arXiv:2602.15322v1;Algorithm1,section3;html-sha256=ae119060283877a05e1a05b46be45ab916eaa7cf6f3a637764af07ecb9294744'
+    return MethodRecord(name=name,family='LSQ' if fixture else 'learned_FP4_scale' if learned else 'damping' if damping else 'masking',
+        source_revision=source,adaptation_label=label,required_operations=('nearest_even','exp','analytic_surrogate','sum_to_group','original_W_backbone') if fixture or learned else ('stopgrad','squared_norm','original_W_backbone') if damping else ('current_original_W_cosine','alignment_ema','cpu_bernoulli_half','original_W_backbone'),
+        ordered_parameter_groups=groups,state_schema={'optimizer_states':'caller owned' if fixture else 'named.original_W.backbone+auxiliary.adamw.v1',
+            'proposals':'named.proposal.v1','adapter_mutable_state':'caller log scale and gradient' if fixture else 'learned_scale.parameters_gradients_adam_normalizer.v1' if learned else 'noise.matrix_alignment_rng.v1'},
+        licenses=('Independent local equation implementation; arXiv distribution license is not a software grant; author source not copied; no release or legal assurance',) if fixture or learned else ('Independent S24 project equation; no external implementation copied',) if damping else ('Article CC BY 4.0; attribution arXiv:2602.15322v1; article/legal hashes in docs/harness/m06-scale-noise.md; author software grant unresolved; clean equations',),
+        update_rule_settings={**c,'gradient_target':'declared analytic surrogate, never hard-quantizer finite differences' if fixture or learned else 'original-W current gradient/moment',
+            'moment_coordinates':'original_W','source_copy_status':'no external implementation copied','release_reproduction_status':'unverified',
+            'mask_probability':None if fixture or learned or damping else .5,'practical_Magma_doubling':False,
+            'scale_precision':'float32','scale_information':'training_targets_only',
+            'departures':[] if fixture else ['FP4 nonuniform levels','positive log scale and independent scale Adam/LR','row or tensor grouping','max/Cmax initialization instead of LSQ mean-absolute initialization','bounded log scale and optional gradient clipping','identity storage with common byte decoder'] if learned else ['S24 stopgrad damping comparator, absent from masking paper','fixed FP4 grid','packing-independent penalty, same backward graph'] if damping else ['matrix projection scope','initial alignment .5','zero-vector cosine zero; scaled norms','dedicated CPU mask RNG','gradient-only masking; separate ordinary-LR decay','original-W AdamW/Muon/Muon+ integration'],
+            'supported_backbone_families':[] if fixture else ['AdamW','Muon','Muon+'],'unsupported_backbone_families':[] if fixture else ['SOAP','Madam'],
+            'scope':'bounded equations and synthetic same-device replay only; no author release execution, universal device/model/horizon parity, pilot relevance or protected/scientific selection'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture' if fixture else 'project_adaptation',
+        schedule_fields=('lr','weight_decay','progress','scale_lr') if learned else ('lr','weight_decay','progress'))
+
+
+def register_scale_noise_methods(registry,groups):
+    from .learned_scale import FIXTURE_CONFIG as SCALE_CONFIG,VIEW_CONTRACT
+    from .noise import FIXTURE_CONFIG as NOISE_CONFIG
+    for name in SCALE_NOISE_NAMES:
+        config={**VIEW_CONTRACT,'format':'uniform','minimum':-8,'maximum':7} if name=='lsq_uniform_fixture' else SCALE_CONFIG if name=='learned_fp4_scale' else {**NOISE_CONFIG,'mode':{'damping_fp4':'damping','simple_matrix_mask':'simple','magma_matrix_mask':'magma'}[name]}
+        registry.register(scale_noise_record(name,groups,config))

@@ -33,6 +33,8 @@ from .baselines.ewgs import EwgsAdapter,ADAPTER_FIELDS,trusted_constructor,valid
 from .baselines.trs import TrsState,TrsBackboneAdapter,ADAPTER_FIELDS as TRS_FIELDS,trusted_constructor as trs_constructor,validate_owned_state as validate_trs_state
 from .baselines.qar import QarAdjacentAdapter,ADAPTER_FIELDS as QAR_FIELDS,trusted_constructor as qar_constructor,validate_owned_state as validate_routing_state
 from .baselines.rounding import RoundingAdapter,trusted_constructor as rounding_constructor
+from .baselines.noise import NoiseAdapter,ADAPTER_FIELDS as NOISE_FIELDS,trusted_constructor as noise_constructor,validate_owned_state as validate_noise_state
+from .baselines.learned_scale import LearnedScaleAdapter,ADAPTER_FIELDS as SCALE_FIELDS,trusted_constructor as scale_constructor,validate_owned_state as validate_scale_state
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
@@ -100,6 +102,8 @@ register_state_schema('trs_state.v1',TrsState,('r','K','previous_codes','observa
 register_method_schema('trs_adapter.v1',TrsBackboneAdapter,TRS_FIELDS,trs_constructor)
 register_method_schema('qar_adapter.v1',QarAdjacentAdapter,QAR_FIELDS,qar_constructor)
 register_method_schema('rounding_adapter.v1',RoundingAdapter,QAR_FIELDS,rounding_constructor)
+register_method_schema('noise_adapter.v1',NoiseAdapter,NOISE_FIELDS,noise_constructor)
+register_method_schema('learned_scale_adapter.v1',LearnedScaleAdapter,SCALE_FIELDS,scale_constructor)
 
 
 def _rule_payload(rule):
@@ -127,7 +131,7 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor):
+    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor,noise_constructor,scale_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
@@ -333,6 +337,14 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
     matches = [(n,entry) for n,entry in _METHODS.items() if type(state.method) is entry[0]]
     if len(matches) != 1: raise IntegrityError('Unregistered method schema')
     method_name,(_,method_fields,_) = matches[0]
+    if method_name=='learned_scale_adapter.v1':
+        try:state.method.validate_live_scales()
+        except (ValueError,RuntimeError) as error:raise IntegrityError(str(error)) from error
+        for name,p in state.method.log_scales.items():
+            if type(p) is not torch.nn.Parameter or not p.requires_grad or p._backward_hooks or p._post_accumulate_grad_hooks:
+                raise IntegrityError('Learned scales require hook-free trainable Parameters')
+            if p.grad is not state.method.scale_gradients.get(name):
+                raise IntegrityError('Learned scale gradient owner alias mismatch')
     if set(vars(state.method)) != set(method_fields)|{'parameters','groups','rule'}:
         raise IntegrityError('Unknown adapter fields require registered method schema')
     rule_payload = _rule_payload(state.method.rule)
@@ -457,7 +469,7 @@ def _validate_quantized_owners(payload,prototype):
                 dtype = torch.bool if field == 'previous_zero_groups' else torch.uint8 if field == 'codes' else torch.float32
                 _array(value,shape if field in ('warm_start','codes') else scale_shape,dtype,'Runtime '+field)
                 if field == 'previous_scales' and (not fixed or not bool((value > 0).all())): raise IntegrityError('Invalid fixed scale handoff')
-            if step and fixed and (not torch.equal(handoff['previous_scales'],context.scales) or
+            if step and fixed and ((payload['method_schema']!='learned_scale_adapter.v1' and not torch.equal(handoff['previous_scales'],context.scales)) or
                                    not torch.equal(handoff['previous_zero_groups'],context.scale_zero_groups)):
                 raise IntegrityError('Fixed-scale cross-owner handoff mismatch')
 
@@ -527,6 +539,10 @@ def _validated(snapshot):
             validate_owned_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'])
         if payload['method_schema']=='trs_adapter.v1':
             validate_trs_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule)
+        if payload['method_schema']=='noise_adapter.v1':
+            validate_noise_state(payload['method'],payload['groups'],completed_step,rule,payload['model_cache']['_recipe'])
+        if payload['method_schema']=='learned_scale_adapter.v1':
+            validate_scale_state(payload['method'],payload['groups'],completed_step,rule,payload['model_cache']['_recipe'],payload['weights'],payload['model_cache']['_runtime'],payload['quantizer_state'])
         if payload['method_schema'] in ('qar_adapter.v1','rounding_adapter.v1'):
             validate_routing_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule,payload['weights'],payload['rng_streams'],payload['model_cache']['_recipe'],rounding=payload['method_schema']=='rounding_adapter.v1')
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
@@ -552,6 +568,8 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
         raise IntegrityError('Actual MPS requires availability and fallback disabled before startup')
     payload = _validated(snapshot)
     _strict_runtime(payload)
+    if payload['method_schema']=='learned_scale_adapter.v1' and payload['method']['scale_backend'] not in (None,device):
+        raise IntegrityError('Learned scales require the declared producing backend; cross-backend restoration unsupported')
     try:
         model = ByteTransformer(payload['model_config']).to(device)
         model.load_state_dict(payload['weights'],strict=True)
@@ -568,6 +586,10 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
         _,_,constructor = _METHODS[payload['method_schema']]
         method = constructor(parameters,payload['groups'],rule)
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
+        if payload['method_schema']=='learned_scale_adapter.v1':
+            method.restore_owned_parameters()
+            method.validate_live_scales()
+        if payload['method_schema']=='noise_adapter.v1':method.mask_rng_state=payload['method']['mask_rng_state'].clone()
         if payload['method_schema']=='ewgs_adapter.v2':method.probe_rng_state=payload['method']['probe_rng_state'].clone()
         # Noncapturable scalar counters stay CPU; moments remain original-W device.
         if set(method.optimizer_states) != set(parameters): raise IntegrityError('Optimizer manifest mismatch')
@@ -752,6 +774,8 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
         row.pop('elapsed_seconds',None)
         for name in TIMING_FIELDS: row.get('optimizer_work',{}).pop(name,None)
         row.get('ewgs_work',{}).pop('seconds',None)
+        row.get('learned_scale_work',{}).pop('scale_seconds',None)
+        row.get('noise_work',{}).pop('mask_seconds',None)
         for name in ('context_seconds','probability_seconds'):
             row.get('routing_rounding_work',{}).pop(name,None)
     if payload['rule'].get('schema') == SoapUpdateRule.state_schema:
@@ -759,6 +783,7 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
             for name in TIMING_FIELDS: values.get('telemetry',{}).pop(name,None)
     if payload['method_schema']=='ewgs_adapter.v2':
         for values in payload['method']['refresh_telemetry'].values():values.pop('elapsed_seconds',None)
+    if payload['method_schema']=='learned_scale_adapter.v1':payload['method'].pop('scale_validation_telemetry')
     encoder = _Encoder()
     # _decode leaves RNG states as plain data, suitable for deterministic hashing.
     metadata = encoder.encode(payload)

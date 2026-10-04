@@ -127,12 +127,12 @@ class TrainingState:
                 raise ValueError('Work counts must be nonnegative integers')
             self._work[name] += value
 
-    def summed_nll(self, batch_slice):
+    def summed_nll(self, batch_slice, *, parameter_overrides=None):
         validate_batch(batch_slice)
         if self._work is not None:
             self._work['forward_context'] += sum(len(b.inputs) for b in batch_slice.block_slices)
             self._work['loss_targets'] += batch_slice.target_count
-        loss = summed_nll(self.model,batch_slice)
+        loss = summed_nll(self.model,batch_slice,parameter_overrides=parameter_overrides)
         if self._work is not None:
             # Hook runs when this graph's scalar backward actually starts.
             work = self._work
@@ -184,7 +184,8 @@ def _stage_cursor(cursor):
 def _snapshot(state):
     # Retain actual Parameter objects so even illegal replacement can be undone.
     parameters = dict(state.model.named_parameters())
-    return {'parameters':parameters,'weights':_clone(state.model.state_dict()),
+    owned = getattr(state.method,'transaction_parameters',lambda:{})()
+    return {'parameters':parameters,'weights':_clone(state.model.state_dict()),'owned_parameters':dict(owned),
             'grads':{name:None if p.grad is None else p.grad.detach().clone() for name,p in parameters.items()},
             'model_context':{name:_clone(getattr(state.model,name)) for name in ('_contexts','_context_step','_runtime','_recipe')},
             'method':{name:_clone(value) for name,value in state.method.__dict__.items()
@@ -212,6 +213,8 @@ def _restore(state, snapshot):
         if name not in ('parameters','groups','rule'):
             delattr(state.method,name)
     state.method.__dict__.update(snapshot['method'])
+    if hasattr(state.method,'restore_owned_parameters'):
+        state.method.restore_owned_parameters(snapshot['owned_parameters'])
     state.method.parameters = dict(snapshot['parameters'])
     state.method.groups = snapshot['groups']
     state.method.rule = snapshot['rule_object']
@@ -249,7 +252,7 @@ def _transition(state, contexts, nll, count):
     parameters = dict(state.model.named_parameters())
     for name,context in contexts.items():
         # Endpoint codes on the cached scale are telemetry, never a graph/RNG draw.
-        cached = prepare_context(parameters[name],{'name':'row_fixed_max','rotation':context.rotation,
+        cached = prepare_context(parameters[name],{'name':'tensor_fixed_max' if context.grouping=='whole_tensor' else 'row_fixed_max','rotation':context.rotation,
                          'backward':context.backward,'previous_scales':context.scales},context.step,None)
         old = state.histories.get(name,{})
         telemetry[name] = {'cached_transitions':int((context.codes != cached.codes).sum()),

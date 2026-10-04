@@ -1,0 +1,33 @@
+{
+  "active_publication_stdout": "omitted; subsequent persistent task report names completed publication/commit refs",
+  "completed_consolidation": {
+    "finish.json": {
+      "bytes": 20040,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-20261004/consolidate/finish.json",
+      "sha256": "1406dc2bbebd81bde75cdd5c3c6f08e68ce6ec68806fdc4e20242f9ada618116"
+    },
+    "startup.json": {
+      "bytes": 2724976,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-20261004/consolidate/startup.json",
+      "sha256": "1e6a8f4debab581ab94fa9c1ac3c0c51709c369ccc3c71a62b79ceaacd34b9f5"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-20261004/consolidate/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.txt": {
+      "bytes": 223,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-20261004/consolidate/stdout.txt",
+      "sha256": "d35409fda0328ffca8fd27d521a98cbea70c433e3c54b64b3b29c1b12d7005e6"
+    }
+  },
+  "evidence": {
+    "bytes": 23282,
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-20261004/consolidate/evidence.json",
+    "sha256": "e21ea642aba35390fca3cfd9a215e05920028611401e5abf820d02c54ed1dfdf"
+  },
+  "history": "RED, mutants, original MPS validator failure and observed exp diagnostic immutable; no old moves/deletes/overwrites",
+  "scope": "final source-stable task+affected-boundary covering; exact same-backend learned physical cache, no scientific claims",
+  "task": "M06"
+}

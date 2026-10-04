@@ -51,7 +51,7 @@ def validate_batch(batch: LogicalBatch) -> None:
         raise ValueError('Cannot optimize or score an empty logical batch')
 
 
-def _target_losses(model, batch: LogicalBatch, *, contexts=None):
+def _target_losses(model, batch: LogicalBatch, *, contexts=None, parameter_overrides=None):
     validate_batch(batch)
     device = next(model.parameters()).device
     length = max(len(b.inputs) for b in batch.block_slices)
@@ -68,13 +68,21 @@ def _target_losses(model, batch: LogicalBatch, *, contexts=None):
         labels[row,:n] = torch.tensor(block.labels,device=device)
         padding[row,:n] = False
         mask[row,:n] = torch.tensor(block.score_mask,device=device)
-    logits = model(inputs,positions,padding,contexts=contexts)
+    if parameter_overrides is None:
+        logits = model(inputs,positions,padding,contexts=contexts)
+    else:
+        # M06's identity-storage learned-weight graph uses the identical model,
+        # inputs, activation arithmetic and target scorer. Only the six named
+        # projection weights differ; fresh graphs preserve original-W leaves.
+        if set(parameter_overrides) != {m['name'] for m in model.quantized_matrix_manifest()}:
+            raise ValueError('Functional weight views require exact projection manifest')
+        logits = torch.func.functional_call(model,parameter_overrides,(inputs,positions,padding),{'contexts':{}})
     return F.cross_entropy(logits[mask],labels[mask],reduction='none')
 
 
-def summed_nll(model, batch: LogicalBatch):
+def summed_nll(model, batch: LogicalBatch, *, parameter_overrides=None):
     """Scalar SUM for fresh training graphs; H06 alone owns normalization."""
-    return _target_losses(model,batch).sum()
+    return _target_losses(model,batch,parameter_overrides=parameter_overrides).sum()
 
 
 def evaluation_contexts(model, evaluation_context: dict):
