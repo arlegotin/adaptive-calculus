@@ -1,0 +1,352 @@
+{
+  "task": "H01",
+  "status": "implementation_complete_pending_independent_review",
+  "scientific_gate": null,
+  "source_preparation_command": ".venv/bin/python -m ralup prepare-data --config configs/data.json",
+  "command_exit": 1,
+  "exit_reason": "H01 successful; H02-H08 missing; full pipeline incomplete",
+  "prepared_manifest": {
+    "path": "data/processed/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/provenance/preparation.json",
+    "sha256": "146284ec18a1e3108c12ea3d99fece0689bcaec09289a9bdf950d4cd75e8f6a7",
+    "bytes": 4056
+  },
+  "source_authentication": {
+    "assets": [
+      {
+        "authenticated_head": {
+          "Content-Length": "1090",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91\"",
+          "X-Linked-Size": "732610",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "bytes": 732610,
+        "local_path": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/test-00000-of-00001.parquet",
+        "name": "test-00000-of-00001.parquet",
+        "observed_bytes": 732610,
+        "observed_sha256": "5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91",
+        "pinned_head": {
+          "Content-Length": "1090",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91\"",
+          "X-Linked-Size": "732610",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "revision_authentication": "retained_pinned_head_and_asset_hash",
+        "sha256": "5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91",
+        "source_path": "wikitext-103-raw-v1/test-00000-of-00001.parquet",
+        "split": "test",
+        "status": "authenticated_cache_reuse",
+        "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/test-00000-of-00001.parquet"
+      },
+      {
+        "authenticated_head": {
+          "Content-Length": "1092",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212\"",
+          "X-Linked-Size": "156987808",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "bytes": 156987808,
+        "local_path": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/train-00000-of-00002.parquet",
+        "name": "train-00000-of-00002.parquet",
+        "observed_bytes": 156987808,
+        "observed_sha256": "74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212",
+        "pinned_head": {
+          "Content-Length": "1092",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212\"",
+          "X-Linked-Size": "156987808",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "revision_authentication": "retained_pinned_head_and_asset_hash",
+        "sha256": "74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212",
+        "source_path": "wikitext-103-raw-v1/train-00000-of-00002.parquet",
+        "split": "train",
+        "status": "authenticated_cache_reuse",
+        "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/train-00000-of-00002.parquet"
+      },
+      {
+        "authenticated_head": {
+          "Content-Length": "1092",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720\"",
+          "X-Linked-Size": "157088770",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "bytes": 157088770,
+        "local_path": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/train-00001-of-00002.parquet",
+        "name": "train-00001-of-00002.parquet",
+        "observed_bytes": 157088770,
+        "observed_sha256": "ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720",
+        "pinned_head": {
+          "Content-Length": "1092",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720\"",
+          "X-Linked-Size": "157088770",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "revision_authentication": "retained_pinned_head_and_asset_hash",
+        "sha256": "ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720",
+        "source_path": "wikitext-103-raw-v1/train-00001-of-00002.parquet",
+        "split": "train",
+        "status": "authenticated_cache_reuse",
+        "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/train-00001-of-00002.parquet"
+      },
+      {
+        "authenticated_head": {
+          "Content-Length": "1118",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c\"",
+          "X-Linked-Size": "657209",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "bytes": 657209,
+        "local_path": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/validation-00000-of-00001.parquet",
+        "name": "validation-00000-of-00001.parquet",
+        "observed_bytes": 657209,
+        "observed_sha256": "204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c",
+        "pinned_head": {
+          "Content-Length": "1118",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Linked-ETag": "\"204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c\"",
+          "X-Linked-Size": "657209",
+          "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3"
+        },
+        "revision_authentication": "retained_pinned_head_and_asset_hash",
+        "sha256": "204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c",
+        "source_path": "wikitext-103-raw-v1/validation-00000-of-00001.parquet",
+        "split": "validation",
+        "status": "authenticated_cache_reuse",
+        "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/validation-00000-of-00001.parquet"
+      }
+    ],
+    "configuration": "wikitext-103-raw-v1",
+    "intended_use": "local research; no corpus redistribution authorized",
+    "license_discrepancy": "Pinned card YAML: CC BY-SA 3.0 and GFDL (version unspecified); prose: CC BY-SA 4.0. Unresolved.",
+    "new_download_bytes": 0,
+    "observed_total_bytes": 315466397,
+    "observed_utc": "2026-10-04T00:02:54.893212+00:00",
+    "protected_test_policy": "Raw test parsing/hashing permitted only for non-scoring provenance/dedup audit before partitions; test targets/model scoring closed until E03.",
+    "provenance_manifest_sha256": "fefdc80bde11a22eaeeefe3ae1c4d4a71be9871759b12323ade9b93d202a1b1f",
+    "repository": "Salesforce/wikitext",
+    "revision": "b08601e04326c79dfdd32d625aee71d232d685c3"
+  },
+  "measurement_scope": "All three official splits reconstructed and reversed solely as non-scoring provenance; no test targets/model scoring.",
+  "measured_splits": {
+    "test": {
+      "access_policy": "protected_non_scoring_audit_only_until_E03",
+      "articles": 63,
+      "audit_format": "sha256(concat(uint64_le(raw_length), raw_utf8))",
+      "derived_content_bytes": 1289123,
+      "derived_total_bytes": 1376781,
+      "files": [
+        {
+          "bytes": 1289123,
+          "path": "test.content.bin",
+          "sha256": "7952b062817620ac99b47296dc945942b55068d0e85baf1f95f300c7ad1480ef"
+        },
+        {
+          "bytes": 74086,
+          "path": "test.rows.bin",
+          "sha256": "a6e033805081a71db0d789e0b2b3574ff9e87859340b75a66e05027ca2a83de5"
+        },
+        {
+          "bytes": 13572,
+          "path": "test.articles.jsonl",
+          "sha256": "a81c88c50a762cf8d8420c6b16eff4b995f2ed71073478bc095b3257b4833351"
+        }
+      ],
+      "purpose": "non_scoring_provenance_audit",
+      "raw_utf8_bytes": 1287656,
+      "reconstruction_audit_sha256": "5bb09df7b3f1625dfa32ad558c0e7a97ac5212d5168875b2ba31dc8f57aaed1e",
+      "row_index_bytes": 74086,
+      "row_index_format": "<QQB: content_offset, raw_length, appended_lf; ordinal implicit",
+      "rows": 4358,
+      "source_row_audit_sha256": "5bb09df7b3f1625dfa32ad558c0e7a97ac5212d5168875b2ba31dc8f57aaed1e",
+      "source_shards": [
+        "wikitext-103-raw-v1/test-00000-of-00001.parquet"
+      ]
+    },
+    "train": {
+      "access_policy": "non_scoring_provenance_audit",
+      "articles": 29444,
+      "audit_format": "sha256(concat(uint64_le(raw_length), raw_utf8))",
+      "derived_content_bytes": 539931870,
+      "derived_total_bytes": 577295693,
+      "files": [
+        {
+          "bytes": 539931870,
+          "path": "train.content.bin",
+          "sha256": "d4f43c552ffd6ff64f71d37c8c7f0a5a2c38a1f9bc36d9471811479a2550ec6e"
+        },
+        {
+          "bytes": 30622950,
+          "path": "train.rows.bin",
+          "sha256": "0d6ca1d0460a94b9104abf200d7c76d2f40b95556bc16a78f7708dab8771f561"
+        },
+        {
+          "bytes": 6740873,
+          "path": "train.articles.jsonl",
+          "sha256": "19ea367671244ccb70147f2b63798396e58882a52afe7404e7484e3e5c464ce9"
+        }
+      ],
+      "purpose": "non_scoring_provenance_audit",
+      "raw_utf8_bytes": 539295549,
+      "reconstruction_audit_sha256": "241420851ee56e67bd84c9224fe0ec311a33f437331c9fd72a2e30706fdaa57d",
+      "row_index_bytes": 30622950,
+      "row_index_format": "<QQB: content_offset, raw_length, appended_lf; ordinal implicit",
+      "rows": 1801350,
+      "source_row_audit_sha256": "241420851ee56e67bd84c9224fe0ec311a33f437331c9fd72a2e30706fdaa57d",
+      "source_shards": [
+        "wikitext-103-raw-v1/train-00000-of-00002.parquet",
+        "wikitext-103-raw-v1/train-00001-of-00002.parquet"
+      ]
+    },
+    "validation": {
+      "access_policy": "non_scoring_provenance_audit",
+      "articles": 61,
+      "audit_format": "sha256(concat(uint64_le(raw_length), raw_utf8))",
+      "derived_content_bytes": 1145547,
+      "derived_total_bytes": 1222571,
+      "files": [
+        {
+          "bytes": 1145547,
+          "path": "validation.content.bin",
+          "sha256": "fbf387067edf87fc0f11e8cc1708be8ff6c944f6eeb98c1e34140c8a95629a00"
+        },
+        {
+          "bytes": 63920,
+          "path": "validation.rows.bin",
+          "sha256": "8c1ba3916597a1f865ec70373db35e4395890fef72c9cb3a00498572021c6b92"
+        },
+        {
+          "bytes": 13104,
+          "path": "validation.articles.jsonl",
+          "sha256": "8055b2815a305e3a1347b69dbed88f7a1b77e99a15ef360832f57e06f7776a3e"
+        }
+      ],
+      "purpose": "non_scoring_provenance_audit",
+      "raw_utf8_bytes": 1144248,
+      "reconstruction_audit_sha256": "302851c7c2ae8afd57126f78244c75d9654bfc1b4800ff8582a9ccab19131753",
+      "row_index_bytes": 63920,
+      "row_index_format": "<QQB: content_offset, raw_length, appended_lf; ordinal implicit",
+      "rows": 3760,
+      "source_row_audit_sha256": "302851c7c2ae8afd57126f78244c75d9654bfc1b4800ff8582a9ccab19131753",
+      "source_shards": [
+        "wikitext-103-raw-v1/validation-00000-of-00001.parquet"
+      ]
+    }
+  },
+  "derived_data_bytes": 579895045,
+  "preparation_manifest_bytes": 4056,
+  "synthetic": {
+    "source": {
+      "kind": "synthetic",
+      "path": "tests/fixtures/wikitext_rows.json",
+      "sha256": "afcf2018653bfd154067881795573bf61eaef3d74e3f3191f0d11d0c178c2798"
+    },
+    "manifest_sha256": "ad41d43ccbcaf2a107e855f9c26c7c4896d7b76810298a50f1d8d69e25e940b1",
+    "splits": {
+      "synthetic": {
+        "articles": 3,
+        "audit_format": "sha256(concat(uint64_le(raw_length), raw_utf8))",
+        "derived_content_bytes": 84,
+        "derived_total_bytes": 838,
+        "files": [
+          {
+            "bytes": 84,
+            "path": "synthetic.content.bin",
+            "sha256": "0173ffc8b382dd85d7bb30345883c12173dcd14e34319543b91c8ad659872443"
+          },
+          {
+            "bytes": 153,
+            "path": "synthetic.rows.bin",
+            "sha256": "df70161742774b2fee1ee789491cb5e45e916c8ecb17bf2144d9e4733a6f3ebf"
+          },
+          {
+            "bytes": 601,
+            "path": "synthetic.articles.jsonl",
+            "sha256": "2dac43ec34f3dc10444f2639c07ff3d01c52bea878d746d6eef3e021a5ea4770"
+          }
+        ],
+        "purpose": "non_scoring_provenance_audit",
+        "raw_utf8_bytes": 77,
+        "reconstruction_audit_sha256": "b1ede3c55f08d9b9cf8192874dc0c6747c73ad08440f4f4cb6a2e3bec47f5b69",
+        "row_index_bytes": 153,
+        "row_index_format": "<QQB: content_offset, raw_length, appended_lf; ordinal implicit",
+        "rows": 9,
+        "source_row_audit_sha256": "b1ede3c55f08d9b9cf8192874dc0c6747c73ad08440f4f4cb6a2e3bec47f5b69"
+      }
+    }
+  },
+  "later_stages": [
+    "H02 deduplication and partitions",
+    "H03 byte batches",
+    "H04-H08 remaining harness"
+  ],
+  "source_card": {
+    "url": "https://huggingface.co/datasets/Salesforce/wikitext/raw/b08601e04326c79dfdd32d625aee71d232d685c3/README.md",
+    "path": "vendor/source/wikitext/dataset-card.md",
+    "bytes": 10464,
+    "sha256": "d5aabf145d341366745ac703b5844c442c143943b6c77929481395c822b1c28c"
+  },
+  "legal_notices": {
+    "retrieval_date": "2026-10-04",
+    "purpose": "Official source notices; does not resolve WikiText card license-version discrepancy",
+    "records": [
+      {
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+        "final_url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+        "file": "cc-by-sa-3.0.txt",
+        "bytes": 22240,
+        "sha256": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f",
+        "status": "downloaded",
+        "path": "licenses/sources/wikitext/cc-by-sa-3.0.txt"
+      },
+      {
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+        "final_url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+        "file": "cc-by-sa-4.0.txt",
+        "bytes": 20138,
+        "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+        "status": "downloaded",
+        "path": "licenses/sources/wikitext/cc-by-sa-4.0.txt"
+      },
+      {
+        "url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+        "final_url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+        "file": "gfdl-1.3-reference.txt",
+        "bytes": 22955,
+        "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+        "status": "downloaded",
+        "adoption": "reference_only_dataset_does_not_name_version",
+        "path": "licenses/sources/wikitext/gfdl-1.3-reference.txt"
+      }
+    ]
+  },
+  "limitations": [
+    "License version discrepancy unresolved; GFDL version unspecified; GFDL 1.3 is reference only.",
+    "No corpus redistribution authorized.",
+    "Artifact paths are local ignored caches; permanent evidence contains hashes and counts only.",
+    "Source-only settings are not a resolved research training configuration."
+  ],
+  "verification": {
+    "focused_command": ".venv/bin/python -m pytest tests/unit/test_articles.py -q",
+    "focused_output": "26 passed in 0.12s",
+    "broad_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest -q",
+    "broad_output": "255 passed, 54 skipped in 9.28s",
+    "skip_reason": "MPS tests skip because MPS is unavailable in this sandbox; H01 source tests have no skips. Existing accepted F04/F05 actual-MPS evidence is unchanged.",
+    "tdd": {
+      "initial_red": "11 failed, 4 passed in 1.78s (missing behavior stubs; prior import-only RED is separately recorded in task report)",
+      "cli_red": "1 failed, 19 passed in 0.22s (prepare-data command absent)",
+      "bad_behavior_red": {
+        "unicode_normalization": "exact-byte fixture failed (1 failed in 0.04s)",
+        "double_appended_lf": "exact-byte fixture failed (1 failed in 0.03s)",
+        "dropped_preamble": "exact-byte fixture failed (1 failed in 0.04s)"
+      },
+      "download_partial_red": "2 failed, 23 passed in 0.19s (preexisting partial-file collision; fixed with unique owned temporary files)",
+      "independent_source_audit_red": "1 failed, 25 passed in 0.20s (normalizing reconstruction did not raise; upstream source audit now rejects it)"
+    }
+  }
+}

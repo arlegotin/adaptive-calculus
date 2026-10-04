@@ -1,0 +1,34 @@
+{
+  "retrieval_date": "2026-10-04",
+  "purpose": "Official source notices; does not resolve WikiText card license-version discrepancy",
+  "records": [
+    {
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+      "final_url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+      "file": "cc-by-sa-3.0.txt",
+      "bytes": 22240,
+      "sha256": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f",
+      "status": "downloaded",
+      "path": "licenses/sources/wikitext/cc-by-sa-3.0.txt"
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+      "final_url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+      "file": "cc-by-sa-4.0.txt",
+      "bytes": 20138,
+      "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+      "status": "downloaded",
+      "path": "licenses/sources/wikitext/cc-by-sa-4.0.txt"
+    },
+    {
+      "url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+      "final_url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+      "file": "gfdl-1.3-reference.txt",
+      "bytes": 22955,
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "status": "downloaded",
+      "adoption": "reference_only_dataset_does_not_name_version",
+      "path": "licenses/sources/wikitext/gfdl-1.3-reference.txt"
+    }
+  ]
+}

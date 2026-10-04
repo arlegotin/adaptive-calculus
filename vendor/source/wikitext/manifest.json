@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "repository": "Salesforce/wikitext",
+  "configuration": "wikitext-103-raw-v1",
+  "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "intended_use": "local research; no corpus redistribution authorized",
+  "protected_test_policy": "Raw test parsing/hashing permitted only for non-scoring provenance/dedup audit before partitions; test targets/model scoring closed until E03.",
+  "license_discrepancy": "Pinned card YAML: CC BY-SA 3.0 and GFDL (version unspecified); prose: CC BY-SA 4.0. Unresolved.",
+  "attribution": {
+    "dataset": "WikiText, Salesforce Research; Wikipedia Good and Featured articles",
+    "paper": "Stephen Merity, Caiming Xiong, James Bradbury, Richard Socher (2016), Pointer Sentinel Mixture Models",
+    "doi": "10.48550/arXiv.1609.07843",
+    "article_history": "Not supplied by repository; dataset citation does not replace article attribution"
+  },
+  "card": {
+    "url": "https://huggingface.co/datasets/Salesforce/wikitext/raw/b08601e04326c79dfdd32d625aee71d232d685c3/README.md",
+    "path": "vendor/source/wikitext/dataset-card.md",
+    "bytes": 10464,
+    "sha256": "d5aabf145d341366745ac703b5844c442c143943b6c77929481395c822b1c28c"
+  },
+  "legal_notices": {
+    "retrieval_date": "2026-10-04",
+    "purpose": "Official source notices; does not resolve WikiText card license-version discrepancy",
+    "records": [
+      {
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+        "final_url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt",
+        "file": "cc-by-sa-3.0.txt",
+        "bytes": 22240,
+        "sha256": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f",
+        "status": "downloaded",
+        "path": "licenses/sources/wikitext/cc-by-sa-3.0.txt"
+      },
+      {
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+        "final_url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+        "file": "cc-by-sa-4.0.txt",
+        "bytes": 20138,
+        "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+        "status": "downloaded",
+        "path": "licenses/sources/wikitext/cc-by-sa-4.0.txt"
+      },
+      {
+        "url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+        "final_url": "https://www.gnu.org/licenses/fdl-1.3.txt",
+        "file": "gfdl-1.3-reference.txt",
+        "bytes": 22955,
+        "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+        "status": "downloaded",
+        "adoption": "reference_only_dataset_does_not_name_version",
+        "path": "licenses/sources/wikitext/gfdl-1.3-reference.txt"
+      }
+    ]
+  },
+  "provenance_files": [
+    {
+      "path": "vendor/source/wikitext/repository-metadata.json",
+      "sha256": "bf69c068eebf88886801fa78ba391baa8384530d0a81a89ed1329c7d5dbdc729"
+    },
+    {
+      "path": "vendor/source/wikitext/repository-tree.json",
+      "sha256": "ef525c5718ed393e2f95dd2171b90ea2caea65953ab32bdb0eb717a615ddb278"
+    },
+    {
+      "path": "vendor/source/wikitext/raw-103-asset-metadata.json",
+      "sha256": "d8bde4401693e170dbc99fb50ca8516c79874fd86b689548f6ef6ad64c43d37f"
+    },
+    {
+      "path": "vendor/source/wikitext/downloads.json",
+      "sha256": "37ec5b79d968a7c016eb79c04a6ad4d4a96286139884fa50615cc2fd2a1be6bf"
+    }
+  ],
+  "assets": [
+    {
+      "name": "test-00000-of-00001.parquet",
+      "source_path": "wikitext-103-raw-v1/test-00000-of-00001.parquet",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/test-00000-of-00001.parquet",
+      "bytes": 732610,
+      "sha256": "5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91",
+      "pinned_head": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1090",
+        "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3",
+        "X-Linked-Size": "732610",
+        "X-Linked-ETag": "\"5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91\""
+      }
+    },
+    {
+      "name": "train-00000-of-00002.parquet",
+      "source_path": "wikitext-103-raw-v1/train-00000-of-00002.parquet",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/train-00000-of-00002.parquet",
+      "bytes": 156987808,
+      "sha256": "74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212",
+      "pinned_head": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1092",
+        "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3",
+        "X-Linked-Size": "156987808",
+        "X-Linked-ETag": "\"74da360f23826045b3e6ac6375411fdb15f003030aa74f2596ed08b857cb9212\""
+      }
+    },
+    {
+      "name": "train-00001-of-00002.parquet",
+      "source_path": "wikitext-103-raw-v1/train-00001-of-00002.parquet",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/train-00001-of-00002.parquet",
+      "bytes": 157088770,
+      "sha256": "ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720",
+      "pinned_head": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1092",
+        "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3",
+        "X-Linked-Size": "157088770",
+        "X-Linked-ETag": "\"ba090ac30dbf5461e8dcbdd1a1b8e6f3cf9c2c756d64f0c1220450acd514f720\""
+      }
+    },
+    {
+      "name": "validation-00000-of-00001.parquet",
+      "source_path": "wikitext-103-raw-v1/validation-00000-of-00001.parquet",
+      "split": "validation",
+      "url": "https://huggingface.co/datasets/Salesforce/wikitext/resolve/b08601e04326c79dfdd32d625aee71d232d685c3/wikitext-103-raw-v1/validation-00000-of-00001.parquet",
+      "bytes": 657209,
+      "sha256": "204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c",
+      "pinned_head": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1118",
+        "X-Repo-Commit": "b08601e04326c79dfdd32d625aee71d232d685c3",
+        "X-Linked-Size": "657209",
+        "X-Linked-ETag": "\"204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c\""
+      }
+    }
+  ],
+  "split_rows": {
+    "train": 1801350,
+    "validation": 3760,
+    "test": 4358
+  }
+}

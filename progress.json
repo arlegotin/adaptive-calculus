@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_gate": "WP00",
+  "current_gate": "WP02",
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
     "F01 purpose-specific null evidence gates and synthetic isolation",
@@ -14,23 +14,29 @@
     "F03 exhaustive encoding-aware float64 oracle and threshold FP32 tensor/code parity on CPU and fallback-disabled MPS; scaled-coordinate roundoff retained separately",
     "F03 review fix1: positive subnormal scales/inputs and reconstructed underflow bits preserved on actual fallback-disabled MPS; 4096 mixed-domain cases and tiny directions match CPU",
     "F03 independent reviewer gate complete at af847e3",
-    "F04 analytic Gaussian refit independently integrated; full-row Hadamard, fixed/dynamic scales, detached storage contexts and fresh STE/trust/clipped graphs passed CPU and actual fallback-disabled MPS checks; 215/215 current-suite tests passed; independent reviewer gate pending",
-    "F04 review fix1: finite supplied codes bypass unused nearest overflow; representable subnormal automatic/Gaussian scales, Hadamard forward/inverse gradients and physical trust/clipped masks preserved on actual fallback-disabled MPS; 112 covering cases passed and independent mixed-bit cohorts match; review pending",
-    "F04 review fix2: every Gaussian scale product uses preserved FP32/integer arithmetic, including sparse normal maxima with subnormal row/tensor scales; final context/Gaussian/microbatch files 72/72 passed on actual fallback-disabled CPU/MPS after all test edits; independent review pending"
+    "F05 independent reviewer gate clean at bc1e4a8; bounded update geometry and mechanism diagnostics accepted on CPU and actual fallback-disabled MPS",
+    "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
+    "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending",
+    "F04 independent reviewer gate clean at e27e397; Gaussian scales, rotations and surrogate contexts accepted on CPU and actual fallback-disabled MPS",
+    "F05 independent reviewer gate clean at bc1e4a8; bounded update geometry and mechanism diagnostics accepted on CPU and actual fallback-disabled MPS",
+    "WP01 numerical CPU/actual MPS accepted; this is a numerical engineering gate, not a scientific claim",
+    "H01 implementation: four pinned cache assets authenticated; all official source rows reconstructed and reversed in non-scoring provenance audit; synthetic and real measurements retained in docs/data/h01-evidence.json; independent review pending"
   ],
   "tasks": {
     "F01": "complete",
     "F02": "complete",
     "F03": "complete",
-    "F04": "implemented_pending_review"
+    "F04": "complete",
+    "F05": "complete",
+    "H01": "implemented_pending_review"
   },
   "last_valid_checkpoint": null,
   "blocks": [
-    "F04 independent reviewer gate pending",
-    "WP00 remaining source/data/license foundation tasks pending",
-    "WP01 exact formats, numerical invariants, assistance and scientific tolerances remain pending",
-    "All later scientific gates remain pending; protected scoring is unavailable",
-    "Official OCP PDF raw bytes/checksum unresolved (HTTP403); inspection notes are separately hashed"
+    "H01 independent reviewer gate pending",
+    "WP02 requires H02-H08; source ingestion alone does not pass the data/harness gate",
+    "All later scientific gates remain pending; protected targets/model scoring stays closed until E03",
+    "Pinned source card license version discrepancy and unspecified GFDL version remain unresolved; local research only; no corpus redistribution authorized",
+    "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate"
   ],
-  "next_command": "PYTORCH_ENABLE_MPS_FALLBACK=0 .venv/bin/python -m pytest tests/unit/test_quantization_context.py tests/unit/test_gaussian_fit.py tests/integration/test_surrogate_microbatches.py -q"
+  "next_command": ".venv/bin/python -m pytest tests/unit/test_articles.py -q"
 }

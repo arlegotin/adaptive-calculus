@@ -1838,5 +1838,20 @@
       "modifications": [],
       "fixture_parity": "not applicable; no release fixture reproduced"
     }
+  ],
+  "data_sources": [
+    {
+      "name": "WikiText-103 raw",
+      "repository": "Salesforce/wikitext",
+      "configuration": "wikitext-103-raw-v1",
+      "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+      "manifest_path": "vendor/source/wikitext/manifest.json",
+      "manifest_sha256": "fefdc80bde11a22eaeeefe3ae1c4d4a71be9871759b12323ade9b93d202a1b1f",
+      "license_notices": "licenses/sources/wikitext/manifest.json",
+      "intended_use": "local research; no corpus redistribution authorized",
+      "redistribution": "not authorized",
+      "license_discrepancy": "Pinned card YAML: CC BY-SA 3.0 and GFDL (version unspecified); prose: CC BY-SA 4.0. Unresolved.",
+      "measured_evidence": "docs/data/h01-evidence.json"
+    }
   ]
 }

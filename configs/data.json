@@ -1,0 +1,8 @@
+{
+  "kind": "pinned_source",
+  "repository": "Salesforce/wikitext",
+  "configuration": "wikitext-103-raw-v1",
+  "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "cache": "data/raw/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3",
+  "output": "data/processed/wikitext/b08601e04326c79dfdd32d625aee71d232d685c3/provenance"
+}
