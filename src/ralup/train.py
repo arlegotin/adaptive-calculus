@@ -368,7 +368,7 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
         feature_work = state._work.get('feature_work')
         public_work = {k:v for k,v in state._work.items() if k not in ('before_weights','training_loss','features','feature_tensors','common_gradient_ema')}
         if feature_work is not None:
-            public_work['policy_seconds'] = feature_work['scan_seconds']
+            public_work['policy_seconds'] = feature_work['scan_seconds']+public_work.get('policy_seconds',0.)
         if feature_work is not None and not feature_work['detailed_trace']:features = {}
         work = {**public_work,'step':step,'stream':batch.target_count,'unique':unique,'nll_sum':nll,
                 'nll_count':batch.target_count,'status':'completed_step','nonfinite_count':0,

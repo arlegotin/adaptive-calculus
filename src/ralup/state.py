@@ -42,6 +42,8 @@ from .quantization.context import QuantizationContext
 from .policy.history import MatrixHistory
 from .policy.features import FeatureVector
 from .policy.normalizer import FrozenNormalizer
+from .policy.controllers import ControllerState,ControllerArtifact
+from .policy.adapter import PolicyAdapter,ADAPTER_FIELDS as POLICY_FIELDS,trusted_constructor as policy_constructor,validate_owned_state as validate_policy_state
 from .records import ArtifactRef, RunLedger, WorkLedger, sha256_file
 from .train import TrainingState, _rng_state, _restore_rng
 
@@ -92,8 +94,9 @@ def register_method_schema(name, cls, field_names, constructor, *, shared_fields
 
 for _name,_cls in [('model_config.v1',ModelConfig),('schedule_point.v1',SchedulePoint),
                    ('parameter_group.v1',ParameterGroup),('quantization_context.v1',QuantizationContext),('matrix_history.v1',MatrixHistory),
-                   ('feature_vector.v1',FeatureVector),('frozen_normalizer.v1',FrozenNormalizer)]:
+                   ('feature_vector.v1',FeatureVector),('frozen_normalizer.v1',FrozenNormalizer),('controller_state.v1',ControllerState),('controller_artifact.v1',ControllerArtifact)]:
     register_state_schema(_name,_cls,tuple(f.name for f in fields(_cls)))
+register_method_schema('policy_adapter.v1',PolicyAdapter,POLICY_FIELDS,policy_constructor)
 register_method_schema('ordinary_adapter.v1',MethodAdapter,
                        ('optimizer_states','proposals','snapshot_schema'),MethodAdapter)
 
@@ -135,12 +138,13 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor,noise_constructor,scale_constructor):
+    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor,noise_constructor,scale_constructor,policy_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
         raise IntegrityError('Matrix rules require the registered matrix adapter')
-    adapter = constructor(dict(prototype.named_parameters()),payload['groups'],rule)
+    adapter = (constructor(dict(prototype.named_parameters()),payload['groups'],rule,payload['method']) if constructor is policy_constructor
+               else constructor(dict(prototype.named_parameters()),payload['groups'],rule))
     if payload['method']['snapshot_schema'] != adapter.snapshot_schema:
         raise IntegrityError('Method state schema mismatch')
     return adapter
@@ -582,6 +586,8 @@ def _validated(snapshot):
         _keys(payload['method'],names)
         if payload['method']['proposals']: raise IncompleteStep('Uncommitted proposals in snapshot')
         _validate_quantized_owners(payload,prototype,adapter)
+        if payload['method_schema']=='policy_adapter.v1':
+            validate_policy_state(payload['method'],payload['groups'],completed_step,payload['histories'],payload['configuration'])
         if payload['method_schema']=='ewgs_adapter.v2':
             if type(rule) is not AdamWUpdateRule:raise IntegrityError('EWGS owns original-W AdamW only')
             if payload['model_cache']['_recipe'] is None or payload['model_cache']['_recipe'].get('backward')!='ewgs':raise IntegrityError('EWGS requires explicit backward recipe')
@@ -634,7 +640,8 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
             p.grad = None if grad is None else grad.to(device).clone()
         rule = _construct_rule(payload['rule'])
         _,_,constructor = _METHODS[payload['method_schema']]
-        method = constructor(parameters,payload['groups'],rule)
+        method = (constructor(parameters,payload['groups'],rule,payload['method']) if constructor is policy_constructor
+                  else constructor(parameters,payload['groups'],rule))
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
         if payload['method_schema']=='learned_scale_adapter.v1':
             method.restore_owned_parameters()

@@ -192,3 +192,224 @@ def check_features(backbone_path,design_path,device,output,*,purpose):
     report['cost_contract']='whole physical attempt encloses reference, fit, replay, setup/import/checkpoint costs; inherited288 updates retain immutable lineage and are not new work; unknown enclosing/editing costs remain unknown'
     _write(out,report)
     return ArtifactRef(out,sha256_file(out))
+
+
+# H07 audit exclusions remain unchanged. Additional removals below concern only
+# the initialized-policy constructor metadata and independently verified owners.
+IDENTITY_PROJECTION_EXCLUSIONS={
+    'process_audit':'H07 existing runtime/process audit', 'run_ledger':'H07 existing artifact path/metadata audit wrapper',
+    'cursor_audit':'H07 existing cursor process audit','ledger.elapsed':'H07 existing complete audit clocks retained separately',
+    'ledger.events[*].elapsed_seconds':'H07 existing complete step clocks',
+    'ledger.events[*].policy_seconds':'H07 existing scan/action audit clock',
+    'ledger.events[*].feature_work.scan_seconds':'H07 existing feature scan audit clock',
+    'ledger.events[*].history_work.resolve_seconds':'H07 existing history audit clock',
+    'ledger.events[*].history_work.commit_seconds':'H07 existing history audit clock',
+    'ledger.events[*].optimizer_work.<TIMING_FIELDS>':'H07 existing optimizer clocks; every counter remains',
+    'ledger.events[*].ewgs_work.seconds':'H07 existing EWGS audit clock',
+    'ledger.events[*].learned_scale_work.scale_seconds':'H07 existing scale audit clock',
+    'ledger.events[*].noise_work.mask_seconds':'H07 existing mask audit clock',
+    'ledger.events[*].routing_rounding_work.context_seconds':'H07 existing routing audit clock',
+    'ledger.events[*].routing_rounding_work.probability_seconds':'H07 existing routing audit clock',
+    'method_schema':'initialized identity only: constructor tag maps to its ordinary/matrix authoritative baseline',
+    'method.snapshot_schema.adapter_mutable_state':'initialized identity only: frozen-controller schema tag maps to none.v1',
+    'method.controller_state':'independently require exact45 zero weights/[0,0,1] biases and authenticated deployment digest',
+    'method.normalizer':'independently authenticate selected normalizer; shared histories.feature_normalizer remains exactly compared',
+    'method.normalizer_ref':'independently authenticate selected file/digest',
+    'method.artifact':'independently authenticated deployment provenance; no artifact in initialized engineering scope',
+    'method.deployment_sha256':'independently recomputed frozen-owner identity',
+    'method.last_actions':'independently require exact identity dictionary for every matrix; reject any extra/numeric difference'}
+
+
+def identity_backbone_trajectory_hash(state):
+    """Exact shared scientific projection; NEVER a full H07 state-hash claim."""
+    import hashlib
+    from ..state import _validated,capture_snapshot,_Encoder
+    from safetensors.torch import save as tensor_bytes
+    from ..optim.adamw import AdamWUpdateRule
+    from ..optim.soap import TIMING_FIELDS
+    from .adapter import PolicyAdapter,validate_deployment
+    p=_validated(capture_snapshot(state))
+    if type(state.method) is PolicyAdapter:
+        validate_deployment(vars(state.method),state.histories,state.configuration)
+        c=state.method.controller_state
+        if c.family not in ('affine45','initialized') or not torch.equal(c.parameters.cpu(),torch.tensor([0.]*42+[0.,0.,1.])) or state.method.artifact is not None:
+            raise ValueError('Backbone projection only admits independently verified exact initialized candidate')
+        expected={'alpha':0.,'h':1.,'tau':1.,'identity_action':True,'original_W_commit':True,'assistance_bypassed':True}
+        want={n:expected for n in state.method.groups[0].parameter_names} if state.schedule['step'] else {}
+        if state.method.last_actions!=want:raise ValueError('Identity projection rejects changed actions')
+        p['method_schema']='ordinary_adapter.v1' if type(state.method.rule) is AdamWUpdateRule else 'matrix_adapter.v1'
+        for key in ('controller_state','normalizer','normalizer_ref','artifact','deployment_sha256','last_actions'):p['method'].pop(key)
+        p['method']['snapshot_schema']['adapter_mutable_state']='none.v1'
+    elif p['method_schema'] not in ('ordinary_adapter.v1','matrix_adapter.v1'):
+        raise ValueError('Identity projection requires authoritative ordinary/matrix reference')
+    for key in ('process_audit','run_ledger','cursor_audit'):p.pop(key)
+    p['ledger'].pop('elapsed')
+    for row in p['ledger']['events']:
+        for key in ('elapsed_seconds','policy_seconds'):row.pop(key,None)
+        row.get('feature_work',{}).pop('scan_seconds',None)
+        for key in ('resolve_seconds','commit_seconds'):row.get('history_work',{}).pop(key,None)
+        for key in TIMING_FIELDS:row.get('optimizer_work',{}).pop(key,None)
+        for family,clock in (('ewgs_work','seconds'),('learned_scale_work','scale_seconds'),('noise_work','mask_seconds')):row.get(family,{}).pop(clock,None)
+        for key in ('context_seconds','probability_seconds'):row.get('routing_rounding_work',{}).pop(key,None)
+    encoder=_Encoder();metadata=encoder.encode(p)
+    return hashlib.sha256(canonical_bytes(metadata)+tensor_bytes(encoder.tensors)).hexdigest()
+
+
+def controller_composition_probe(device):
+    """Small NEW rotated composition probe, not a replay of the F05 suite."""
+    from ..quantization.rotation import to_storage,from_storage
+    from .actions import compose_action,BOUND_RTOL,BOUND_ATOL
+    from ..models.checks import TOLERANCES
+    w=torch.tensor([[.001,-.31,1.7,-4.2],[0.,.4,1.,.7]],dtype=torch.float32)
+    dw=torch.tensor([[.002,.13,-.7,1.9],[0.,.1,.2,-.1]],dtype=torch.float32)*.01
+    rows=[]
+    for action in ((.5,1.2,.5),(0.,32.,1.)):
+        outputs=[];infos=[]
+        for target in ('cpu',device):
+            u=to_storage(w.to(target),'full_hadamard');d=to_storage(dw.to(target),'full_hadamard')
+            ctx=prepare_context(u,{'name':'row_fixed_max','previous_scales':torch.ones(2,1,device=target)},0,None)
+            out,info=compose_action(u,d,*action,ctx)
+            outputs.append(from_storage(out,'full_hadamard').cpu());infos.append(info)
+        torch.testing.assert_close(outputs[0],outputs[1],atol=TOLERANCES['rotation_atol'],rtol=TOLERANCES['rotation_rtol'])
+        rows.append({'action':list(action),'roundoff_max_abs':float((outputs[0]-outputs[1]).abs().max()),
+            'bound_rtol':BOUND_RTOL,'bound_atol':BOUND_ATOL,'accepted_count':infos[-1]['accepted_count'],
+            'accepted_bound_excess_max':infos[-1]['accepted_bound_excess_max'],
+            'observed_bound_excess_max':infos[-1]['observed_bound_excess_max'],
+            'rejected_count':infos[-1]['rejected_count'],'unrepresentable_nudge_count':infos[-1]['unrepresentable_nudge_count']})
+    return {'scope':'two NEW hand-sized rotated action compositions; CPU/MPS measured output contract only',
+        'atol':TOLERANCES['rotation_atol'],'rtol':TOLERANCES['rotation_rtol'],'rows':rows}
+
+
+def check_controllers(backbone_path,design_path,device,output,*,purpose):
+    """WP05 bounded M09 engineering scope, not accepted B0 or final learning."""
+    from .controllers import Affine45,LearnedLR49,Static3,count_parameters
+    from .adapter import PolicyAdapter
+    from .normalizer import FrozenNormalizer
+    from ..search import source_identity,create_trial_state,operation_contract
+    from ..optim.base import SchedulePoint
+    from ..state import capture_snapshot,save_snapshot,load_snapshot,restore_snapshot,exact_cpu_state_hash
+    from ..train import select_logical_batch,train_step,_equal,_rng_state,_restore_rng
+    from ..calibrate import _Sampler,_limits,memory_report,_offsets
+    if purpose!='exploratory-development-bootstrap':raise ValueError('Explicit exploratory purpose required')
+    backbone,backbone_ref=read_exploratory_backbone(backbone_path)
+    design_ref=_ref(design_path);design=_read(design_ref)
+    if design.get('schema')!='ralup.m09_controller_design.v1' or design.get('purpose')!=purpose or design['source_identity']!=source_identity() or design['backbone']!=backbone_ref:
+        raise ValueError('Prospectively frozen current-source M09 design required')
+    for key in ('helper','supervisor'):
+        if sha256_file(design[key]['path'])!=design[key]['sha256']:raise ValueError('M09 frozen helper changed')
+    for observed in design['runtime_commands']:
+        actual=subprocess.run(observed['command'],capture_output=True,text=True,check=True)
+        if actual.stdout!=observed['stdout'] or actual.stderr!=observed['stderr']:raise ValueError('M09 runtime changed after freeze')
+    if device!='mps' or not torch.backends.mps.is_available() or os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK')!='0':raise ValueError('Actual native MPS fallback0 required')
+    if design['episode_steps']!=4 or design['resume_step']!=2 or design['continuation_horizon']!=16 or design['trace_cadence']!=1:
+        raise ValueError('Only frozen four-step/two-step-resume M09 diagnostic scope admitted')
+    if design['tolerances']!={'rotation_atol':8e-6,'rotation_rtol':2e-6,'assistance_bound_atol':0.,'assistance_bound_rtol':2.384185791015625e-7,'same_device_identity':'exact shared-owner projection','same_device_resume':'exact strict H07'}:raise ValueError('Frozen M09 numerical tolerances must remain fail-closed')
+    selected=json.loads((ROOT/'docs/harness/m08-feature-evidence.json').read_bytes())['normalizer']
+    # Index structure is intentionally explicit; a user-provided substitute is rejected.
+    selected=selected['artifact'] if 'artifact' in selected else selected
+    if design['normalizer']!=selected:raise ValueError('Selected M08 diagnostic reference normalizer required')
+    n=_read(selected);normalizer=FrozenNormalizer(torch.tensor(n['mean']),torch.tensor(n['std']),n['source_manifest'])
+    admission=_read(design['prior_admission'])
+    if any(admission['source_identity'][name]!=source_identity()[name] for name in design['unchanged_numerical_sources']):raise ValueError('Prior primitive source changed')
+    if [(c['partition'],c['mode']) for c in design['cases']]!=[('target_train','initialized_identity'),('meta_train','changed_rotated')]:raise ValueError('Only frozen core identity and proxy rotated scopes admitted')
+    for case in design['cases']:
+        cfg=case['config']
+        expected_bias=[0.,0.,1.] if case['mode']=='initialized_identity' else [.5,.1823215567939546,.5]
+        expected_rotation='identity' if case['mode']=='initialized_identity' else 'full_hadamard'
+        if case['bias']!=expected_bias or cfg['partition']!=case['partition'] or cfg['recipe']!={**backbone['recipe'],'rotation':expected_rotation}:raise ValueError('Only the frozen named action/partition/recipe compositions admitted')
+        if cfg['source_identity']!=source_identity() or cfg['parent']!=backbone['parents'][cfg['partition']]['artifact'] or cfg['purpose']!='development-bootstrap' or cfg['parent_kind']!='derived_model_only' or cfg['budget']!=16*8192:raise ValueError('Current typed model-only/reset parent required')
+        inherited={**cfg,'recipe':{**cfg['recipe'],'rotation':'identity'}}
+        scopes=[s for s in admission['operation_scopes'] if s['contract']==operation_contract(inherited) and s['maximum_steps']>=4]
+        if not scopes:raise ValueError('No applicable original primitive operation proof')
+        proof=_read(scopes[0]['evidence'])
+        if proof['status']!='pass' or proof['scope']!=operation_contract(inherited) or proof['source_identity']!=admission['source_identity']:raise ValueError('Unauthenticated primitive proof')
+    attempt=Path(os.environ['M09_ATTEMPT_DIR']);started=time.perf_counter()
+    report={'schema':'ralup.m09_controller_evidence.v1','status':'failed','design':design_ref,'backbone':backbone_ref,
+        'normalizer':selected,'source_identity':source_identity(),'device':'mps','fallback':0,
+        'capacities':{'affine45':count_parameters(Affine45()),'learned_lr49':count_parameters(LearnedLR49()),'static3':count_parameters(Static3())},
+        'identity_projection_exclusions':IDENTITY_PROJECTION_EXCLUSIONS,'composition':controller_composition_probe(device),
+        'cases':[],'new_training_targets':0,'new_training_updates':0,'new_query_targets':0,
+        'limits':'WP05 scoped exploratory engineering diagnostic only: actual core initialized identity and proxy rotated changed action, four-step continuation/two-step replay, frozen diagnostic M08 normalizer. No accepted B0/WP04/S31, learned distribution, policy benefit, universal source/model/horizon/action-range transfer or protected scoring.'}
+    try:
+        for case in design['cases']:
+            cfg=case['config'];folder=attempt/case['mode'];folder.mkdir(exist_ok=False)
+            row={'partition':case['partition'],'mode':case['mode'],'parent':cfg['parent'],'steps':[],'replay':[],'checkpoints':[],
+                'continuation_horizon':16,'episode_steps':4,'recipe':cfg['recipe'],'parent_state_route':'authenticated model-only/reset with cursor/global/named RNG and inherited expenditure','inherited_updates':288,'inherited_targets':2359296}
+            report['cases'].append(row)
+            with _Sampler(device,_limits(cfg['resolved'])) as sampler:
+                def cap():
+                    sampler.sample()
+                    if sampler.exceeded or time.perf_counter()-started>design['finite_forecast_seconds']:raise RuntimeError('M09 frozen time/memory envelope exhausted')
+                state=create_trial_state(cfg);controller=Affine45()
+                with torch.no_grad():controller.linear.bias.copy_(torch.tensor(case['bias']))
+                state.method=PolicyAdapter(state.method.rule,controller,normalizer,normalizer_ref=ArtifactRef(**selected)).bind(dict(state.model.named_parameters()),state.method.groups)
+                state.optimizer_state=state.method.optimizer_states
+                state.configuration['policy_features']={'enabled':True,'full_horizon':16,'trace_cadence':1};state.histories['feature_normalizer']=normalizer
+                base=None
+                if case['mode']=='initialized_identity':
+                    base=create_trial_state(cfg);base.configuration['policy_features']=dict(state.configuration['policy_features']);base.histories['feature_normalizer']=normalizer
+                    initial_rng=_rng_state();hashes=[];baseline_seconds=0.;row['baseline_steps']=[]
+                    for i in range(4):
+                        cap();base.schedule['point']=SchedulePoint(.02,0.,i/16)
+                        batch=select_logical_batch(base,8192);events=len(base.ledger.events);status='failed'
+                        try:result=train_step(base,batch);status='completed'
+                        finally:
+                            receipt={'execution_id':f'{attempt.name}:baseline:{i}','step':i,'inputs':_offsets(batch),'events':base.ledger.events[events:],'status':status,'unknown_partial_work':status=='failed'}
+                            with (folder/'baseline.jsonl').open('a') as raw:raw.write(canonical_bytes(receipt).decode()+'\n');raw.flush();os.fsync(raw.fileno())
+                            report['new_training_targets']+=sum(e['stream'] for e in receipt['events'] if e['status']=='completed_step');report['new_training_updates']+=sum(e['status']=='completed_step' for e in receipt['events'])
+                        baseline_seconds+=result.work['elapsed_seconds'];row['baseline_steps'].append({'step':i,'work':result.work})
+                        hashes.append(identity_backbone_trajectory_hash(base))
+                    base_hash=hashes[-1];base_final_rng=_rng_state();_restore_rng(initial_rng)
+                    row['authoritative_baseline_projection_sha256']=base_hash
+                    row['authoritative_baseline_whole_step_seconds']=baseline_seconds
+                ids={n:id(p) for n,p in state.model.named_parameters()}
+                with (folder/'steps.jsonl').open('x') as raw:
+                    for i in range(4):
+                        cap();state.schedule['point']=SchedulePoint(.02,0.,i/16)
+                        batch=select_logical_batch(state,8192);events=len(state.ledger.events);status='failed'
+                        try:result=train_step(state,batch);status='completed'
+                        finally:
+                            receipt={'execution_id':f'{attempt.name}:{case["mode"]}:step:{i}','step':i,'inputs':_offsets(batch),'events':state.ledger.events[events:],'status':status,'unknown_partial_work':status=='failed'}
+                            raw.write(canonical_bytes(receipt).decode()+'\n');raw.flush();os.fsync(raw.fileno())
+                            report['new_training_targets']+=sum(e['stream'] for e in receipt['events'] if e['status']=='completed_step');report['new_training_updates']+=sum(e['status']=='completed_step' for e in receipt['events'])
+                        row['steps'].append({'step':i,'work':result.work,'actions':state.method.last_actions})
+                        if {n:id(p) for n,p in state.model.named_parameters()}!=ids:raise AssertionError('Parameter owner changed')
+                        if base is not None:
+                            actual=identity_backbone_trajectory_hash(state)
+                            if actual!=hashes[i]:raise AssertionError('Complete initialized backbone trajectory differs')
+                            row.setdefault('identity_projection_hashes',[]).append(actual)
+                        if i in (1,3):
+                            t=time.perf_counter();ref=save_snapshot(capture_snapshot(state),folder/('midpoint-2' if i==1 else 'completed-4'))
+                            row['checkpoints'].append({'label':'midpoint-2' if i==1 else 'completed-4',**_ref(ref.path),'io_seconds':time.perf_counter()-t})
+                            if i==1:midpoint=ref
+                if base is not None:
+                    # Direct exact equality includes every shared numerical owner.
+                    owners={'W_aux':_equal(base.model.state_dict(),state.model.state_dict()),'retained_gradients':_equal({n:p.grad for n,p in base.model.named_parameters()},{n:p.grad for n,p in state.model.named_parameters()}),
+                        'base_moments':_equal(base.optimizer_state,state.optimizer_state),'proposals':_equal(base.method.proposals,state.method.proposals),
+                        'quantizer':_equal(base.quantizer_state,state.quantizer_state),'cache_context':_equal({k:getattr(base.model,k) for k in ('_contexts','_context_step','_runtime','_recipe')},{k:getattr(state.model,k) for k in ('_contexts','_context_step','_runtime','_recipe')}),
+                        'history_features_EMA_normalizer':_equal(base.histories,state.histories),'cursor':base.cursor.state==state.cursor.state,'schedule':_equal(base.schedule,state.schedule),'global_rng':_equal(base_final_rng,_rng_state()),
+                        'named_rng':_equal({n:g.getstate() if hasattr(g,'getstate') else g.get_state() for n,g in base.rng_streams.items()},{n:g.getstate() if hasattr(g,'getstate') else g.get_state() for n,g in state.rng_streams.items()}),
+                        'work_counts':_equal(base.ledger.stream,state.ledger.stream) and _equal(base.ledger.passes,state.ledger.passes) and _equal(base.ledger.coverage,state.ledger.coverage)}
+                    row['direct_shared_owner_equality']=owners
+                    if not all(owners.values()):raise AssertionError('Shared complete owner equality failed')
+                    del base;gc.collect()
+                expected=exact_cpu_state_hash(state);row['strict_final_state_sha256']=expected
+                state=restore_snapshot(load_snapshot(midpoint),device);ids={n:id(p) for n,p in state.model.named_parameters()}
+                for i in range(2,4):
+                    cap();state.schedule['point']=SchedulePoint(.02,0.,i/16);batch=select_logical_batch(state,8192);events=len(state.ledger.events);status='failed'
+                    try:result=train_step(state,batch);status='completed'
+                    finally:
+                        receipt={'execution_id':f'{attempt.name}:{case["mode"]}:replay:{i}','step':i,'inputs':_offsets(batch),'events':state.ledger.events[events:],'status':status,'unknown_partial_work':status=='failed'}
+                        with (folder/'replay.jsonl').open('a') as raw:raw.write(canonical_bytes(receipt).decode()+'\n');raw.flush();os.fsync(raw.fileno())
+                        report['new_training_targets']+=sum(e['stream'] for e in receipt['events'] if e['status']=='completed_step');report['new_training_updates']+=sum(e['status']=='completed_step' for e in receipt['events'])
+                    row['replay'].append({'step':i,'work':result.work})
+                    if {n:id(p) for n,p in state.model.named_parameters()}!=ids:raise AssertionError('Resumed owner replaced')
+                row['strict_resume_exact']=exact_cpu_state_hash(state)==expected
+                if not row['strict_resume_exact']:raise AssertionError('Complete frozen-controller strict replay differs')
+                row['memory']=memory_report(sampler.samples);row['policy_frozen_digest']=state.method.deployment_sha256
+                del state;gc.collect();torch.mps.empty_cache()
+        report['status']='pass'
+    except BaseException as error:
+        report['failure']=f'{type(error).__name__}: {error}';report['complete_seconds']=time.perf_counter()-started;_write(output,report);raise
+    report['complete_seconds']=time.perf_counter()-started;_write(output,report)
+    return ArtifactRef(output,sha256_file(output))
