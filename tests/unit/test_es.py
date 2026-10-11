@@ -80,23 +80,11 @@ def test_real_query_authentication_uses_source_namespaced_document_ids(tmp_path)
     with pytest.raises(ValueError,match='documents'):tasks.authenticate_queries(cursor,[replace(block,document_id='train:17')])
 
 
-def test_two_stage_selection_uses_meta_nomination_then_full_official_loss(tmp_path):
+def test_empty_hash_authenticated_references_do_not_authorize_selection(tmp_path):
     from ralup.meta.selection import select_controller
-    from ralup.policy.controllers import ControllerArtifact,freeze_controller,Affine45,Static3
+    from ralup.policy.controllers import ControllerArtifact,freeze_controller,Affine45
     from ralup.records import ArtifactRef,sha256_file
     p=tmp_path/'provenance.json';p.write_text('{}');ref=ArtifactRef(p,sha256_file(p))
-    def artifact(controller):
-        state=freeze_controller(controller)
-        return ControllerArtifact(state.family,state.parameters,ref,ref,ref,ref)
-    a=artifact(Affine45());other=Affine45()
-    with torch.no_grad():other.linear.bias[1]=.1
-    b=artifact(other);c=artifact(Static3())
-    def row(artifact,partition,loss):
-        return dict(partition=partition,controller=artifact,seed=19,terminal_loss=loss,elapsed_seconds=4.,horizon=128,full_horizon=128,input_sha256='same-endpoint',opportunity_sha256='equal-budget')
-    meta=[row(a,'meta-development',2.),row(b,'meta-development',1.),row(c,'meta-development',1.5)]
-    official=[row(b,'development',1.4),row(c,'development',1.2)]
-    assert select_controller(meta,official) is c
-    with pytest.raises(ValueError,match='nominees'):select_controller(meta,[row(a,'development',.1),row(c,'development',1.2)])
-    wrong=[dict(official[0],horizon=16),official[1]]
-    with pytest.raises(ValueError,match='Full continuation'):select_controller(meta,wrong)
-    with pytest.raises(ValueError,match='Unequal'):select_controller(meta,[dict(official[0],seed=20),official[1]])
+    state=freeze_controller(Affine45());a=ControllerArtifact(state.family,state.parameters,ref,ref,ref,ref)
+    def row(partition):return dict(partition=partition,controller=a,seed=19,terminal_loss=1.,elapsed_seconds=4.,horizon=128,full_horizon=128,input_sha256='same-endpoint',opportunity_sha256='equal-budget')
+    with pytest.raises(ValueError):select_controller([row('meta-development')],[row('development')])

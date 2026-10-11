@@ -1,0 +1,22 @@
+{
+  "schema": "ralup.m11.fix1_verification.v1",
+  "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
+  "finding": "I1: selector eligibility/endpoint/stage-nomination authority",
+  "purpose": "Focused CPU authority/API tests only; fixture JSON, controller tensors, no Transformer forward/update/query or historical native/full-suite rerun.",
+  "source_files": {
+    "src/ralup/meta/selection.py": "8834bf382328956842ba55772f0e07b8a99e173387048f7eb79d51870d586ccc",
+    "tests/unit/test_es.py": "c7615ffe818326e9693be9d5c8d03ca2b14899f9787f9e450c09f8b40d3be043",
+    "tests/unit/test_meta_selection.py": "78388a396db734dcfb96a7fc6858b2f822a106d1caa81487fab0c2725c08670e"
+  },
+  "command": [
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/test_meta_selection.py",
+    "tests/unit/test_es.py"
+  ],
+  "forecast_seconds": 20,
+  "hard_deadline_seconds": 120,
+  "storage_forecast_bytes": 67108864,
+  "retention": "Retain complete producer/source/runtime/startup/stdout/stderr/finish and CPU fixture evidence in new owned fix1 directory; no old evidence modification."
+}

@@ -16,8 +16,9 @@ for folder in sorted(store.iterdir()):
   if 'unknown_partial_work' in d:row['historical_unknown_partial_work']=d['unknown_partial_work']
  rows.append(row)
 value={'schema':'ralup.m11_evidence_index.v1','updated_utc':datetime.now(timezone.utc).isoformat(),'status':'needs_revision_pending_independent_review','attempts':rows,
- 'finalization_receipt_location':str(store/'commit-evidence-v1'/'report.json'),
- 'final_report_location':str(store/'commit-evidence-v1'/'M11-report.md'),
+ 'finalization_receipt_location':str(store/'fix1-commit-v1'/'report.json'),
+ 'final_report_location':str(store/'fix1-commit-v1'/'M11-report.md'),
+ 'fix_round_1':{'finding':'I1','status':'implemented_pending_scoped_rereview','fix_base':'e25a96c4c316129abc193f3715493a3fdbfe08ca','verification':'fix1-verify-selector-v1:27passed1.54s','source_applicability':'Selector-only strict runtime identity change; no old complete-state import, normalizer DATA unchanged; no new model work'},
  'scope':'Exploratory B0null/WP04inconclusive/confirmation-ineligible. No selected final controller or learned gain claim. Current source/noise evidence does not qualify all later horizons.',
  'v1_completed_work_bound':{'updates':64,'training_targets':524288,'query_forward_targets':0,'basis':'raw completed_step events plus pre-scoring query-auth validation traceback and failure-only duplicate journal; historical generic unknown_partial_work=true remains unchanged'},
  'ancestor_cost':'Original typed META parent707 288updates2359296targets shared ancestry, globally deduplicate; never count cloned ledger ancestry as fresh independent work.',

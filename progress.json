@@ -46,7 +46,7 @@
     "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
     "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
   ],
-  "next_command": "Full M11 independent review c2552c0722110d0c7ed5e5e0e28df11d3d680eda..HEAD; then mandatoryM10 beforeE01.",
+  "next_command": "Scoped M11 I1 fix rereview from e25a96c4c316129abc193f3715493a3fdbfe08ca..HEAD; then mandatoryM10 beforeE01.",
   "M11": {
     "status": "WP06_NEEDS_REVISION_pending_independent_review",
     "evidence_index": "docs/harness/m11-evidence.json",
@@ -68,7 +68,7 @@
       "META-development and full official-development selection; robustB0/recipe applicability and familyLR tuningE01",
       "Shared-range learnedLR and retuned mechanism contrastsE05; global evidence/cost unionE07"
     ],
-    "next_action": "Full M11 independent review c2552c0722110d0c7ed5e5e0e28df11d3d680eda..HEAD; then mandatoryM10 beforeE01.",
+    "next_action": "Scoped M11 I1 fix rereview from e25a96c4c316129abc193f3715493a3fdbfe08ca..HEAD; then mandatoryM10 beforeE01.",
     "implementation_commit": "5ed817e8a34640bc0227d9d603947a3ab8933007",
     "current_reference_design": {
       "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
@@ -80,6 +80,14 @@
     "final_m": null,
     "final_iterations": null,
     "logging_fix_commit": "16fe874b3a7e3249ae833fa977a9db974a7191d2",
-    "disposition_basis": "Exact brief short-horizon/noisy revision branch: both provisional policies improveK32/64 but worsenfull496 on both panels; residual direction-sampling variability. No family defeat/resource impossibility/general rejection."
+    "disposition_basis": "Exact brief short-horizon/noisy revision branch: both provisional policies improveK32/64 but worsenfull496 on both panels; residual direction-sampling variability. No family defeat/resource impossibility/general rejection.",
+    "fix_round_1": {
+      "finding": "I1",
+      "status": "implemented_pending_scoped_rereview",
+      "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
+      "verification": "fix1-verify-selector-v1:27passed1.54s; no model work",
+      "scope": "Only selector eligibility/endpoint/nomination authority; WP06 NEEDS_REVISION unchanged",
+      "future_source_applicability": "New strict runtime identity; normalizer DATA unchanged, no old complete-state import"
+    }
   }
 }

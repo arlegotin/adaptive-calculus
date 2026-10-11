@@ -50,6 +50,49 @@
       "status": "source_transaction_committed"
     },
     {
+      "attempt": "commit-evidence-v1",
+      "complete_launcher_seconds": 4.00821816700045,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/finish.json",
+          "sha256": "b77d9af1d01ac680d5f97b3de1b3852aa25c60c16bdab9330197b9fdf2a13337"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/report.json",
+          "sha256": "e61456416cb5cf87eb6907619fd7c7f75645aead30a1121d8926265463bf8451"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/startup.json",
+          "sha256": "2a0a14b1736948b3ed9c0b08a2380deaf7f0b9855032b3d020034fa4f75aaf8b"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/supervision.json",
+          "sha256": "d3052c6bb1b5caca21e1ff9bc1085e681793bd2b902b5ca3947a8ef35f399b11"
+        }
+      },
+      "status": "evidence_committed_needs_revision_pending_independent_review"
+    },
+    {
+      "attempt": "fix1-verify-selector-v1",
+      "complete_launcher_seconds": 5.728665958002239,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-verify-selector-v1/finish.json",
+          "sha256": "42ffab5f55e47f3ceb77acaed6bea1705d2535d16b361dc7c04344154fb19c65"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-verify-selector-v1/startup.json",
+          "sha256": "d58ff0e6db626f91fc2f884263deca29bc41f0475e0fb4bbfe0b0db478a4003a"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-verify-selector-v1/supervision.json",
+          "sha256": "e30c7373b5c28efbf0812ced9733e69691b821f9a16518097c685f59488f7e50"
+        }
+      }
+    },
+    {
       "attempt": "freeze-calibration-v1",
       "complete_launcher_seconds": 11.622126459002175,
       "exit_code": 1,
@@ -359,15 +402,22 @@
       }
     }
   ],
-  "final_report_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/M11-report.md",
-  "finalization_receipt_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/report.json",
+  "final_report_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/M11-report.md",
+  "finalization_receipt_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/report.json",
+  "fix_round_1": {
+    "finding": "I1",
+    "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
+    "source_applicability": "Selector-only strict runtime identity change; no old complete-state import, normalizer DATA unchanged; no new model work",
+    "status": "implemented_pending_scoped_rereview",
+    "verification": "fix1-verify-selector-v1:27passed1.54s"
+  },
   "next": "Full M11 independent review BASEc2552c0..finalHEAD, then mandatoryM10 beforeE01. WP06 reopening requires justified longer-horizon/objective calibration, matched candidate/LR/static own-policy-refresh learning, both development selection stages and B0 applicability; final budgets/selected controller remain null.",
   "schema": "ralup.m11_evidence_index.v1",
   "scope": "Exploratory B0null/WP04inconclusive/confirmation-ineligible. No selected final controller or learned gain claim. Current source/noise evidence does not qualify all later horizons.",
   "status": "needs_revision_pending_independent_review",
   "telemetry_scope": "Old bootstrap/calibration producer dropped completed last_actions on rebind: no pre-update complete-owner proof. Corrected5ed817e reference/affected-assessment preserves full-owner clones but rollout step receipts omit policy_actions. No invented old action attribution. Logging-only correction committed16fe874; focused23passed. Exact src delta is meta/tasks.py; feature/history/normalization math unchanged. No old complete-state import. Any future learning requires fresh strict pools; authenticated META-only normalizer DATA retains original provenance.",
   "unknown_costs": "Early unreceipted CPU/editing/tool/enclosing work unknown, never zero or represented by native launcher walls.",
-  "updated_utc": "2026-10-11T20:32:25.793880+00:00",
+  "updated_utc": "2026-10-11T20:48:37.342293+00:00",
   "v1_completed_work_bound": {
     "basis": "raw completed_step events plus pre-scoring query-auth validation traceback and failure-only duplicate journal; historical generic unknown_partial_work=true remains unchanged",
     "query_forward_targets": 0,
