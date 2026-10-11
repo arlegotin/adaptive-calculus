@@ -36,7 +36,7 @@ def test_single_synthetic_open_and_append_only_result(e03_factory):
     blocks=list(evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory))
     assert sum(sum(block.score_mask) for block in blocks)==33
     before=evaluate.confirmation_access_events(ref)
-    assert [row['kind'] for row in before]==['frozen','opened']
+    assert [row['kind'] for row in before]==['frozen','opened','payload_ready']
     with pytest.raises(evaluate.ProtectedAccessError,match='already'):
         evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory)
     result=artifact('scores.json',{'synthetic':True,'manifest_sha256':ref.sha256,'bpb':8.0})
@@ -44,7 +44,7 @@ def test_single_synthetic_open_and_append_only_result(e03_factory):
     assert evaluate.existing_protected_result(ref).sha256==result['sha256']
     with pytest.raises(evaluate.ProtectedAccessError): evaluate.record_protected_result(ref,result)
     after=evaluate.confirmation_access_events(ref)
-    assert after[:2]==before
+    assert after[:len(before)]==before
     Path(result['path']).write_bytes(b'changed result')
     with pytest.raises(evaluate.IntegrityError): evaluate.existing_protected_result(ref)
 
@@ -108,3 +108,58 @@ def test_amendment_classifies_inspection_that_occurs_between_read_and_append(e03
     event=evaluate.record_confirmation_amendment(ref,{'claim':'changed after concurrent inspection'})
     assert event['claim_status']=='exploratory'
     assert event['fresh_independent_confirmation_required'] is True
+
+
+@pytest.mark.parametrize('completion',['failed','interrupted','successful'])
+def test_result_requires_completed_payload_during_interleaved_open(e03_factory,monkeypatch,completion):
+    """Reservation alone must deny both result publication and result retrieval."""
+    from ralup.records import ConfirmationAudit
+    inputs,ref,inventory,artifact=e03_factory()
+    payload=Path(inputs['dataset']['payload']['path'])
+    result=artifact('interleaved-result.json',{'synthetic':True,'manifest_sha256':ref.sha256,'bpb':8.0})
+    original=evaluate.read_artifact
+    publication_denied=[]; retrieval_denied=[]
+    def during_read(reference):
+        if reference.path == payload:
+            try:
+                evaluate.record_protected_result(ref,result)
+            except evaluate.ProtectedAccessError:
+                publication_denied.append(True)
+            try:
+                evaluate.existing_protected_result(ref)
+            except evaluate.ProtectedAccessError:
+                retrieval_denied.append(True)
+            if completion == 'failed':
+                # Retain a NEW, explicitly synthetic pre-fix result history:
+                # old buggy producers could publish between reserve and failure.
+                if publication_denied:
+                    ConfirmationAudit(ref).append('result',{'result':result,'scope':'synthetic-pre-fix-history'})
+                raise evaluate.IntegrityError('synthetic pending payload hash mismatch')
+            if completion == 'interrupted':
+                raise KeyboardInterrupt('synthetic interruption after reservation')
+        return original(reference)
+    monkeypatch.setattr(evaluate,'read_artifact',during_read)
+    if completion == 'failed':
+        with pytest.raises(evaluate.IntegrityError,match='pending payload'):
+            evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory)
+    elif completion == 'interrupted':
+        with pytest.raises(KeyboardInterrupt,match='after reservation'):
+            evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory)
+    else:
+        blocks=evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory)
+        assert sum(sum(block.score_mask) for block in blocks)==33
+    assert publication_denied == [True]
+    assert retrieval_denied == [True]
+    rows=evaluate.confirmation_access_events(ref)
+    if completion == 'successful':
+        assert [row['kind'] for row in rows]==['frozen','opened','payload_ready']
+        assert rows[-1]['reservation_event_id']==rows[1]['event_id']
+        assert evaluate.existing_protected_result(ref) is None
+        evaluate.record_protected_result(ref,result)
+        assert evaluate.existing_protected_result(ref).sha256 == result['sha256']
+    else:
+        assert not any(row['kind']=='payload_ready' for row in rows)
+        with pytest.raises(evaluate.ProtectedAccessError): evaluate.record_protected_result(ref,result)
+        with pytest.raises(evaluate.ProtectedAccessError): evaluate.existing_protected_result(ref)
+    with pytest.raises(evaluate.ProtectedAccessError,match='already'):
+        evaluate.open_protected_targets(phase='confirm',manifest_ref=ref,inventory=inventory)

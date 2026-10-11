@@ -338,9 +338,15 @@ class ConfirmationAudit:
             raise IntegrityError('Confirmation access history invalid') from error
         return rows
 
-    def events(self):
+    def events(self, *, guard=None):
+        import fcntl
         try:
-            return self._decode(self.path.read_bytes())
+            with self.path.open('rb') as stream:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_SH)
+                rows = self._decode(stream.read())
+                if guard is not None:
+                    guard(rows)
+                return rows
         except OSError as error:
             raise IntegrityError('Confirmation access history unavailable') from error
 

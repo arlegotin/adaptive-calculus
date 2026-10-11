@@ -86,12 +86,21 @@ A hash-linked append-only `.access.jsonl` records the original freeze, denied
 openings, single scorer reservation, payload failures, amendments and result refs.
 Sequence, previous event hash, manifest hash and exact canonical event bytes are
 validated on every access; events have distinct IDs and automatic UTC. A local
-advisory writer lock serializes check/append. The first scorer reservation is
-retained even if reading fails. Repeated opening fails; it never silently replaces
-a result. `record_protected_result(ref, result_reference_dict)` permits one result
-only after successful opening, authenticating its manifest binding;
-`existing_protected_result(ref)` returns the existing verified ArtifactRef or
-fails on changed result bytes. E04 owns actual execution/scoring/inference.
+advisory writer lock serializes check/append. The `opened` event reserves the
+scorer before the read; it does not establish successful opening. Only after the
+exact payload authenticates and all blocks materialize does a locked
+`payload_ready` transition bind that original reservation and payload SHA-256.
+The first reservation is retained even if reading fails or the process is
+interrupted; repeated opening fails without retry or replacement.
+`record_protected_result(ref, result_reference_dict)` permits one result only
+after that successful state, authenticating its manifest binding under the append
+lock. `existing_protected_result(ref)` checks that same successful state and
+authenticates result bytes under the same audit file's shared reader lock.
+Pending, failed or amended openings reject publication/retrieval, including
+pre-fix histories containing a result without successful payload completion.
+No scorer/result ever requested returns null; a successful opening with no
+result yet also returns null. Existing verified results must follow the successful
+transition; changed result bytes or invalid histories fail. E04 owns actual execution/scoring/inference.
 
 `record_confirmation_amendment(ref, amendment)` preserves amendments separately
 from the frozen manifest. Before inspection it requires a new freeze; after

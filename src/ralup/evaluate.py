@@ -401,8 +401,8 @@ def open_protected_targets(*, phase: str, manifest_ref: ArtifactRef, inventory: 
         def guard(rows):
             if any(row['kind'] in ('opened','amendment') for row in rows):
                 raise ProtectedAccessError('Locked scorer already opened or manifest amended; no replacement')
-        audit.append('opened',{'inventory_sha256':hashlib.sha256(canonical_bytes({'inventory':inventory})).hexdigest(),
-                             'scope':'synthetic-engineering','claim_status':'synthetic_engineering'},guard=guard)
+        reservation=audit.append('opened',{'inventory_sha256':hashlib.sha256(canonical_bytes({'inventory':inventory})).hexdigest(),
+                                         'scope':'synthetic-engineering','claim_status':'synthetic_engineering'},guard=guard)
     except (ProtectedAccessError,IncompleteConfirmation,IntegrityError) as error:
         audit.append('denied',{'reason':str(error)})
         raise
@@ -419,7 +419,16 @@ def open_protected_targets(*, phase: str, manifest_ref: ArtifactRef, inventory: 
                 raise IntegrityError('Synthetic articles must be nonempty strings')
             data=content.encode('utf-8')
             blocks.extend(tile_article(Article(data,[],hashlib.sha256(data).hexdigest())))
-        return tuple(blocks)
+        blocks=tuple(blocks)
+        def ready_guard(rows):
+            reservations=[row for row in rows if row['kind']=='opened']
+            if (len(reservations)!=1 or reservations[0]['event_id']!=reservation['event_id']
+                    or any(row['kind'] in ('payload_ready','payload_failed','result','amendment') for row in rows)):
+                raise ProtectedAccessError('Payload completion requires the original pending, unamended reservation')
+        audit.append('payload_ready',{'reservation_event_id':reservation['event_id'],
+            'payload_sha256':payload_ref.sha256,'materialized_blocks':len(blocks),
+            'target_count':sum(sum(block.score_mask) for block in blocks)},guard=ready_guard)
+        return blocks
     except (ValueError,OSError,TypeError) as error:
         audit.append('payload_failed',{'reason':str(error),'failure_disposition':'retained_no_retry'})
         raise
@@ -433,6 +442,18 @@ def record_confirmation_amendment(reference, amendment):
     return audit.append('amendment',{'amendment':amendment})
 
 
+def _require_successful_payload(rows, payload_sha256):
+    reservations=[row for row in rows if row['kind']=='opened']
+    ready=[row for row in rows if row['kind']=='payload_ready']
+    if (len(reservations)!=1 or len(ready)!=1
+            or ready[0].get('reservation_event_id')!=reservations[0]['event_id']
+            or ready[0].get('payload_sha256')!=payload_sha256
+            or ready[0]['sequence']<=reservations[0]['sequence']
+            or any(row['kind'] in ('payload_failed','amendment') for row in rows)):
+        raise ProtectedAccessError('No successful authenticated/materialized locked payload; pending, failed or amended opening')
+    return ready[0]
+
+
 def record_protected_result(reference, result):
     _,payload=_manifest(reference); _validate_contract(payload)
     result_ref=_reference(result)
@@ -440,18 +461,25 @@ def record_protected_result(reference, result):
     if value.get('manifest_sha256') != reference.sha256 or value.get('synthetic') is not True:
         raise IntegrityError('Result must bind exact synthetic manifest identity')
     def guard(rows):
-        if not any(row['kind']=='opened' for row in rows) or any(row['kind'] in ('result','payload_failed','amendment') for row in rows):
-            raise ProtectedAccessError('No successful locked scorer or result already recorded/amended')
+        _require_successful_payload(rows,payload['dataset']['payload']['sha256'])
+        if any(row['kind']=='result' for row in rows):
+            raise ProtectedAccessError('Locked scorer result already recorded; no replacement')
     return ConfirmationAudit(reference).append('result',{'result':result},guard=guard)
 
 
 def existing_protected_result(reference):
     _,payload=_manifest(reference); _validate_contract(payload)
-    events=ConfirmationAudit(reference).events()
-    results=[row for row in events if row['kind']=='result']
-    if not results:
-        return None
-    if len(results)!=1:
-        raise IntegrityError('More than one locked scorer result')
-    ref=_reference(results[0]['result']); read_artifact(ref)
-    return ref
+    verified=[]
+    def guard(rows):
+        results=[row for row in rows if row['kind']=='result']
+        if not any(row['kind']=='opened' for row in rows) and not results:
+            return  # No scorer/result has ever been requested.
+        ready=_require_successful_payload(rows,payload['dataset']['payload']['sha256'])
+        if not results:
+            return
+        if len(results)!=1 or results[0]['sequence']<=ready['sequence']:
+            raise IntegrityError('Result must follow the single successful locked payload completion')
+        ref=_reference(results[0]['result']); read_artifact(ref)
+        verified.append(ref)
+    ConfirmationAudit(reference).events(guard=guard)
+    return verified[0] if verified else None
