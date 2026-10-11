@@ -1,0 +1,377 @@
+{
+  "ancestor_cost": "Original typed META parent707 288updates2359296targets shared ancestry, globally deduplicate; never count cloned ledger ancestry as fresh independent work.",
+  "attempts": [
+    {
+      "attempt": "closure-v1",
+      "complete_launcher_seconds": 3.5539475420009694,
+      "exit_code": 0,
+      "files": {
+        "disposition.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/disposition.json",
+          "sha256": "81c6764d049c23d71d019c45c628327e15ab7295f2b54514051ef941c83d9445"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/finish.json",
+          "sha256": "2db946ab51bcb56380c065f375f34bfa8b792bafd8b31137994adde053ac5000"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/report.json",
+          "sha256": "31fa4a7105dc4e61469c74b69866e1ab294fecfcbbd0fd0a2d3bd11940d9fc24"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/startup.json",
+          "sha256": "b3f83b3f6ec7b6201d40543ae29a7242c06ff1902a5935293813a1eba8ab6e99"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/supervision.json",
+          "sha256": "96eed710fd22d21a80f29dc7eef393ab9d90521edfcccb3d89049254c7f44bca"
+        }
+      },
+      "status": "needs_revision_packaged_pending_independent_review"
+    },
+    {
+      "attempt": "commit-action-journal-v1",
+      "complete_launcher_seconds": 3.2958291670001927,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-action-journal-v1/finish.json",
+          "sha256": "c4d88478225c9191ab6a50a5b31867235d60815490490068470745695edce2cb"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-action-journal-v1/report.json",
+          "sha256": "26acb68d6ec1d9a8cdef21d3e9576ee85fe897151304eace3e97f1d15993de35"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-action-journal-v1/startup.json",
+          "sha256": "da3c61116f6cd5bcf086ae961ba20b901c6a505719887858e093499db120e991"
+        }
+      },
+      "status": "source_transaction_committed"
+    },
+    {
+      "attempt": "freeze-calibration-v1",
+      "complete_launcher_seconds": 11.622126459002175,
+      "exit_code": 1,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-calibration-v1/finish.json",
+          "sha256": "8dafbd2fc1d59a6d5900cef8370e606066ba704a486d0439bd6944ebf6536303"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-calibration-v1/startup.json",
+          "sha256": "6bec54edd1024986d59d503da7ee0edf251593ea858de577cb06c12f8ffed712"
+        }
+      }
+    },
+    {
+      "attempt": "freeze-calibration-v2",
+      "complete_launcher_seconds": 18.460929583001416,
+      "exit_code": 0,
+      "files": {
+        "design.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-calibration-v2/design.json",
+          "sha256": "dfe95a5326e974b185b124f1019d17bbbecca93294fa4bb02a5cc4f7319c3778"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-calibration-v2/finish.json",
+          "sha256": "9bfbe3fde6d78001aaa49976f7f1c43765bfa56565a7669517dbc75e78f74966"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-calibration-v2/startup.json",
+          "sha256": "2d607026bfcd57d9fe49fdad82081db5de522366de89e13d11dccb8997dffaaf"
+        }
+      }
+    },
+    {
+      "attempt": "freeze-final-calibration-v1",
+      "complete_launcher_seconds": 20.955176291998214,
+      "exit_code": 0,
+      "files": {
+        "design.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-final-calibration-v1/design.json",
+          "sha256": "afb92170134c535f4ce82bf79d2065a74e5b7859cf667243e09ec96c517f5342"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-final-calibration-v1/finish.json",
+          "sha256": "bd3745c0b6a6a135ac9334190874c3bf9f828678302cb13d9deb2eed6a1ce4a7"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-final-calibration-v1/startup.json",
+          "sha256": "b1b5cfe705719897c87e96b27d71f7f13ed70d3ac267ee83cd8b23200e4ec325"
+        }
+      }
+    },
+    {
+      "attempt": "freeze-reference-v1",
+      "complete_launcher_seconds": 3.064655917001801,
+      "exit_code": 0,
+      "files": {
+        "design.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
+          "sha256": "c19a02a4b38f41a2876f42177ea2be995b9416874c9518603f34407ddb42f837"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/finish.json",
+          "sha256": "8f742ed6fae4ad495c4009551dbcd851862935df981004d898d09350ae31f7e1"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/startup.json",
+          "sha256": "baaebcd7e8f1e6ba90070073da88776c714233aaf1ac3bcf2654205ca4fd1d68"
+        }
+      }
+    },
+    {
+      "attempt": "interpret-calibration-v1",
+      "complete_launcher_seconds": 3.2734960000016144,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-calibration-v1/finish.json",
+          "sha256": "31a1d3b4b45c6fa67770670cfeadc14dc40795396539e1cc1ccdfcf3cfa38535"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-calibration-v1/report.json",
+          "sha256": "80147b367bd24386da5c8c6bee3dd1286679e75d2d0f137ec4cb2bba7840ddca"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-calibration-v1/startup.json",
+          "sha256": "21636e657ee23db52de342ebe821c631467bf7cfc8ce016c5251498bf52b3b14"
+        }
+      },
+      "status": "measured_diagnostic_calibration"
+    },
+    {
+      "attempt": "interpret-final-calibration-v1",
+      "complete_launcher_seconds": 4.283032292001735,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-final-calibration-v1/finish.json",
+          "sha256": "9ac044045074c206c62a74b6d9f80d861512a627277a1e8701084744144ae1d4"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-final-calibration-v1/report.json",
+          "sha256": "7e01e24fc0472aafc3731b6cff6ad707b5cd16b1fa557a8428e1586f0b2464af"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/interpret-final-calibration-v1/startup.json",
+          "sha256": "4cc2d5e290b55b618d8021003008ea8557c408cf46c57f0af424cb1d0cf81084"
+        }
+      },
+      "status": "retained_assessment_arithmetic_completed"
+    },
+    {
+      "attempt": "native-bootstrap-v1",
+      "complete_launcher_seconds": 114.01320687499901,
+      "exit_code": 1,
+      "failure": "Query is outside authenticated META-TRAIN documents",
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v1/finish.json",
+          "sha256": "87176c6ca15ff5a2b3ce16f7b6ec544607ca52c899a786d7e419e79f1463f2b4"
+        },
+        "reference-normalizer.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v1/reference-normalizer.json",
+          "sha256": "14349472f94257655bceb4e79dd9594789744d1a154270460f63bffd3072cf1d"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v1/report.json",
+          "sha256": "ebbd279ed2286a4ff6dacd138d52113eaa800ce3930d4b40d446505b189e36e4"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v1/startup.json",
+          "sha256": "2d7c8621424a3373ebcff1f19c5f91e4cff516284aa0bac144260a50954e3756"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v1/supervision.json",
+          "sha256": "cae8698927127783a4781a85101dc39f4fc35cd3e4cca56106ff3d26ff0d2037"
+        }
+      },
+      "historical_unknown_partial_work": true,
+      "status": "failed"
+    },
+    {
+      "attempt": "native-bootstrap-v2",
+      "complete_launcher_seconds": 294.74714179199873,
+      "exit_code": 0,
+      "files": {
+        "duplicate-0.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/duplicate-0.json",
+          "sha256": "55c6a32fec14ceb6b9009a5ec678e2a88421e889caf2f5ca0296066581b64c6f"
+        },
+        "duplicate-1.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/duplicate-1.json",
+          "sha256": "0e462c813f5bc74e984de813a6a2656fc02af2598fd8315ef3f32aea0eaf4f59"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/finish.json",
+          "sha256": "42ae2d9a593bd239bace4371e707871526d089d29ca58174f9032b60a9c5b74e"
+        },
+        "generation-1.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/generation-1.json",
+          "sha256": "b2a9bccf6e2c75c236a5c6c0035f137d1c48465931f25843bd6a859544a8c13b"
+        },
+        "reference-normalizer.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/reference-normalizer.json",
+          "sha256": "3de8b6d583fef409d743da3b7df3b78ff993ce3096c07f2b0a30387b5c7781ab"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/report.json",
+          "sha256": "dc423e68e9ce4f9db7502bde15a03d04f8b554f097651e8b89c7ec90d41a5dd2"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/startup.json",
+          "sha256": "4cb66e6c4f0622674cbd9ef979a28f971e5da49f9f22d0cecf524b98f7c8c5f6"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-bootstrap-v2/supervision.json",
+          "sha256": "958fa7ca69244c29884522701c9013b63d01924557131786e47c9e53e5e22973"
+        }
+      },
+      "status": "measured_bootstrap_only"
+    },
+    {
+      "attempt": "native-calibration-v1",
+      "complete_launcher_seconds": 2502.645167666,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-calibration-v1/finish.json",
+          "sha256": "efc31fa7e8dbf5f2ebc3b886a6f5af7b12b4aae7a20fe48eb75f7fc9dccca2ec"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-calibration-v1/report.json",
+          "sha256": "a4f34e8bb6352c0c0f5f5e17a03f56ecfb6d4b8af0242bb5c73e0588028080f7"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-calibration-v1/startup.json",
+          "sha256": "95e6aa3fb7f1f8723187a9393662e8c20fceeb88d19b180ddbaa23dd1a28af50"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-calibration-v1/supervision.json",
+          "sha256": "d1351bbf8abb51da99173212f9585f023b0254acc1f2d5e79852c2f89cafb440"
+        }
+      },
+      "status": "calibration_measured_pending_interpretation"
+    },
+    {
+      "attempt": "native-final-calibration-v1",
+      "complete_launcher_seconds": 1708.5698505,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/finish.json",
+          "sha256": "bcd525ba5481aec778f65f129fa82fff1d5d70ed93c7a446063d6ff56908a363"
+        },
+        "pilot-generation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/pilot-generation.json",
+          "sha256": "5b8dbd8d5d062de0f9cc59bab272c09d2608aa7c0728ad3c048b7f742ab999ee"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/report.json",
+          "sha256": "ca2cf15d18bd5bb96fc69ed5a53104332eacb1c81b07a8c9dda55f8f272a5f01"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/startup.json",
+          "sha256": "6d156407911e04f3ca6860af29dcd255320686a7cace29265294a005abae4677"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/supervision.json",
+          "sha256": "21020ad2a49e4dca581bacca3df1abf796363aec6c3205beef2940320311bd04"
+        },
+        "vectors.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-final-calibration-v1/vectors.json",
+          "sha256": "f7332cf24190f27a3fc2a59475c6188a21f357febc27854de212db15e2e7b97a"
+        }
+      },
+      "status": "final_normalizer_assessment_measured_pending_budget"
+    },
+    {
+      "attempt": "native-reference-v1",
+      "complete_launcher_seconds": 596.7302737499995,
+      "exit_code": 0,
+      "files": {
+        "final-reference-normalizer.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-reference-v1/final-reference-normalizer.json",
+          "sha256": "d75faa2001817b0d2add0e0abe1bea48530eb37196f925c2ce00bbc696f53c9e"
+        },
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-reference-v1/finish.json",
+          "sha256": "6a0910eb4d4a0ca6fe1be8727a11d177e91c17c72c048f5e452a4da27131d2a3"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-reference-v1/report.json",
+          "sha256": "e6fdff225bb13326d1f03262535f5309879dd4ab8fc85a64335cd7a69f5c1e52"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-reference-v1/startup.json",
+          "sha256": "15b56c7e6e54e9f3137ee2acfaa15fd9b5146668e91db25e84183c31c3b85240"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/native-reference-v1/supervision.json",
+          "sha256": "0e8bc2a19a1d6a3dc4c44cecb36af7a37170365831787e7a1fa9036d9e22c161"
+        }
+      },
+      "status": "final_reference_pool_ready_pending_horizon_compatibility"
+    },
+    {
+      "attempt": "receipt-accounting-v1",
+      "complete_launcher_seconds": 27.021616707999783,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/receipt-accounting-v1/finish.json",
+          "sha256": "f3f784970ffae9b941776f116b038e90c3736decf3d1d374fbd26070453ebcdc"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/receipt-accounting-v1/report.json",
+          "sha256": "0f13f7f6f8bcce4940c939696b715bd4950d6a5fb4940dbe72bc2df89bb861a2"
+        },
+        "scored-source-offset-intervals.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/receipt-accounting-v1/scored-source-offset-intervals.json",
+          "sha256": "b0d0b3bb94ae287624e9c8683b245683d77ba79e9a100868597932637da25757"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/receipt-accounting-v1/startup.json",
+          "sha256": "7d9ddd2b77d39d4354b45a17116f8e9571b5b7607d14a43abbe1c614ee76b9b3"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/receipt-accounting-v1/supervision.json",
+          "sha256": "0422d394877922f48689cb902f456a42660388f68222a0b131e1e597679ac0d1"
+        }
+      },
+      "status": "receipt_accounting_completed"
+    },
+    {
+      "attempt": "verify-action-journal-v1",
+      "complete_launcher_seconds": 10.278903082999022,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/verify-action-journal-v1/finish.json",
+          "sha256": "8e7d0bd886913f646d3f15a3bc6cb09dd64a9865853c1aa3363905814dcbf513"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/verify-action-journal-v1/startup.json",
+          "sha256": "bc344c74d7f3ef8490c6f403f8572084bda426265dcecd2886f6307e2665eb26"
+        }
+      }
+    }
+  ],
+  "final_report_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/M11-report.md",
+  "finalization_receipt_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/commit-evidence-v1/report.json",
+  "next": "Full M11 independent review BASEc2552c0..finalHEAD, then mandatoryM10 beforeE01. WP06 reopening requires justified longer-horizon/objective calibration, matched candidate/LR/static own-policy-refresh learning, both development selection stages and B0 applicability; final budgets/selected controller remain null.",
+  "schema": "ralup.m11_evidence_index.v1",
+  "scope": "Exploratory B0null/WP04inconclusive/confirmation-ineligible. No selected final controller or learned gain claim. Current source/noise evidence does not qualify all later horizons.",
+  "status": "needs_revision_pending_independent_review",
+  "telemetry_scope": "Old bootstrap/calibration producer dropped completed last_actions on rebind: no pre-update complete-owner proof. Corrected5ed817e reference/affected-assessment preserves full-owner clones but rollout step receipts omit policy_actions. No invented old action attribution. Logging-only correction committed16fe874; focused23passed. Exact src delta is meta/tasks.py; feature/history/normalization math unchanged. No old complete-state import. Any future learning requires fresh strict pools; authenticated META-only normalizer DATA retains original provenance.",
+  "unknown_costs": "Early unreceipted CPU/editing/tool/enclosing work unknown, never zero or represented by native launcher walls.",
+  "updated_utc": "2026-10-11T20:32:25.793880+00:00",
+  "v1_completed_work_bound": {
+    "basis": "raw completed_step events plus pre-scoring query-auth validation traceback and failure-only duplicate journal; historical generic unknown_partial_work=true remains unchanged",
+    "query_forward_targets": 0,
+    "training_targets": 524288,
+    "updates": 64
+  }
+}

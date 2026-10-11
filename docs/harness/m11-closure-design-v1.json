@@ -1,0 +1,9 @@
+{
+  "schema": "ralup.m11.closure.v1",
+  "helper_sha256": "d4638939200286c90a6b55a38fdf75456c530041e9ee8fb28313fe28b3da05ab",
+  "purpose": "Receipt-only diagnostic disposition packaging, historical text-log and explicitly unexecuted draft preservation. No model work, no old artifact modifications.",
+  "forecast_seconds": 30,
+  "hard_deadline_seconds": 120,
+  "storage_forecast_bytes": 67108864,
+  "retention": "All new closure files retained permanently; original old evidence unchanged; only author-owned unexecuted workspace drafts may be removed after hash-authenticated archival."
+}

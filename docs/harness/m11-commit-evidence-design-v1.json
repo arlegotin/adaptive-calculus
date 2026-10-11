@@ -1,0 +1,11 @@
+{
+  "schema": "ralup.m11.evidence_commit.v1",
+  "helper_sha256": "2c0cd2d4d7819d0d01908f5ecc248eb4d504703a94171887c27a7b4a56f977b7",
+  "purpose": "Validate helper syntax, finite JSON, all small indexed receipt hashes and diagnostic gates; bounded local evidence/progress commit then final report capture. No model work or historical test repetition.",
+  "forecast_seconds": 30,
+  "hard_deadline_seconds": 120,
+  "storage_forecast_bytes": 67108864,
+  "source_transaction_limit_bytes": 16777216,
+  "git_free_minimum_bytes": 536870912,
+  "retention": "Retain all transaction receipts, final report and archives permanently. No old evidence mutation."
+}

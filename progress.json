@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_gate": "WP02",
+  "current_gate": "WP06",
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
     "F01 purpose-specific null evidence gates and synthetic isolation",
@@ -31,7 +31,8 @@
     "H01": "implemented_pending_review",
     "H03": "implemented_pending_review",
     "H08": "implemented_pending_review",
-    "N01": "implemented_pending_review"
+    "N01": "implemented_pending_review",
+    "M11": "implemented_needs_revision_pending_review"
   },
   "last_valid_checkpoint": null,
   "blocks": [
@@ -45,5 +46,40 @@
     "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
     "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
   ],
-  "next_command": ".venv/bin/python -m ralup test-harness --suite data"
+  "next_command": "Full M11 independent review c2552c0722110d0c7ed5e5e0e28df11d3d680eda..HEAD; then mandatoryM10 beforeE01.",
+  "M11": {
+    "status": "WP06_NEEDS_REVISION_pending_independent_review",
+    "evidence_index": "docs/harness/m11-evidence.json",
+    "confirmation_eligible": false,
+    "B0": null,
+    "WP04": "inconclusive",
+    "completed": [
+      "M11 corrected-source focused37passed and full sandboxCPU844passed/76skipped",
+      "55actual historical-producer calibration rollouts: noise/sigma/m/query and16/32/64/full508",
+      "Historical bootstrap fit/calibration limited by dropped pre-update last_actions telemetry; fixed with RED/GREEN owner preservation, no old rerun",
+      "Genuine broad-age baseline/bootstrap-policy META-only10752-row reference fit and complete16/256/448pool under5ed817e",
+      "All35changed-fit rollouts includingK16/32/64/full496, two disjoint query panels, broad-age and actualLR49 admissions",
+      "Logging-only action receipt fix16fe874: focused23passed7.20s; prior844CPUcoverage belongs5ed817e",
+      "Authenticated receipt-only accounting6420updates52592640training6078464query204evals; retained task source-offset union"
+    ],
+    "open": [
+      "Prospectively justified longer-horizon/objective calibration and final budget resolution under reopenedWP06",
+      "Matched candidate/LR/static restarts and each own-current-policy refresh using fresh complete current-source pools",
+      "META-development and full official-development selection; robustB0/recipe applicability and familyLR tuningE01",
+      "Shared-range learnedLR and retuned mechanism contrastsE05; global evidence/cost unionE07"
+    ],
+    "next_action": "Full M11 independent review c2552c0722110d0c7ed5e5e0e28df11d3d680eda..HEAD; then mandatoryM10 beforeE01.",
+    "implementation_commit": "5ed817e8a34640bc0227d9d603947a3ab8933007",
+    "current_reference_design": {
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
+      "sha256": "c19a02a4b38f41a2876f42177ea2be995b9416874c9518603f34407ddb42f837"
+    },
+    "WP06": "NEEDS_REVISION",
+    "selected_controller": null,
+    "final_K": null,
+    "final_m": null,
+    "final_iterations": null,
+    "logging_fix_commit": "16fe874b3a7e3249ae833fa977a9db974a7191d2",
+    "disposition_basis": "Exact brief short-horizon/noisy revision branch: both provisional policies improveK32/64 but worsenfull496 on both panels; residual direction-sampling variability. No family defeat/resource impossibility/general rejection."
+  }
 }

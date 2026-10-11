@@ -1,0 +1,17 @@
+{
+  "schema": "ralup.m11.receipt_accounting.v1",
+  "purpose": "Authenticate completed receipts and reconstruct source-offset union only; zero model restore/forward/update/query.",
+  "helper_sha256": "ba62d9e0c16d4baa8b033948d9370c7e5d453f9fcc7350f1cc1716f2ca4be1f2",
+  "forecast_seconds": 60,
+  "hard_deadline_seconds": 180,
+  "storage_forecast_bytes": 536870912,
+  "retention": "Retain all receipts and source-offset interval union; no deletion.",
+  "input_attempts": [
+    "native-bootstrap-v1",
+    "native-bootstrap-v2",
+    "native-calibration-v1",
+    "native-reference-v1",
+    "native-final-calibration-v1"
+  ],
+  "reconstruction": "Only old authenticated H03 data cursor metadata under unchanged data source; verify all rollout input digests. No full-state import."
+}
