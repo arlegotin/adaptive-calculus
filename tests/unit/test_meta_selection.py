@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import pytest
 import torch
@@ -22,7 +23,7 @@ class Evidence:
     def change(self,ref,**changes):return self.write({**self.read(ref),**changes})
 
 
-def selection_fixture(tmp_path,monkeypatch):
+def selection_fixture(tmp_path,monkeypatch,*,trajectory_corpus="absolute"):
     from ralup.meta import selection
     from ralup.search import source_identity
     e=Evidence(tmp_path);source=source_identity();prefix='a'*64
@@ -35,7 +36,11 @@ def selection_fixture(tmp_path,monkeypatch):
     monkeypatch.setattr(selection,'DATA_INDEX',data_index,raising=False)
     recipe=e.write({'schema':'ralup.exploratory_backbone.v1','status':'EXPLORATORY','b0':None,'selected_b0':False,'confirmation_eligible':False,'recipe':{'matrix_lr':.02}})
     recipe_index=tmp_path/'recipe-index.json';recipe_index.write_bytes(canonical_bytes({'exploratory_backbone':recipe}));monkeypatch.setattr(selection,'RECIPE_INDEX',recipe_index,raising=False)
-    trajectory=e.write({'schema':'ralup.feature_trajectory.v1','partition':'meta_train','role':'reference','synthetic':False,'data_manifest':data})
+    original_data=dict(data)
+    if trajectory_corpus!='absolute':original_data['path']=os.path.relpath(data['path'],Path.cwd())
+    if trajectory_corpus=='different':original_data=e.write({'synthetic':False,'partitions':{'other':{}}})
+    if trajectory_corpus=='wrong_hash':original_data['sha256']='f'*64
+    trajectory=e.write({'schema':'ralup.feature_trajectory.v1','partition':'meta_train','role':'reference','synthetic':False,'data_manifest':original_data})
     normalizer=e.write({'mean':[0.]*14,'std':[1.]*14,'source_manifest':json.dumps({'schema':'ralup.frozen_normalizer_sources.v1','partition':'meta_train','rows':2,'trajectories':[trajectory]})})
     opportunities=[{'origin':origin,'age':1,'horizon':2,'pairs':1,'query_targets':4,'features':14,'history':True,'refresh_steps':4 if origin=='own-policy' else 0} for origin in ('baseline','own-policy')]
     design=e.write({'schema':'ralup.matched_meta_training.v1','purpose':'final-matched-training','synthetic':False,'created_utc':'2026-10-11T00:00:00+00:00','source_identity':source,'backbone':recipe,'normalization':normalizer,'data':data,'opportunities':opportunities})
@@ -139,3 +144,50 @@ def test_nomination_cannot_predate_completed_meta_endpoints(tmp_path,monkeypatch
         design=e.read(e.read(row['endpoint'])['design']);design['nomination']=nomination
         replace_endpoint_design(e,row,design)
     with pytest.raises(ValueError,match='completed META'):select_controller(meta,official)
+
+
+def test_relative_original_corpus_and_absolute_artifact_select_identically(tmp_path,monkeypatch):
+    e,artifacts,meta,official,_=selection_fixture(tmp_path,monkeypatch,trajectory_corpus='relative')
+    artifact=artifacts['affine45'];norm=e.read({'path':str(artifact.normalization.path),'sha256':artifact.normalization.sha256})
+    trajectory=json.loads(norm['source_manifest'])['trajectories'][0];original=e.read(trajectory)['data_manifest']
+    before=Path(trajectory['path']).read_bytes()
+    assert not Path(original['path']).is_absolute()
+    assert artifact.to_json()['data']['path']==str(Path(original['path']).resolve())
+    assert select_controller(meta,official) is artifacts['static3']
+    assert Path(trajectory['path']).read_bytes()==before
+
+
+@pytest.mark.parametrize('corpus',['different','wrong_hash'])
+def test_original_normalizer_corpus_mismatch_remains_denied(tmp_path,monkeypatch,corpus):
+    _,_,meta,official,_=selection_fixture(tmp_path,monkeypatch,trajectory_corpus=corpus)
+    with pytest.raises(ValueError,match='Normalizer reference/data'):select_controller(meta,official)
+
+
+def test_genuine_preserved_normalizer_passes_only_corpus_boundary(monkeypatch):
+    # No real campaign exists: stop deliberately before absent opportunity
+    # authority, without fabricating family/endpoint evidence or selecting.
+    from types import SimpleNamespace
+    from ralup.meta import selection
+    from ralup.search import source_identity
+    store=Path('/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011')
+    path=store/'native-reference-v1/final-reference-normalizer.json'
+    if not path.exists():pytest.skip('Local preserved reference DATA absent')
+    assert sha256_file(path)=='d75faa2001817b0d2add0e0abe1bea48530eb37196f925c2ce00bbc696f53c9e'
+    accepted=json.loads(selection.DATA_INDEX.read_bytes())['manifest']
+    data={'path':str(Path(accepted['path']).resolve()),'sha256':accepted['sha256']}
+    normalization={'path':str(path),'sha256':sha256_file(path)}
+    recipe=json.loads(selection.RECIPE_INDEX.read_bytes())['exploratory_backbone']
+    training={'path':'in-memory-eligibility','sha256':'1'*64};designref={'path':'in-memory-design','sha256':'2'*64}
+    record={'schema':'ralup.meta_selection_eligibility.v1','status':'eligible_exploratory','synthetic':False,'confirmation_eligible':False,'B0':None,'families':dict.fromkeys(selection.FAMILIES,None),'design':designref}
+    design={'schema':'ralup.matched_meta_training.v1','purpose':'final-matched-training','synthetic':False,'source_identity':source_identity(),'normalization':normalization,'backbone':recipe,'data':data}
+    value={'training':training,'normalization':normalization,'B0':recipe,'data':data}
+    read=selection._read
+    monkeypatch.setattr(selection,'_read',lambda ref:record if ref==training else design if ref==designref else read(ref))
+    original=[normalization,*json.loads(read(normalization)['source_manifest'])['trajectories']]
+    before={ref['path']:sha256_file(ref['path']) for ref in original}
+    for ref in original[1:]:
+        relative=read(ref)['data_manifest']
+        assert not Path(relative['path']).is_absolute()
+        assert Path(relative['path']).resolve()==Path(data['path']) and relative['sha256']==data['sha256']
+    with pytest.raises(KeyError,match='opportunities'):selection._eligible(SimpleNamespace(to_json=lambda:value,family='affine45'))
+    assert before=={ref['path']:sha256_file(ref['path']) for ref in original}

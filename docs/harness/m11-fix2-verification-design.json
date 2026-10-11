@@ -1,0 +1,22 @@
+{
+  "schema": "ralup.m11.fix2_verification.v1",
+  "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
+  "finding": "N1: original relative normalizer corpus references versus absolute exported artifact",
+  "purpose": "Focused read-only corpus-identity and selector/API tests; no model execution/refit/state import/native historical rerun.",
+  "source_files": {
+    "src/ralup/meta/selection.py": "2140082f2f831134d8229218618c571ad76c608c161be72a1af0c8cad5339112",
+    "tests/unit/test_meta_selection.py": "949b50961ad17b4481e620126201a8a36867bf310c72db4d44245003810af057",
+    "tests/unit/test_es.py": "c7615ffe818326e9693be9d5c8d03ca2b14899f9787f9e450c09f8b40d3be043"
+  },
+  "command": [
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/test_meta_selection.py",
+    "tests/unit/test_es.py"
+  ],
+  "forecast_seconds": 20,
+  "hard_deadline_seconds": 120,
+  "storage_forecast_bytes": 67108864,
+  "retention": "All new fix2 receipts and fixtures retained; existing genuine normalizer/trajectory/corpus bytes unchanged."
+}

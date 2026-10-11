@@ -1,0 +1,12 @@
+{
+  "schema": "ralup.m11.fix2_commit.v1",
+  "helper_sha256": "ab9ec4ad912df90fba99256d02af0d1f531bd4c0530025f09323773d4fe6cefc",
+  "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
+  "purpose": "N1 bounded consumer/evidence commit with focused verification source equality, static/index checks and durable full fix2 report/applicability; zero model work.",
+  "forecast_seconds": 30,
+  "hard_deadline_seconds": 120,
+  "storage_forecast_bytes": 67108864,
+  "source_transaction_limit_bytes": 16777216,
+  "git_free_minimum_bytes": 536870912,
+  "retention": "New fix2 receipts/archive/reports preserved. Original normalizer/trajectories/corpus and historical evidence untouched."
+}

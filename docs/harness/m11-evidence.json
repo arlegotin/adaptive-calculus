@@ -74,6 +74,30 @@
       "status": "evidence_committed_needs_revision_pending_independent_review"
     },
     {
+      "attempt": "fix1-commit-v1",
+      "complete_launcher_seconds": 4.693436125002336,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/finish.json",
+          "sha256": "d064a341161790c6f7404ad6993b33a7a233a73082019693d8262ab384b92276"
+        },
+        "report.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/report.json",
+          "sha256": "1fb8422f264815df1568d68158cc2662e37319a7b9f499a387f95b2f58ec72fb"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/startup.json",
+          "sha256": "ad04cbfeee3f725e961a996b46297f858306a41c022a399554bf6ab4eed0a6b5"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/supervision.json",
+          "sha256": "a005470dcb1a74f44bd4e3fdfaa19127cef56c8834ee315abb088d4d72dffa72"
+        }
+      },
+      "status": "fix1_committed_pending_scoped_rereview"
+    },
+    {
       "attempt": "fix1-verify-selector-v1",
       "complete_launcher_seconds": 5.728665958002239,
       "exit_code": 0,
@@ -89,6 +113,25 @@
         "supervision.json": {
           "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-verify-selector-v1/supervision.json",
           "sha256": "e30c7373b5c28efbf0812ced9733e69691b821f9a16518097c685f59488f7e50"
+        }
+      }
+    },
+    {
+      "attempt": "fix2-verify-selector-v1",
+      "complete_launcher_seconds": 4.908667250001599,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix2-verify-selector-v1/finish.json",
+          "sha256": "ac7d1ec788bc6b248167e799c292d4e6979b413666528ef0e7ac8dca4c70ba99"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix2-verify-selector-v1/startup.json",
+          "sha256": "7819a865e1f150d4e07574853bfb59c4ce5d98aab705592675d5919106b4d21f"
+        },
+        "supervision.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix2-verify-selector-v1/supervision.json",
+          "sha256": "12268a281edeb20378c3a0ac66c5b28d194e9c25684c1f6d44ecf27ba6b6aeae"
         }
       }
     },
@@ -402,14 +445,21 @@
       }
     }
   ],
-  "final_report_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/M11-report.md",
-  "finalization_receipt_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix1-commit-v1/report.json",
+  "final_report_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix2-commit-v1/M11-report.md",
+  "finalization_receipt_location": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/fix2-commit-v1/report.json",
   "fix_round_1": {
     "finding": "I1",
     "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
     "source_applicability": "Selector-only strict runtime identity change; no old complete-state import, normalizer DATA unchanged; no new model work",
-    "status": "implemented_pending_scoped_rereview",
+    "status": "addressed_by_scoped_review",
     "verification": "fix1-verify-selector-v1:27passed1.54s"
+  },
+  "fix_round_2": {
+    "finding": "N1",
+    "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
+    "source_applicability": "One corpus-reference consumer comparison, exact original normalizer/trajectory DATA retained; no model work or old complete-state import",
+    "status": "implemented_pending_scoped_rereview",
+    "verification": "fix2-verify-selector-v1:31passed1.87s"
   },
   "next": "Full M11 independent review BASEc2552c0..finalHEAD, then mandatoryM10 beforeE01. WP06 reopening requires justified longer-horizon/objective calibration, matched candidate/LR/static own-policy-refresh learning, both development selection stages and B0 applicability; final budgets/selected controller remain null.",
   "schema": "ralup.m11_evidence_index.v1",
@@ -417,7 +467,7 @@
   "status": "needs_revision_pending_independent_review",
   "telemetry_scope": "Old bootstrap/calibration producer dropped completed last_actions on rebind: no pre-update complete-owner proof. Corrected5ed817e reference/affected-assessment preserves full-owner clones but rollout step receipts omit policy_actions. No invented old action attribution. Logging-only correction committed16fe874; focused23passed. Exact src delta is meta/tasks.py; feature/history/normalization math unchanged. No old complete-state import. Any future learning requires fresh strict pools; authenticated META-only normalizer DATA retains original provenance.",
   "unknown_costs": "Early unreceipted CPU/editing/tool/enclosing work unknown, never zero or represented by native launcher walls.",
-  "updated_utc": "2026-10-11T20:48:37.342293+00:00",
+  "updated_utc": "2026-10-11T20:58:35.513428+00:00",
   "v1_completed_work_bound": {
     "basis": "raw completed_step events plus pre-scoring query-auth validation traceback and failure-only duplicate journal; historical generic unknown_partial_work=true remains unchanged",
     "query_forward_targets": 0,

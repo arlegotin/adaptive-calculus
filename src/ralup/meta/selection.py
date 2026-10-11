@@ -70,7 +70,9 @@ def _eligible(artifact):
         _require(len(norm[key])==14 and all(type(v) in (int,float) and math.isfinite(v) and (key!='std' or v>=1e-6) for v in norm[key]),'Finite fourteen-feature normalizer required')
     for ref in provenance['trajectories']:
         trajectory=_read(ref)
-        _require(trajectory['schema']=='ralup.feature_trajectory.v1' and trajectory['partition']=='meta_train' and trajectory['role']=='reference' and trajectory['synthetic'] is False and trajectory['data_manifest']==design['data'],'Normalizer reference/data scope mismatch')
+        # The corpus above is already authenticated. Compare its resolved file
+        # and digest, preserving original relative trajectory-reference bytes.
+        _require(trajectory['schema']=='ralup.feature_trajectory.v1' and trajectory['partition']=='meta_train' and trajectory['role']=='reference' and trajectory['synthetic'] is False and _ref(ArtifactRef(**trajectory['data_manifest']))==design['data'],'Normalizer reference/data scope mismatch')
     opportunities=design['opportunities']
     _require(type(opportunities) is list and {o['origin'] for o in opportunities}=={'baseline','own-policy'},'Baseline and own-current-policy opportunities required')
     for op in opportunities:
