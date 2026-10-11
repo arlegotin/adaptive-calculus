@@ -692,6 +692,123 @@ def _prerequisite_disposition(eligibility):
         'measured_non_advantage':False,'completed_tournament':False,'global_unaffordability':False}
 
 
+def _lineage_producer(receipt, source, inputs, outputs, *, completed=True):
+    """Bind prospective inputs and actual outputs to one completed producer."""
+    startup=_read(ArtifactRef(**receipt['startup']));finish=_read(ArtifactRef(**receipt['finish']))
+    if ({k:v['sha256'] for k,v in startup['source'].items() if k.startswith('src/')}!=source
+            or any(ref not in startup.get('inputs',[]) for ref in inputs)):
+        raise ValueError('Seed lineage producer source/prospective input mismatch')
+    produced={(str((Path(receipt['finish']['path']).parent/row['path']).resolve()),row['sha256'])
+              for row in finish['completed_objects']}
+    if any((str(Path(ref['path']).resolve()),ref['sha256']) not in produced for ref in outputs):
+        raise ValueError('Seed lineage output lacks completed producer authentication')
+    start=datetime.fromisoformat(startup['utc']);end=datetime.fromisoformat(finish['completed_utc'])
+    if start.tzinfo is None or end.tzinfo is None or end<start or (completed and finish['exit_code']!=0):
+        raise ValueError('Seed lineage requires chronological completed producer evidence')
+    return end
+
+
+def _seed_parent_lineage(record, source, manifest):
+    """Read actual initialization and complete typed parent ancestry; never restore.
+
+    Seed labels, differently packaged files and distinct checkpoint hashes are
+    insufficient. Origin weights, named initialization RNG and data permutation
+    are checked independently of packaging, then the entire parent chain is
+    bound to that origin. This is a future selection prerequisite, not an H07
+    compatibility waiver or a mutation of imported state.
+    """
+    import random
+    import torch
+    from .state import load_snapshot,_validated,_Encoder,tensor_bytes
+    from .data.cursor import BatchCursor
+    seed=record['seed'];origin_config=_read(ArtifactRef(**record['origin_config']))
+    def payload(ref):
+        value=_validated(load_snapshot(ArtifactRef(**ref)))
+        identities={k:v.sha256 for k,v in value['identities']['automatic'].items() if k.startswith('src/')}
+        if identities!=source:raise ValueError('Seed lineage checkpoint producer source mismatch')
+        return value
+    def digest(value):
+        encoder=_Encoder();metadata=encoder.encode(value)
+        return hashlib.sha256(canonical_bytes(metadata)+tensor_bytes(encoder.tensors)).hexdigest()
+    initial=payload(record['initial_checkpoint']);config=initial['configuration'];cursor=initial['cursor']
+    if (type(seed) is not int or seed<0 or config!=origin_config or config.get('seed')!=seed
+            or config.get('warmstart_parent') or config.get('source_partition')!='target_train'
+            or config.get('artifact_role')!='warmstart' or initial['schedule']['step']!=0
+            or initial['ledger']['stream']['targets']!=0 or cursor is None or cursor['cumulative_target_count']!=0):
+        raise ValueError('Seed lineage requires an authenticated fresh originating initialization')
+    if (cursor['source']['kind']!='indexed' or cursor['source']['sha256']!=manifest['sha256']
+            or cursor['source']['partition']!='target-training'
+            or config['resolved']['data']['manifest']!=manifest):
+        raise ValueError('Seed lineage originating data source mismatch')
+    expected=BatchCursor.from_manifest(Path(manifest['path']),manifest['sha256'],partition='target-training',
+                                      seed=seed,run_target_budget=cursor['run_target_budget'])
+    if expected.state!=cursor:raise ValueError('Seed lineage originating data permutation/RNG differs from its seed')
+    streams=initial['rng_streams']
+    if set(streams)!={'initialization','quantizer','meta','timing'}:
+        raise ValueError('Complete originating named RNG lineage required')
+    initialization=streams['initialization']
+    if initialization['__rng_kind__']!='torch_rng' or initialization['device']!='cpu':
+        raise ValueError('Origin initialization requires its actual CPU generator')
+    generator=torch.Generator().set_state(initialization['state'])
+    if generator.initial_seed()!=seed:raise ValueError('Origin initialization RNG seed differs from declared lineage')
+    from .models.transformer import ByteTransformer
+    # _create initializes on CPU before device transfer. Reproduce only that
+    # finite initialization, without a forward/update or global RNG mutation.
+    with torch.random.fork_rng():
+        torch.set_rng_state(torch.Generator().manual_seed(seed).get_state())
+        expected_model=ByteTransformer(initial['model_config'])
+        expected_initialization=torch.get_rng_state()
+    if (digest(dict(expected_model.state_dict()))!=digest(initial['weights'])
+            or not torch.equal(expected_initialization,initialization['state'])):
+        raise ValueError('Origin weights/initialization RNG are not the declared seeded construction')
+    del expected_model
+    stream_seed=lambda name:int.from_bytes(hashlib.sha256(f'ralup-rng-v1:{seed}:{name}'.encode()).digest()[:8],'little')
+    for name in ('meta','timing'):
+        if streams[name]['__rng_kind__']!='python_rng' or streams[name]['state']!=random.Random(stream_seed(name)).getstate():
+            raise ValueError('Origin named RNG does not belong to this seed lineage')
+    # Compare in the recorded representation; never convert/reseed imported RNG.
+    if streams['quantizer']['__rng_kind__']!='torch_rng':raise ValueError('Origin quantizer RNG lineage missing')
+    expected_quantizer=torch.Generator(device=streams['quantizer']['device']).manual_seed(stream_seed('quantization'))
+    if not torch.equal(expected_quantizer.get_state(),streams['quantizer']['state']):
+        raise ValueError('Origin quantizer RNG does not belong to this seed lineage')
+    if not record['parents']:raise ValueError('Complete warm/training parent lineage required')
+    previous=None;last=None;last_checkpoint=None
+    for index,stage in enumerate(record['parents']):
+        parent=_read(ArtifactRef(**stage['artifact']));checkpoint=parent['checkpoint']
+        current=payload(checkpoint);current_config=current['configuration']
+        if index==0:
+            if stage['kind']!='warmstart' or current_config!=config or current_config.get('warmstart_parent'):
+                raise ValueError('Seed lineage root must be the declared warmstart producer')
+            inputs=[record['origin_config']];outputs=[record['initial_checkpoint'],stage['artifact'],checkpoint]
+        else:
+            from .warmstart import _original,_project_cost
+            if stage['kind']!='derived_model_only':raise ValueError('Later seed lineage stages require typed derived parents')
+            bound,_,_,_=_original(ArtifactRef(**checkpoint))
+            if set(parent)!=set(bound)|{'project_cost','creation'} or any(parent[k]!=v for k,v in bound.items()):
+                raise ValueError('Seed lineage typed derived parent binding differs')
+            project=parent['project_cost']
+            if project!=_project_cost([ArtifactRef(**r) for r in project['completed_attempts']],
+                                      [ArtifactRef(**r) for r in project['selection_evidence']],ArtifactRef(**checkpoint)):
+                raise ValueError('Seed lineage derived parent costs differ')
+            inherited=current_config.get('warmstart_parent',{})
+            trial=_read(ArtifactRef(**stage['trial_config']))
+            if (inherited.get('artifact')!=previous or inherited.get('checkpoint')!=last_checkpoint
+                    or current_config.get('search_trial')!=trial or trial.get('parent')!=previous
+                    or trial.get('seed')!=seed):
+                raise ValueError('Seed lineage omits or relabels an imported training parent')
+            inputs=[stage['trial_config'],previous];outputs=[stage['artifact'],checkpoint]
+        _lineage_producer(stage['producer'],source,inputs,outputs)
+        if (current_config.get('seed')!=seed or parent['source_partition']!='target_train'
+                or current['cursor']['source']!=cursor['source'] or current['model_config']!=initial['model_config']
+                or digest(current['rng_streams']['initialization'])!=digest(initialization)
+                or current['cursor']['cumulative_target_count']<= (0 if last is None else last['cursor']['cumulative_target_count'])):
+            raise ValueError('Parent initialization/data/RNG trajectory does not belong to its seed lineage')
+        previous=stage['artifact'];last=current;last_checkpoint=checkpoint
+    return {'parent':previous,'initial_weights':digest(initial['weights']),
+            'initialization_rng':digest(initialization),'initial_data_rng':digest(cursor['rng_states']),
+            'terminal_state':digest({k:last[k] for k in ('weights','cursor','rng_streams','global_rng')})}
+
+
 def _replication_authority(results, eligibility):
     """Finite prospective full-budget contract, separate from bootstrap labels.
 
@@ -728,6 +845,34 @@ def _replication_authority(results, eligibility):
     from .analysis.cost import trial_cost_record,cost_quality_frontier
     from .meta.selection import _query_count,DATA_INDEX
     accepted=json.loads(DATA_INDEX.read_bytes());corpus=_read(ArtifactRef(**accepted['manifest']))
+    all_seeds=[*design['tuning_seeds'],*design['fresh_seeds']]
+    if any(type(seed) is not int or seed<0 for seed in all_seeds) or len(set(all_seeds))!=len(all_seeds):
+        raise ValueError('Unique disjoint tuning/replication seed inventory required')
+    if (len(design.get('seed_lineages',[]))!=len(all_seeds)
+            or {row['seed'] for row in design.get('seed_lineages',[])}!=set(all_seeds)):
+        raise ValueError('Complete seed-specific warm/training parent lineage inventory required')
+    lineages={row['seed']:_seed_parent_lineage(row,design['source_identity'],accepted['manifest']) for row in design['seed_lineages']}
+    for key in ('initial_weights','initialization_rng','initial_data_rng','terminal_state'):
+        if len({row[key] for row in lineages.values()})!=len(lineages):
+            raise ValueError('Independent seed lineages reuse actual initialization/data/RNG or parent state')
+    used_tuning=set();tuning_refs=set()
+    for trial in design.get('tuning_runs',[]):
+        row=_read(ArtifactRef(**trial['result']));config=_read(ArtifactRef(**trial['config']))
+        identity=canonical_bytes(trial['result'])
+        if identity in tuning_refs:raise ValueError('Duplicate frozen tuning result inventory')
+        tuning_refs.add(identity);seed=row['seed']
+        if (type(seed) is not int or seed not in lineages or config.get('seed')!=seed
+                or row.get('trial_config')!=trial['config'] or row.get('source_identity')!=design['source_identity']
+                or config.get('source_identity')!=design['source_identity']
+                or row['trial_id']!=hashlib.sha256(canonical_bytes(config)).hexdigest()
+                or config.get('parent')!=lineages[seed]['parent'] or row['cost'].get('parent')!=config.get('parent')):
+            raise ValueError('Retained tuning result/config/actual parent seed lineage mismatch')
+        ended=_lineage_producer(trial['producer'],design['source_identity'],[trial['config']],[trial['result']],completed=False)
+        if ended>datetime.fromisoformat(design['created_utc']):raise ValueError('Tuning inventory must finish before replication freeze')
+        used_tuning.add(seed)
+    if used_tuning!=set(design['tuning_seeds']) or used_tuning&set(design['fresh_seeds']):
+        raise ValueError('Actual retained tuning seeds differ from frozen inventory or reuse replication seeds')
+    assessed_tuning=set()
     for row,config_ref,receipt in zip(results,design['trial_configs'],completion['producers']):
         config=_read(ArtifactRef(**config_ref));startup=_read(ArtifactRef(**receipt['startup']));finish=_read(ArtifactRef(**receipt['finish']))
         source={k:v['sha256'] for k,v in startup['source'].items() if k.startswith('src/')}
@@ -740,6 +885,8 @@ def _replication_authority(results, eligibility):
             raise ValueError('Replication design postdates producer startup')
         if row['trial_config']!=config_ref or config['budget']!=design['full_budget'] or config['seed'] not in design['fresh_seeds']:
             raise ValueError('Replication config differs from prospective full-budget seed inventory')
+        if row.get('seed')!=config['seed'] or config.get('parent')!=lineages[config['seed']]['parent']:
+            raise ValueError('Replication requires its actual seed-specific parent lineage matched across methods')
         if row['cost'].get('parent')!=config.get('parent'):
             raise ValueError('Replication cost must retain its exact model parent ancestry')
         if config['resolved']['data']['manifest']['sha256']!=accepted['manifest']['sha256']:
@@ -763,11 +910,13 @@ def _replication_authority(results, eligibility):
         tuning=_read(ArtifactRef(**judgment['tuning_evidence']))
         if tuning.get('replication_design')!=design_ref or tuning.get('status')!='completed' or not tuning.get('result_refs'):
             raise ValueError('Tuning assessment must bind actual retained trial results and replication design')
-        for ref in tuning['result_refs']:_read(ArtifactRef(**ref))
+        for ref in tuning['result_refs']:
+            _read(ArtifactRef(**ref));assessed_tuning.add(canonical_bytes(ref))
         assessed.append({**row,'full_budget':True,'fresh_seed':True,
             **{k:judgment[k] for k in ('settled','lr_bracketed','edge','missing_mechanism')},
             'cost':{**row['cost'],'complete_seconds':totals['seconds']}})
     if len(assessed)!=len(results):raise ValueError('Missing completed replication producer inventory')
+    if assessed_tuning!=tuning_refs:raise ValueError('Assessed tuning results differ from complete frozen tuning inventory')
     return assessed,design
 
 

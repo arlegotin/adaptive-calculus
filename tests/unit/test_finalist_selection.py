@@ -213,3 +213,187 @@ def test_initialized_metaquant_cannot_enter_frozen_search_pool():
     from ralup.search import _build_search_method
     with pytest.raises(ValueError,match='META-trained'):
         _build_search_method({'method':'metaquant_fp4_frozen','method_config':{}},{},())
+
+
+def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=False):
+    """Real typed checkpoints and byte-bound receipts; finite admission, not science.
+
+    Only DATA_INDEX is redirected to a local finite corpus. Snapshot decoding,
+    cursor/RNG validation, query-byte checks and cost/producer authentication are
+    real. No native gate, learned controller or scientific finalist is produced.
+    """
+    import hashlib
+    import random
+    import torch
+    from dataclasses import asdict
+    from test_batch_cursor import frozen_fixture
+    from test_meta_selection import Evidence
+    from ralup.config import canonical_bytes
+    from ralup.records import ArtifactRef
+    from ralup.search import source_identity, _ref, _write, warmstart_report
+    from ralup.state import capture_snapshot, save_snapshot
+    from ralup.models.transformer import ByteTransformer, ModelConfig
+    from ralup.optim.adamw import AdamWUpdateRule
+    from ralup.optim.base import MethodAdapter, default_parameter_groups
+    from ralup.train import TrainingState, select_logical_batch, train_step
+    from ralup.data.cursor import BatchCursor
+    from ralup.data.blocks import make_block
+    from ralup.meta import selection
+    e=Evidence(tmp_path);source=source_identity();manifest=frozen_fixture(tmp_path)
+    corpus=copy.deepcopy(manifest.payload)
+    raw=b'finite development bytes';query_file=tmp_path/'development.bin';query_file.write_bytes(raw)
+    doc={'id':'development','split':'validation','content_path':str(query_file),'content_start':0,
+         'bytes':len(raw),'content_sha256':hashlib.sha256(raw).hexdigest()}
+    corpus['audit']['protected_documents'].append(doc)
+    data=e.write(corpus)
+    cursor=BatchCursor.from_manifest(Path(data['path']),data['sha256'],partition='target-training',seed=10,run_target_budget=4)
+    prefix=cursor.state['source']['hashes']['source_sha256']
+    index=tmp_path/'finite-data-index.json';index.write_bytes(canonical_bytes({'manifest':data,'frozen_hashes':{'source_sha256':prefix}}))
+    monkeypatch.setattr(selection,'DATA_INDEX',index)
+    block=asdict(make_block(doc['content_sha256'],0,len(raw),b'',raw,document_id=prefix+':development'))
+    query=e.write({'blocks':[{k:list(v) if isinstance(v,tuple) else v for k,v in block.items()}]})
+    def receipt(inputs,outputs,start='2026-10-11T01:00:00+00:00'):
+        startup=e.write({'utc':start,'launcher_started_utc':start,'inputs':inputs,
+                         'source':{k:{'sha256':v} for k,v in source.items()}})
+        finish=e.write({'exit_code':0,'elapsed_seconds':10.,'completed_utc':'2026-10-11T01:00:10+00:00',
+                        'completed_objects':[{'path':r['path'],'sha256':r['sha256']} for r in outputs]})
+        return {'startup':startup,'finish':finish}
+    lineages={};parents={}
+    for seed in (10,71,72):
+        initialization=torch.Generator().manual_seed(seed)
+        with torch.random.fork_rng():
+            torch.set_rng_state(initialization.get_state());model=ByteTransformer(ModelConfig(1,8,2))
+            initialization.set_state(torch.get_rng_state())
+        stream_seed=lambda name:int.from_bytes(hashlib.sha256(f'ralup-rng-v1:{seed}:{name}'.encode()).digest()[:8],'little')
+        config={'source_partition':'target_train','seed':seed,'pilot_target_budget':4,
+                'artifact_role':'warmstart','resolved':{'data':{'manifest':data},'model':{'layers':1,'width':8,'heads':2}}}
+        cursor=BatchCursor.from_manifest(Path(data['path']),data['sha256'],partition='target-training',seed=seed,run_target_budget=4)
+        state=TrainingState(model,MethodAdapter(dict(model.named_parameters()),default_parameter_groups(model),AdamWUpdateRule()),
+            cursor=cursor,configuration=config,rng_streams={'initialization':initialization,
+                'quantizer':torch.Generator().manual_seed(stream_seed('quantization')),
+                'meta':random.Random(stream_seed('meta')),'timing':random.Random(stream_seed('timing'))})
+        if seed==72 and damage=='altered_origin_weights':
+            with torch.no_grad():next(model.parameters()).add_(.125)
+        if seed==72 and damage=='altered_origin_quantizer':state.rng_streams['quantizer'].manual_seed(123)
+        initial=_ref(save_snapshot(capture_snapshot(state),tmp_path/f'initial-{seed}'))
+        origin_config=e.write(config)
+        train_step(state,select_logical_batch(state,4))
+        checkpoint=_ref(save_snapshot(capture_snapshot(state),tmp_path/f'warm-{seed}'))
+        work=e.write({'trial_id':f'warm-{seed}','family':'warm','status':'completed','curve':[],
+            'executions':[{'event_id':f'warm-{seed}:loss','kind':'loss','targets':4,'stream_targets':4,
+                           'classifications':['training'],'source_intervals':[[prefix,f'doc-{seed}',0,4]]}],
+            'cost':{'wall_interval':{'clock':'UTC','start':10+seed,'end':11+seed}}})
+        parents[seed]=_ref(_write(tmp_path/f'parent-{seed}'/'warmstart.json',warmstart_report(
+            ArtifactRef(**checkpoint),'target_train',{'complete_seconds':1.,'execution_record':work,
+                'ledger':{k:getattr(state.ledger,k) for k in ('stream','passes','elapsed','events')}})))
+        producer=receipt([origin_config],[initial,checkpoint,parents[seed],work])
+        lineages[seed]={'seed':seed,'origin_config':origin_config,'initial_checkpoint':initial,
+                        'parents':[{'artifact':parents[seed],'kind':'warmstart','producer':producer}]}
+        if derived_parent:
+            from ralup.calibrate import import_warmstart
+            from ralup.warmstart import create_derived_warmstart
+            previous=parents[seed];fresh_model=ByteTransformer(ModelConfig(1,8,2))
+            fresh=TrainingState(fresh_model,MethodAdapter(dict(fresh_model.named_parameters()),default_parameter_groups(fresh_model),AdamWUpdateRule()),
+                cursor=BatchCursor.from_manifest(Path(data['path']),data['sha256'],partition='target-training',seed=seed,run_target_budget=4),
+                configuration={**config,'artifact_role':'continuation'})
+            fresh=import_warmstart(ArtifactRef(**previous),fresh,partition='target_train',continuation_targets=4)
+            trial=e.write({'seed':seed,'parent':previous,'source_identity':source})
+            fresh.configuration['search_trial']=e.read(trial)
+            train_step(fresh,select_logical_batch(fresh,4))
+            derived_checkpoint=_ref(save_snapshot(capture_snapshot(fresh),tmp_path/f'derived-{seed}'))
+            selection_proof=e.write({'status':'fixture','scope':'derived-parent admission only'})
+            original_receipt=receipt([trial,previous],[derived_checkpoint,selection_proof])
+            parents[seed]=_ref(create_derived_warmstart(ArtifactRef(**derived_checkpoint),tmp_path/f'derived-parent-{seed}.json',
+                completed_attempts=[ArtifactRef(**original_receipt['finish'])],selection_evidence=[ArtifactRef(**selection_proof)]))
+            lineages[seed]['parents'].append({'artifact':parents[seed],'kind':'derived_model_only','trial_config':trial,
+                'producer':receipt([trial,previous],[parents[seed],derived_checkpoint])})
+    if damage=='shared_parent':
+        parents[72]=parents[71]
+    elif damage=='repackaged_parent':
+        # A new report hash/path cannot make the same checkpoint a fresh unit.
+        parents[72]=e.change(parents[71],extra_label='seed72')
+        lineages[72]={**lineages[71],'seed':72}
+        lineages[72]['parents']=[{'artifact':parents[72],'kind':'warmstart',
+            'producer':receipt([lineages[71]['origin_config']],[parents[72],lineages[71]['initial_checkpoint'],e.read(parents[71])['checkpoint']])}]
+    elif damage=='origin_label':
+        # Distinct seed/config metadata still imports the original RNG trajectory.
+        lineages[72]={**lineages[71],'seed':72,'origin_config':e.change(lineages[71]['origin_config'],seed=72)}
+        parents[72]=parents[71]
+    rows=[];configs=[]
+    def result(seed,method,parent):
+        config={'seed':seed,'budget':8,'source_identity':source,'parent':parent,
+                'resolved':{'data':{'manifest':data}},'recipe':{'method':method}}
+        config_ref=e.write(config);key=hashlib.sha256(canonical_bytes(config)).hexdigest()
+        row={'trial_id':key,'family':method,'seed':seed,'budget':8,'status':'completed','source_identity':source,
+             'trial_config':config_ref,'query_inputs':query,'recipe':config['recipe'],'model':'core',
+             'curve':[{'budget':8,'development_bpb':2.}],
+             'executions':[{'event_id':key+':loss','kind':'loss','targets':8,'stream_targets':8,
+                            'classifications':['training'],'source_intervals':[[prefix,'doc',0,8]]}],
+             'cost':{'parent':parent,'complete_seconds':10.,'wall_interval':{'clock':'UTC','start':100,'end':110}}}
+        reference=e.write(row)
+        return {**row,'evidence':reference},config_ref
+    tuning_seed=71 if damage=='retained_tuning_seed' else 10
+    tuning,tuning_config=result(tuning_seed,'AdamW',parents[tuning_seed])
+    tuning_producer=receipt([tuning_config],[tuning['evidence']])
+    for method in ('AdamW','Muon'):
+        for seed in (71,72):
+            parent=parents[seed]
+            if damage=='unmatched_methods' and method=='Muon' and seed==71:parent=parents[72]
+            row,config=result(seed,method,parent);rows.append(row);configs.append(config)
+    inventory=['AdamW','Muon','Muon+','SOAP','Madam','EWGS','TRS','QuEST','QAR',
+               'stochastic_rounding','learned_scale','damping_masking','MetaQuant']
+    proof=e.write({'scope':'finite engineering authority fixture, no scientific eligibility'})
+    design={'schema':'ralup.finalist_replication_design.v1','synthetic':False,'source_identity':source,
+            'created_utc':'2026-10-11T02:00:00+00:00','fresh_seeds':[71,72],'tuning_seeds':[10],
+            'trial_configs':configs,'full_budget':8,
+            'seed_lineages':list(lineages.values()),
+            'tuning_runs':[{'result':tuning['evidence'],'config':tuning_config,'producer':tuning_producer}],
+            'family_status':{name:{'status':'included' if name in ('AdamW','Muon') else 'unresolved',
+                'reason':'finite fixture only','evidence':[proof]} for name in inventory}}
+    design_ref=e.write(design)
+    tuning_refs=[tuning['evidence']]
+    if damage=='omitted_tuning_result':
+        hidden,_=result(71,'AdamW',parents[71]);tuning_refs.append(hidden['evidence'])
+    assessment=e.write({'replication_design':design_ref,'status':'completed','result_refs':tuning_refs})
+    completion=e.write({'schema':'ralup.finalist_replication_completion.v1','status':'completed','design':design_ref,
+        'result_refs':[row['evidence'] for row in rows],
+        'producers':[receipt([design_ref],[row['evidence']],start='2026-10-11T03:00:00+00:00') for row in rows],
+        'assessments':{hashlib.sha256(canonical_bytes(row['recipe'])).hexdigest():{'settled':True,'lr_bracketed':True,
+            'edge':False,'missing_mechanism':False,'tuning_evidence':assessment} for row in rows}})
+    analysis=e.write({'replication_design':design_ref,'replication_completion':completion})
+    return rows,{'selection_analysis':analysis,'fresh_seeds':[71,72]}
+
+
+def test_complete_replication_inventory_accepts_distinct_matched_training_units(tmp_path,monkeypatch):
+    from ralup.search import _replication_authority
+    rows,eligibility=replication_fixture(tmp_path,monkeypatch)
+    assessed,_=_replication_authority(rows,eligibility)
+    assert len(assessed)==4 and all(row['fresh_seed'] for row in assessed)
+
+
+def test_typed_derived_seed_lineage_preserves_separate_unknown_parent_cost_gate(tmp_path,monkeypatch):
+    from ralup.search import _replication_authority,_seed_parent_lineage,_read
+    from ralup.records import ArtifactRef
+    from ralup.meta import selection
+    rows,eligibility=replication_fixture(tmp_path,monkeypatch,derived_parent=True)
+    analysis=_read(ArtifactRef(**eligibility['selection_analysis']))
+    design=_read(ArtifactRef(**analysis['replication_design']))
+    manifest=json.loads(selection.DATA_INDEX.read_bytes())['manifest']
+    units={record['seed']:_seed_parent_lineage(record,design['source_identity'],manifest)
+           for record in design['seed_lineages']}
+    assert all(units[row['seed']]['parent']==row['cost']['parent'] for row in rows)
+    assert len({unit['initial_weights'] for unit in units.values()})==3
+    # The existing typed derived schema has aggregate historical cost. Successful
+    # lineage validation cannot invent missing physical ancestor IDs/costs.
+    with pytest.raises(ValueError,match='Complete physical execution and parent costs'):
+        _replication_authority(rows,eligibility)
+
+
+@pytest.mark.parametrize('damage',['retained_tuning_seed','omitted_tuning_result','shared_parent',
+                                  'repackaged_parent','origin_label','unmatched_methods',
+                                  'altered_origin_weights','altered_origin_quantizer'])
+def test_replication_rejects_reused_or_unaccounted_training_units(tmp_path,monkeypatch,damage):
+    from ralup.search import _replication_authority
+    rows,eligibility=replication_fixture(tmp_path,monkeypatch,damage)
+    with pytest.raises(ValueError,match='seed|lineage|parent|tuning|origin'):
+        _replication_authority(rows,eligibility)

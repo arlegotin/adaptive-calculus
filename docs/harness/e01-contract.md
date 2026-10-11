@@ -78,6 +78,34 @@ seeds, creation UTC and the complete required-family inventory. Every family is
 included, blocked or unresolved with a reason and authenticated fidelity/source
 evidence. All included families require matching full-budget replication.
 
+The design also freezes `tuning_runs` (each actual result/config and its producer
+startup/finish) and `seed_lineages` for every tuning and replication seed. The
+union of all retained tuning assessments must equal that frozen result inventory.
+Used seeds are derived from those authenticated results, configs and actual
+parent lineages; they must equal the frozen tuning seeds and exclude every fresh
+replication seed. Failed retained tuning work does not disappear from this check.
+
+Each lineage binds an `origin_config`, a real step-zero `initial_checkpoint`, and
+the complete ordered `parents` chain. Root warmstart and subsequent typed
+derived-model-only stages bind their producer inputs/outputs and actual checkpoint
+bytes. Later stages also bind `trial_config` and their exact previous imported
+parent. The original source archives must equal the current replication source;
+missing historic origin evidence fails closed. This adds selection prerequisites,
+not old-state compatibility. Existing MODELONLY imports and reset semantics are
+unchanged.
+
+Origin validation reproduces the existing CPU seeded model initialization without
+a forward/update, checks the actual initial weights and post-initialization RNG,
+reconstructs the initial indexed data cursor/permutation/RNG, and checks the named
+quantizer/meta/timing RNG states. It never converts or reseeds imported state.
+Root initialization and terminal W/cursor/all-RNG state identities are compared
+across units, so a new filename, report hash or seed label cannot create an
+independent sample. Every method within a seed must use that same authenticated
+terminal parent. This validation has its own actual selector cost, captured by
+the enclosing receipt. Successful lineage validation leaves the separate complete
+physical-parent-cost gate intact; aggregate-only derived parents still cannot
+become eligible by inventing historic execution IDs.
+
 The completion binds the exact design, complete result inventory (failures
 cannot disappear), paired startup/finish receipts for every run, and recipe-hash
 assessments. Each producer must bind the design in `inputs` before execution,
