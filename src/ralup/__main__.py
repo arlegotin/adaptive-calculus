@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     harness.add_argument("--device", choices=("cpu", "mps"), default="cpu", help="device for model checks")
     harness.add_argument("--output", type=Path, default=Path("artifacts/checks/data-results.json"))
     baselines = subcommands.add_parser("verify-baselines", help="run named baseline engineering fixtures")
-    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs", "routing-rounding", "scale-noise"), required=True)
+    baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs", "routing-rounding", "scale-noise", "metaquant"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
     policy = subcommands.add_parser('test-policy',help='finite actual feature/history checks on the typed exploratory development protocol')
@@ -90,7 +90,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify-baselines":
         from .baselines.checks import check_adamw
         try:
-            if args.suite == "scale-noise":
+            if args.suite == "metaquant":
+                from .baselines.metaquant import check_metaquant
+                ref = check_metaquant(args.device,args.output)
+            elif args.suite == "scale-noise":
                 from .baselines.noise import check_scale_noise
                 ref = check_scale_noise(args.device,args.output)
             elif args.suite == "routing-rounding":
@@ -314,7 +317,15 @@ def _run_explore(path):
     if method_settings is not None:
         from .baselines.registry import build_matrix_method, matrix_record, MethodRegistry
         registry = MethodRegistry()
-        if method_settings['name'] in ('learned_fp4_scale','damping_fp4','simple_matrix_mask','magma_matrix_mask'):
+        if method_settings['name'] in ('metaquant_fp4_frozen','metaquant_fp4_online_target_training'):
+            from .baselines.metaquant import MetaQuantLMAdapter,validate_config
+            from .baselines.trs import construct_backbone
+            from .baselines.registry import metaquant_record
+            meta_config=validate_config(method_settings['config'])
+            method=MetaQuantLMAdapter(construct_backbone(meta_config['backbone']),meta_config).bind(dict(model.named_parameters()),default_parameter_groups(model))
+            model.configure_quantization({'name':'row_fixed_max','rotation':meta_config['rotation'],'backward':'ste'})
+            registry.register(metaquant_record(method_settings['name'],method.groups,method.config))
+        elif method_settings['name'] in ('learned_fp4_scale','damping_fp4','simple_matrix_mask','magma_matrix_mask'):
             from .baselines.learned_scale import LearnedScaleAdapter
             from .baselines.noise import NoiseAdapter
             from .baselines.registry import scale_noise_record

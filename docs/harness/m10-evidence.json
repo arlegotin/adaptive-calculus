@@ -1,0 +1,2071 @@
+{
+  "CPU_regression_scope": "explicit cached-function availability override plus lazy subprocess bootstrap; physical MPS stays exclusively in native-functional-v1 and seed-isolation checks",
+  "active_administration": "this index launcher is excluded; its finished stdout/finish receipt is a subsequent immutable observation",
+  "administration_cost_scope": "index receipt separate; active commit launcher omitted until its immutable finish exists; engineering/project total unknown",
+  "attempts": [
+    {
+      "child_cpu_system_seconds": 0.736603,
+      "child_cpu_user_seconds": 4.129274,
+      "child_maxrss": 356646912,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 7.202266249994864,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 78187,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final/finish.json",
+        "sha256": "6108d6d2f3706fbf44481a2629b200a3137675fd76b2158d462a4de3aad1078c"
+      },
+      "name": "focused-final",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final/runtime-observation.json",
+        "sha256": "50cce1379006425576b3b3c0214ab6b9415de325d577be279f6ee7c3e5c0932f"
+      },
+      "startup": {
+        "bytes": 21233579,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final/startup.json",
+        "sha256": "6b472330717faa86e46dd0682b80a0f766feab1de8afb347619e81485c768b04"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 99,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final/stdout.txt",
+        "sha256": "56f99432b6d73d91f51a2319c89dd6dd20c29d8791a456df2dd823f2d9a27bd6"
+      },
+      "storage_after": {
+        "data_free_after": 80991539200,
+        "git_free_after": 7143882752
+      },
+      "storage_before": {
+        "allocated_bytes": 21284216142,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81018089472,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7143858176
+      },
+      "utc": "2026-10-11T21:18:09.131943+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.754899,
+      "child_cpu_user_seconds": 4.186628,
+      "child_maxrss": 357400576,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "tests/unit/test_method_registry.py",
+        "-q",
+        "-k",
+        "not actual_mps"
+      ],
+      "elapsed_seconds": 7.760533708998992,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 78593,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final-2/finish.json",
+        "sha256": "49cdd31d54935181a0ed5664d24dd90c95ca6bd68c04bf60934b5acb4fb5bee4"
+      },
+      "name": "focused-final-2",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final-2/runtime-observation.json",
+        "sha256": "b638171faef46226583e4901d0028236954c5359cfadbb7449ebc433f7bf4eae"
+      },
+      "startup": {
+        "bytes": 24473929,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final-2/startup.json",
+        "sha256": "c0af3a75eb3c0c23447e72255b1c45b180d60838e35cc8ccb2241e05e26e563b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final-2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 113,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/focused-final-2/stdout.txt",
+        "sha256": "8d2b210151ed97a0ce201df1e92f6157411ca63abcdbca14cc23c7732b48e0da"
+      },
+      "storage_after": {
+        "data_free_after": 80614395904,
+        "git_free_after": 7127601152
+      },
+      "storage_before": {
+        "allocated_bytes": 21511370667,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80647688192,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7127597056
+      },
+      "utc": "2026-10-11T21:24:02.846388+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 6.881726,
+      "child_cpu_user_seconds": 91.790938,
+      "child_maxrss": 775913472,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "docs/harness/m10-pytest-cpu.py"
+      ],
+      "elapsed_seconds": 99.15146483299759,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 452788,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression/finish.json",
+        "sha256": "34d2e50d9606cff5c17bf9af8ee6722243d55585366e7a664513acfbfe4faea7"
+      },
+      "name": "full-cpu-regression",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression/runtime-observation.json",
+        "sha256": "75742dcdc575db10245cf712cc6e2fd98e29fef63822debec70656feaaa0694f"
+      },
+      "startup": {
+        "bytes": 21297067,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression/startup.json",
+        "sha256": "57142a87a28be8ed73f529b7e37215c496012b8935b6d0d498223282781d6f69"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3467484,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression/stdout.txt",
+        "sha256": "f3a1f73b1acb28953e22a56bf7effb7f6106b71e5052c0a716984c8fa75d678e"
+      },
+      "storage_after": {
+        "data_free_after": 80940883968,
+        "git_free_after": 7127871488
+      },
+      "storage_before": {
+        "allocated_bytes": 21309196762,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80989163520,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7143858176
+      },
+      "utc": "2026-10-11T21:18:49.853207+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 14.256464,
+      "child_cpu_user_seconds": 64.726401,
+      "child_maxrss": 752091136,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "docs/harness/m10-pytest-cpu.py"
+      ],
+      "elapsed_seconds": 78.23987433299772,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 3213764,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-2/finish.json",
+        "sha256": "9cb0e95c78d2941ca2dc5f2411111b3fd84100c9eb524d8fbbeb78e0baedc87a"
+      },
+      "name": "full-cpu-regression-2",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-2/runtime-observation.json",
+        "sha256": "b2968c676447f68ff76624cfefae930bfff38944db7b1fe225bb477a8d558d57"
+      },
+      "startup": {
+        "bytes": 21660120,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-2/startup.json",
+        "sha256": "0fe9021fc8d1baefcd64d032d881181a93b5e8b74b281122462d3656b3e22536"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5472,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-2/stdout.txt",
+        "sha256": "dbef1f7fcad19effdced518ee668e264498f107d1e15968dcc9689697ecd9fd2"
+      },
+      "storage_after": {
+        "data_free_after": 80708214784,
+        "git_free_after": 7127695360
+      },
+      "storage_before": {
+        "allocated_bytes": 21344494956,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80939700224,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7127851008
+      },
+      "utc": "2026-10-11T21:21:09.633908+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 14.072451,
+      "child_cpu_user_seconds": 64.204065,
+      "child_maxrss": 755335168,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "docs/harness/m10-pytest-cpu.py"
+      ],
+      "elapsed_seconds": 78.08401470800163,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 3213755,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-3/finish.json",
+        "sha256": "37525a272fa05a84147729efdbde890f3cdfe31928c6045a4d546847604f6887"
+      },
+      "name": "full-cpu-regression-3",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-3/runtime-observation.json",
+        "sha256": "fc2c6a7e4f6d2eaafee4249b031835eccf7bc6190913a757ead238a44fa1fff2"
+      },
+      "startup": {
+        "bytes": 24538042,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-3/startup.json",
+        "sha256": "ab93001111c69dd06711ab2bbfd804116860ed024d9c523efb01e06929910f8a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-3/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1357,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/full-cpu-regression-3/stdout.txt",
+        "sha256": "14c89315de882b40a2a7163ea7a90fbbc1c81f5c190990f23c761293b5576759"
+      },
+      "storage_after": {
+        "data_free_after": 80431161344,
+        "git_free_after": 7127408640
+      },
+      "storage_before": {
+        "allocated_bytes": 21539601213,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80611422208,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7127543808
+      },
+      "utc": "2026-10-11T21:24:32.318036+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.752375,
+      "child_cpu_user_seconds": 4.072943,
+      "child_maxrss": 357040128,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 7.122961332999694,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 77842,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-boundaries/finish.json",
+        "sha256": "9b15203e932c85ef9b05e2c56218c876d7f4e67a32a8c299954dd7324b693895"
+      },
+      "name": "green-boundaries",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-boundaries/runtime-observation.json",
+        "sha256": "4b001a851d52186670e9b804fe1df62a7985869deb2136e6d9268f8da6c3c9cf"
+      },
+      "startup": {
+        "bytes": 21051425,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-boundaries/startup.json",
+        "sha256": "7db22ae63ef2e23c1193a7d5846076f817bfd040ec3f1b924f81c5b1f5452fef"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-boundaries/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 99,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-boundaries/stdout.txt",
+        "sha256": "1ca1ad4690e3be2808f9a23963803b54877e50902e7c80d03dc522e66077619a"
+      },
+      "storage_after": {
+        "data_free_after": 81097474048,
+        "git_free_after": 7144308736
+      },
+      "storage_before": {
+        "allocated_bytes": 21167153476,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81124597760,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144120320
+      },
+      "utc": "2026-10-11T21:13:12.160866+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.457742,
+      "child_cpu_user_seconds": 2.492308,
+      "child_maxrss": 355598336,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 5.483008666997193,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 23770,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-1/finish.json",
+        "sha256": "9225c621797f9b3f05cad64ffd1792a7c97f0609bbeb4ff8b2d57962d50f3925"
+      },
+      "name": "green-mechanism-1",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-1/runtime-observation.json",
+        "sha256": "0eeed503a3933fe09e9bd15b394c043c1a062b5c7c1dfd50d73e4b15d7b0fc70"
+      },
+      "startup": {
+        "bytes": 20961071,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-1/startup.json",
+        "sha256": "2c94a9218d7fbb87ad3b5ca66a6925e95657840911a1b44f614eca85344cef64"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3882,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-1/stdout.txt",
+        "sha256": "1834f2762a6ffb881315e6c2cddc820c37f787b58fe2db0d7b46a7c52b2a2c37"
+      },
+      "storage_after": {
+        "data_free_after": 81629376512,
+        "git_free_after": 7144706048
+      },
+      "storage_before": {
+        "allocated_bytes": 21055556534,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81652592640,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144710144
+      },
+      "utc": "2026-10-11T21:08:48.640989+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.6241479999999999,
+      "child_cpu_user_seconds": 3.817005,
+      "child_maxrss": 355188736,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 6.858627584006172,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 23950,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-2/finish.json",
+        "sha256": "c4110e0a40e7990aeab7b9ea3ff953c76b0dd87bdd762d1807930ce0bcf34c8b"
+      },
+      "name": "green-mechanism-2",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-2/runtime-observation.json",
+        "sha256": "b6bd2fdf1f7768379022d201a64ada10a1b0291c85ccddc49a13ce719e9183a3"
+      },
+      "startup": {
+        "bytes": 20996210,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-2/startup.json",
+        "sha256": "16a10a1520653180a84830c519fcd6bdb5cae5dea8e3bf1b8e1bc13b11e9d63a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 99,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-mechanism-2/stdout.txt",
+        "sha256": "4e2ea407d5a3deb7c5eab2eae7abf5422ec303da98fe563987f9c7b88d75f7d4"
+      },
+      "storage_after": {
+        "data_free_after": 81380638720,
+        "git_free_after": 7144538112
+      },
+      "storage_before": {
+        "allocated_bytes": 21100085666,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81430802432,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144599552
+      },
+      "utc": "2026-10-11T21:10:20.068322+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.7932159999999999,
+      "child_cpu_user_seconds": 4.305477,
+      "child_maxrss": 358088704,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 7.431574957998237,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 77852,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-single-clip/finish.json",
+        "sha256": "cc46ad5b87dfe574c2f9c96bae88613bb983f1d25bd91901d0cb42d02a5d520b"
+      },
+      "name": "green-single-clip",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-single-clip/runtime-observation.json",
+        "sha256": "784a85c6741201f8a77cf6f000b669f936c5479d7242093797599a9cad0b8aaf"
+      },
+      "startup": {
+        "bytes": 21132624,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-single-clip/startup.json",
+        "sha256": "76448d02dbb50a681191bf9ba9d4c108be4d5f01cf9ef839b8be5279286fd7b2"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-single-clip/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 99,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/green-single-clip/stdout.txt",
+        "sha256": "42b3c574a8c17f7020e9ee4dc11a8249a87ead1d2ebe2ce68d11ef5c691cb8cc"
+      },
+      "storage_after": {
+        "data_free_after": 81051127808,
+        "git_free_after": 7144214528
+      },
+      "storage_before": {
+        "allocated_bytes": 21214339639,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81076785152,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144230912
+      },
+      "utc": "2026-10-11T21:14:12.288045+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 1.3735,
+      "child_cpu_user_seconds": 3.797093,
+      "child_maxrss": 552845312,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "ralup",
+        "verify-baselines",
+        "--suite",
+        "metaquant",
+        "--device",
+        "mps",
+        "--output",
+        "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json"
+      ],
+      "elapsed_seconds": 14.176541125001677,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 24413,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/finish.json",
+        "sha256": "2d7315aa581a882d8419800c094afd05a04e4270096dad31b8b9ad3a7c21df57"
+      },
+      "name": "native-functional-v1",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/runtime-observation.json",
+        "sha256": "ed79b99c3d38b398f21ad796255ccb060eb2a1825fc70d1cbee461321b39faea"
+      },
+      "startup": {
+        "bytes": 27333479,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/startup.json",
+        "sha256": "f23c89a5db7442bbd0945b29bd2e89f301ad91cd417b23f897ddb73c7467feda"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 230,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/stdout.txt",
+        "sha256": "0b0b48676dcfa9096a0dce542dd6c85d86fccc0494612889c117e4a30d3ecca9"
+      },
+      "storage_after": {
+        "data_free_after": 80256036864,
+        "git_free_after": 7127388160
+      },
+      "storage_before": {
+        "allocated_bytes": 21683694972,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80336412672,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7126339584
+      },
+      "utc": "2026-10-11T21:26:23.251208+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.20044199999999998,
+      "child_cpu_user_seconds": 1.435369,
+      "child_maxrss": 350470144,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q",
+        "-k",
+        "priming_failed or fast_context_forgery or priming_previous"
+      ],
+      "elapsed_seconds": 4.128947500001232,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 23750,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-exposure-identity/finish.json",
+        "sha256": "f928e453343f26407bac83bf5f98229b888885903f9b78e1500b7d553d2e09f3"
+      },
+      "name": "red-exposure-identity",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-exposure-identity/runtime-observation.json",
+        "sha256": "9cb61b21aff8fd7d74c1a956b381a043bba0435125e5db3d39e8d7cc13a1ea2f"
+      },
+      "startup": {
+        "bytes": 21196964,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-exposure-identity/startup.json",
+        "sha256": "cf76647f7636ab20453bd6baeb8eaf9dad489b75b80c8b95b7534adb88f2af98"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-exposure-identity/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 8912,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-exposure-identity/stdout.txt",
+        "sha256": "2ffe345c50262a3f38b2b9699ce3c3309006f4a9a3008f30cafa31381f693a12"
+      },
+      "storage_after": {
+        "data_free_after": 81041678336,
+        "git_free_after": 7143690240
+      },
+      "storage_before": {
+        "allocated_bytes": 21239196712,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81065836544,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144124416
+      },
+      "utc": "2026-10-11T21:15:19.061831+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.14016599999999999,
+      "child_cpu_user_seconds": 0.901345,
+      "child_maxrss": 241582080,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 3.535534374997951,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 23378,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-mechanism/finish.json",
+        "sha256": "c58521741f8cb3ecd2bda29d8a598cfdf95d2cf3497e6cb3223125bd3849b702"
+      },
+      "name": "red-mechanism",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-mechanism/runtime-observation.json",
+        "sha256": "717a0ebf155c9349b15a76702ce6550d9c36122ff30c8f4686fb18c4e102d46c"
+      },
+      "startup": {
+        "bytes": 20944145,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-mechanism/startup.json",
+        "sha256": "508eeb65e06179be4084603e147b786a69b623ac33c1175b186d91d4a2900134"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-mechanism/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 24281,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-mechanism/stdout.txt",
+        "sha256": "6288d0648528518eb8facd39c6e10c17d1d054b8123154a240b45b5817d8db0e"
+      },
+      "storage_after": {
+        "data_free_after": 81741324288,
+        "git_free_after": 7161716736
+      },
+      "storage_before": {
+        "allocated_bytes": 21033348470,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81763778560,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7161720832
+      },
+      "utc": "2026-10-11T21:05:18.020962+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.11031099999999999,
+      "child_cpu_user_seconds": 0.716564,
+      "child_maxrss": 250789888,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q",
+        "-k",
+        "framework_meta_initialization"
+      ],
+      "elapsed_seconds": 3.3049897919991054,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 23741,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-meta-seed-isolation/finish.json",
+        "sha256": "74f37bf2447d508757c0883a34e6296d4c64285ef7757fbcc97ba8e1593460af"
+      },
+      "name": "red-meta-seed-isolation",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-meta-seed-isolation/runtime-observation.json",
+        "sha256": "aef31cae60f00330a6fa49db73a59fb160bf4a9f426b36933ecfa5c399d11005"
+      },
+      "startup": {
+        "bytes": 21214928,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-meta-seed-isolation/startup.json",
+        "sha256": "0a66b4848b937a7ed327030ced9b1b154eca25cef027b00bbef729c8da4b0e7e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-meta-seed-isolation/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2686,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-meta-seed-isolation/stdout.txt",
+        "sha256": "c340ead4d20a000fb4a1ea4f0475cef21ec17d3021a745579ed0cd722920a09c"
+      },
+      "storage_after": {
+        "data_free_after": 81016360960,
+        "git_free_after": 7144050688
+      },
+      "storage_before": {
+        "allocated_bytes": 21261699833,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81035190272,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144062976
+      },
+      "utc": "2026-10-11T21:16:26.316955+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.121528,
+      "child_cpu_user_seconds": 0.7307669999999999,
+      "child_maxrss": 239992832,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_metaquant_fast_weights.py",
+        "-q",
+        "-k",
+        "registry_dorefa"
+      ],
+      "elapsed_seconds": 3.760023167000327,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 24285,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-original-registry/finish.json",
+        "sha256": "90afd7d2fb821ff6001f66fa049d2cc664a34ac8203b9101fd35fc43a241ad14"
+      },
+      "name": "red-original-registry",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-original-registry/runtime-observation.json",
+        "sha256": "52f7212df7a26bce5aa88a275d9738ac7bc064a9fd9ae5061d76f9d39f1cf2f0"
+      },
+      "startup": {
+        "bytes": 24455431,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-original-registry/startup.json",
+        "sha256": "ef6f4c683d0400064e94740ab293d969219bfdf83a2ef48dd91ebb7b1412aa54"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-original-registry/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1025,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-original-registry/stdout.txt",
+        "sha256": "b06ed0139e2fdccbaa391ee345a31168b26ea4e0fc439d7b617517d34a5ab9ca"
+      },
+      "storage_after": {
+        "data_free_after": 80649666560,
+        "git_free_after": 7127572480
+      },
+      "storage_before": {
+        "allocated_bytes": 21485609528,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 80675848192,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7127269376
+      },
+      "utc": "2026-10-11T21:23:28.568990+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.128829,
+      "child_cpu_user_seconds": 0.8256,
+      "child_maxrss": 244350976,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 3.633081125000899,
+      "exit_code": 2,
+      "finish": {
+        "bytes": 23726,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries/finish.json",
+        "sha256": "66af6f5a89bf76c274024783b2666fece18048402bc0582ab18c51fba75a1896"
+      },
+      "name": "red-remaining-boundaries",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries/runtime-observation.json",
+        "sha256": "57441df23bab0f0392d62039f914bdf89e53b3a6107d5d8915b32f546c84495d"
+      },
+      "startup": {
+        "bytes": 21013781,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries/startup.json",
+        "sha256": "6b866d549b273af8034a5417665d09ebbff061a25b96fba070d68ae79dee2601"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1069,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries/stdout.txt",
+        "sha256": "5e1010daaee6e71f00720c18cd052ce92e9a66119d34d4274a7f0e669cb2e2d4"
+      },
+      "storage_after": {
+        "data_free_after": 81226829824,
+        "git_free_after": 7144349696
+      },
+      "storage_before": {
+        "allocated_bytes": 21122432253,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81257037824,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144370176
+      },
+      "utc": "2026-10-11T21:11:41.303043+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.674318,
+      "child_cpu_user_seconds": 4.058699,
+      "child_maxrss": 360841216,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q"
+      ],
+      "elapsed_seconds": 7.2552957919979235,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 24376,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries-2/finish.json",
+        "sha256": "03f5c336ef6cb4de6a3fd6412e3fbe3ff9a31efd7a3aaaaf571e45ae056bc10a"
+      },
+      "name": "red-remaining-boundaries-2",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries-2/runtime-observation.json",
+        "sha256": "2587cb18a0ac8ed96c44f1da20ef67c183ca5fa4124d39be6edbffe1ade2dfc6"
+      },
+      "startup": {
+        "bytes": 21032179,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries-2/startup.json",
+        "sha256": "1ed5a6fbc82e06d6a463a4515cd2310dcb62316a2144355d7033269b8ee6b0e5"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries-2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 21691,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-remaining-boundaries-2/stdout.txt",
+        "sha256": "b53304814c181e63d13dc13746da8d261709f7c59ee69fd3b715d96f7a6f1420"
+      },
+      "storage_after": {
+        "data_free_after": 81127817216,
+        "git_free_after": 7144349696
+      },
+      "storage_before": {
+        "allocated_bytes": 21144738287,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81150668800,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144153088
+      },
+      "utc": "2026-10-11T21:12:16.407996+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.126249,
+      "child_cpu_user_seconds": 0.730088,
+      "child_maxrss": 258949120,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/integration/test_metaquant_adapter.py",
+        "-q",
+        "-k",
+        "share_one_logical_gradient_clip"
+      ],
+      "elapsed_seconds": 3.325217124998744,
+      "exit_code": 1,
+      "finish": {
+        "bytes": 23748,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-single-clip/finish.json",
+        "sha256": "665a3370de2ad96186716a13f52066b7449dcfb0ce37165c8d8780c8a7809d45"
+      },
+      "name": "red-single-clip",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-single-clip/runtime-observation.json",
+        "sha256": "16418b72624b647eca2d9863334dc669f7cbcb57e2d8bda372bb4ff0030ed947"
+      },
+      "startup": {
+        "bytes": 21115441,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-single-clip/startup.json",
+        "sha256": "657b9d1267ee9d771daf2b46595b1067e6d9347e9e4ec5f5de9a1f89cc916edc"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-single-clip/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1148,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/red-single-clip/stdout.txt",
+        "sha256": "e6c3e81cc01801e573021b6c7919c843fe5be8cd81a0aec5f17c6942a17463d8"
+      },
+      "storage_after": {
+        "data_free_after": 81073373184,
+        "git_free_after": 7144304640
+      },
+      "storage_before": {
+        "allocated_bytes": 21191927300,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81096196096,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144308736
+      },
+      "utc": "2026-10-11T21:13:26.548955+00:00"
+    },
+    {
+      "child_cpu_system_seconds": 0.17864,
+      "child_cpu_user_seconds": 1.190591,
+      "child_maxrss": 345980928,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "docs/harness/m10-replay-diagnostic.py"
+      ],
+      "elapsed_seconds": 3.758608333999291,
+      "exit_code": 0,
+      "finish": {
+        "bytes": 23737,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/replay-diagnostic/finish.json",
+        "sha256": "f17ed272b9bfbabd975737ee8b48c34995c8576d6f30fd606ed73692ee7f82b4"
+      },
+      "name": "replay-diagnostic",
+      "runtime": {
+        "bytes": 873,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/replay-diagnostic/runtime-observation.json",
+        "sha256": "f5d87036b2d6891a90b30957c079da15541e042ff79307d0d8633d707cb39b91"
+      },
+      "startup": {
+        "bytes": 20978668,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/replay-diagnostic/startup.json",
+        "sha256": "8a5b5b5f0454d1ecbb5fabb5420fa2fe03a5f68231b17a0fe63abb41808208d6"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/replay-diagnostic/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1195,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/replay-diagnostic/stdout.txt",
+        "sha256": "91a7deb7a90b46efdcbbd1066d90f6e6d3db6892d2b75babece9f7d9df13a3fe"
+      },
+      "storage_after": {
+        "data_free_after": 81592918016,
+        "git_free_after": 7144488960
+      },
+      "storage_before": {
+        "allocated_bytes": 21077820529,
+        "complete_remaining_fix_forecast_bytes": 536870912,
+        "data_free_before": 81615626240,
+        "forecast_scope": "current M10 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7144673280
+      },
+      "utc": "2026-10-11T21:09:34.106980+00:00"
+    }
+  ],
+  "base": "33c8352a13babde50303a4ed072c05befe83243f",
+  "blocked_is_defeated_baseline": false,
+  "common_enclosing_engineering_and_project_cost": "unknown, not zero",
+  "completed_administration": [
+    {
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "docs/harness/m10-index.py"
+      ],
+      "elapsed_seconds": 5.444101417000638,
+      "immutable_index": {
+        "bytes": 51746,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/index-v1/index.json",
+        "sha256": "35ac8251f25ad89fa10f663910efebd84191f2c423552f28736d66c5b588c974"
+      },
+      "name": "index-v1",
+      "receipts": {
+        "finish": {
+          "bytes": 24579,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/index-v1/finish.json",
+          "sha256": "e994e5d62241122ceb8f8c1f3dbf0611d509ae1483a80f6ffabc69ac66103f8a"
+        },
+        "startup": {
+          "bytes": 27351822,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/index-v1/startup.json",
+          "sha256": "295fa60f68bb9ce4ced026d33c0ed30c5a3d8651beb5690e73ff324a710c174d"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/index-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 889,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/index-v1/stdout.txt",
+          "sha256": "ee7f226d22a1640152a6a51e9de33b107a0494862c70fbffb6b38cbc59ee43e8"
+        }
+      }
+    }
+  ],
+  "completed_invocation_elapsed_seconds": 344.21256470998924,
+  "cost_scope": "each completed launcher interval includes child; sum is scoped invocation work, not task wall union or complete engineering/project cost",
+  "final_source_hashes": {
+    "src/ralup/__init__.py": "ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd",
+    "src/ralup/__main__.py": "c97c339ba9be33d1d3755017b1bed3e8e6e2c4f506b0eab126a2ff23c7c02a4f",
+    "src/ralup/baselines/__init__.py": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f",
+    "src/ralup/baselines/checks.py": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b",
+    "src/ralup/baselines/ewgs.py": "00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff",
+    "src/ralup/baselines/learned_scale.py": "d3b3e092245149c4ad36926f33d041a12f7c64d5ecedf1cbbcc17da5569a7b22",
+    "src/ralup/baselines/metaquant.py": "e3db83d0c2906affcd6c4ad0e38811dea9b311c3b8bca2582170f0d5e25af6c7",
+    "src/ralup/baselines/muon_checks.py": "ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11",
+    "src/ralup/baselines/noise.py": "4fb6514e055274805531ae4926500a8db952caa3486535c46dd028eb8a1c861f",
+    "src/ralup/baselines/qar.py": "a309831c37e9b55e68e109dd5dd4d672bcf3e7aee98371c34bd549d5336437ea",
+    "src/ralup/baselines/references/__init__.py": "6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f",
+    "src/ralup/baselines/references/soap_reference.py": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b",
+    "src/ralup/baselines/registry.py": "a783500268898d16c48194898c835ed73bc564c13500e973cd23a54a099f00f0",
+    "src/ralup/baselines/rounding.py": "21f9e162ad8c4a6b10df51049ff9f80389c67fafe24583fb3d8a131024a1d7fa",
+    "src/ralup/baselines/soap_madam_checks.py": "d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b",
+    "src/ralup/baselines/trs.py": "6c759a7ee85b0b92c7027e43c59dcadd435773f651d7c5a650c8a95a2a0edf8d",
+    "src/ralup/calibrate.py": "1e26bd718902ad4639978eac7ec0f8e30bbeaae6eb7b68a34b29204573b2518b",
+    "src/ralup/config.py": "96bf4a3ee4ffe8a3c27dfdefbd7679ae804a41c8243357857b7ef39da085a350",
+    "src/ralup/data/__init__.py": "6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0",
+    "src/ralup/data/articles.py": "1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c",
+    "src/ralup/data/batches.py": "5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750",
+    "src/ralup/data/blocks.py": "c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe",
+    "src/ralup/data/checks.py": "cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f",
+    "src/ralup/data/cursor.py": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af",
+    "src/ralup/data/dedup.py": "c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f",
+    "src/ralup/data/partitions.py": "551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9",
+    "src/ralup/data/source.py": "fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f",
+    "src/ralup/diagnostics/__init__.py": "ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00",
+    "src/ralup/diagnostics/quadratics.py": "3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840",
+    "src/ralup/environment.py": "0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160",
+    "src/ralup/evaluate.py": "ecd6780a8a005466d69b901889051e13d131fec5697e47e489abfff57ff17886",
+    "src/ralup/meta/__init__.py": "9f080d8764e62251844c6da57cd873c552e977ecdb0fd3f0141590cc67a782cb",
+    "src/ralup/meta/es.py": "e5a510f34760198d0d6008172d159406772f9506d8bf33fa0add2c3dc7c60c87",
+    "src/ralup/meta/selection.py": "2140082f2f831134d8229218618c571ad76c608c161be72a1af0c8cad5339112",
+    "src/ralup/meta/tasks.py": "f04fb1451d4cb64c354d251fe949b3dfa099e3275528527c3962f574aa26948d",
+    "src/ralup/models/__init__.py": "7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752",
+    "src/ralup/models/checks.py": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a",
+    "src/ralup/models/embedding.py": "11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1",
+    "src/ralup/models/linear.py": "f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546",
+    "src/ralup/models/transformer.py": "4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05",
+    "src/ralup/optim/__init__.py": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae",
+    "src/ralup/optim/adamw.py": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c",
+    "src/ralup/optim/base.py": "61bacd5807767a7b92b261651cb4b0b0eecfa48f21db00929c98d33cf6ccb4bb",
+    "src/ralup/optim/madam.py": "afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6",
+    "src/ralup/optim/matrix_adapter.py": "45f6d5600e0470c8e3ad63be349b8fc06c8ad0bb17ee5d6352bb4bac94b575bc",
+    "src/ralup/optim/muon.py": "c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35",
+    "src/ralup/optim/muon_plus.py": "0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d",
+    "src/ralup/optim/soap.py": "f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b",
+    "src/ralup/policy/__init__.py": "2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4",
+    "src/ralup/policy/actions.py": "f4830341e79fb54c863fcbdf0d02d20a6f288e74f8918742b440b0808b5cf4f5",
+    "src/ralup/policy/adapter.py": "5842cc94bbeaff51063b1010b0e906fb4a1b31fe9549c311b578ab8f93392dcd",
+    "src/ralup/policy/checks.py": "669127f4b9ee5af65a23c05662239eff643762b219026acb643d4853160d0b5f",
+    "src/ralup/policy/controllers.py": "1bdd7b3077b0e1eb20b3e7430f455039939dd78a04f484cd2e29dcfe2b9ae9d5",
+    "src/ralup/policy/features.py": "31e647ce2b15f6735887c36f592f3d3c5978f9c6450fd815b571f46e8b0af657",
+    "src/ralup/policy/history.py": "b750ccd592eeaa6c2a71ad21f149418dada2e8abb6694fb49816a6a41611c1c8",
+    "src/ralup/policy/normalizer.py": "0358135d4bf09a4b9a2104394f24f0adb8cc425bf201fea5c45425ee5d560c28",
+    "src/ralup/quantization/__init__.py": "733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16",
+    "src/ralup/quantization/checks.py": "fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2",
+    "src/ralup/quantization/context.py": "3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c",
+    "src/ralup/quantization/formats.py": "a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896",
+    "src/ralup/quantization/fp32.py": "ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5",
+    "src/ralup/quantization/oracle.py": "78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c",
+    "src/ralup/quantization/rotation.py": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d",
+    "src/ralup/quantization/scales.py": "17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64",
+    "src/ralup/quantization/surrogates.py": "a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614",
+    "src/ralup/records.py": "243aeec2352531a03a695267b00e04b7a5675c687e1932f90058cc5f96702faf",
+    "src/ralup/search.py": "9c02615f9f3a00877ce4ef33d8f2fbd1ac1985b47bd89aa57deea55347843356",
+    "src/ralup/state.py": "24993da7dfe631902955045cd0d9bb887330772fefaea9b2cd63e9e8f2feabc7",
+    "src/ralup/train.py": "6522b8b7c8a26a2ac6598462951201b3f28d710ef23b22c9fa671d0276d52ef8",
+    "src/ralup/warmstart.py": "ade8c8301389b92f1d0eb1c00dc3ee5404e133ef2617cb41fc76b562cad13406"
+  },
+  "native_actual_work": {
+    "classification_overlap": "ordinary/priming/fast/meta share execution identity; replay is separately executed and charged; extra read-only passes add loss but no backward",
+    "executed_training_steps": 20,
+    "extra_loss_target_bytes": 0,
+    "factor_forward_derivative_audit_gradient_executions": 4,
+    "original_fixture_scalar_backwards": 2,
+    "original_fixture_scalar_training_losses": 2,
+    "readonly_functional_and_score_target_bytes": 64,
+    "readonly_functional_loss_executions": 4,
+    "readonly_score_executions": 4,
+    "scope": "native synthetic engineering only; not corpus bytes/scientific budget/performance evidence",
+    "total_LM_loss_target_exposures": 224,
+    "training_backward_target_bytes": 160,
+    "training_loss_executions": 40,
+    "training_target_bytes": 160
+  },
+  "native_contract": {
+    "bytes": 2711,
+    "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/m10-native-contract.json",
+    "sha256": "b187818f12102e20c57ee699e98b2db0f4ded4de267001e27b303d0674320942"
+  },
+  "native_logical_step_timing": [
+    {
+      "id": "native-functional-v1/frozen_theta/identity/original/step-0",
+      "observed_step_elapsed_seconds": 0.622853083004884,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/identity/original/step-1",
+      "observed_step_elapsed_seconds": 0.13003337499685585,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/identity/original/step-2",
+      "observed_step_elapsed_seconds": 0.13342283300153213,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/identity/replay/step-1",
+      "observed_step_elapsed_seconds": 0.11376849999942351,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/identity/replay/step-2",
+      "observed_step_elapsed_seconds": 0.14342095900065033,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/full_hadamard/original/step-0",
+      "observed_step_elapsed_seconds": 0.2512516249989858,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/full_hadamard/original/step-1",
+      "observed_step_elapsed_seconds": 0.3615331250039162,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/full_hadamard/original/step-2",
+      "observed_step_elapsed_seconds": 0.2817352089987253,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/full_hadamard/replay/step-1",
+      "observed_step_elapsed_seconds": 0.3411396670053364,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/frozen_theta/full_hadamard/replay/step-2",
+      "observed_step_elapsed_seconds": 0.3396262079986627,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/identity/original/step-0",
+      "observed_step_elapsed_seconds": 0.08539637499779928,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/identity/original/step-1",
+      "observed_step_elapsed_seconds": 0.14118841700110352,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/identity/original/step-2",
+      "observed_step_elapsed_seconds": 0.15472766699531348,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/identity/replay/step-1",
+      "observed_step_elapsed_seconds": 0.14031745799729833,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/identity/replay/step-2",
+      "observed_step_elapsed_seconds": 0.16793308300111676,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/full_hadamard/original/step-0",
+      "observed_step_elapsed_seconds": 0.16429379200417316,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/full_hadamard/original/step-1",
+      "observed_step_elapsed_seconds": 0.4282489160032128,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/full_hadamard/original/step-2",
+      "observed_step_elapsed_seconds": 0.4219169999996666,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/full_hadamard/replay/step-1",
+      "observed_step_elapsed_seconds": 0.4323722920016735,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    },
+    {
+      "id": "native-functional-v1/online_target_training/full_hadamard/replay/step-2",
+      "observed_step_elapsed_seconds": 0.3281217920011841,
+      "timing_scope": "nested in enclosing native launcher; do not add again"
+    }
+  ],
+  "native_physical_training_events": [
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-0-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-0-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/original/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/replay/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/replay/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/replay/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/identity/replay/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-0-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-0-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/original/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/replay/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/replay/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/replay/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/frozen_theta/full_hadamard/replay/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-0-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-0-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/original/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/replay/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/replay/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/replay/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/identity/replay/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-0-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-0-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-0-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "priming_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/original/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/replay/metaquant-step-1-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/replay/metaquant-step-1-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-1-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/replay/metaquant-step-2-microbatch-1",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-1",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    },
+    {
+      "per_pass_elapsed_seconds": null,
+      "physical_id": "native-functional-v1/online_target_training/full_hadamard/replay/metaquant-step-2-microbatch-2",
+      "producer": {
+        "bytes": 80916,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+        "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+      },
+      "raw_event": {
+        "backward_launched": true,
+        "execution_id": "metaquant-step-2-microbatch-2",
+        "forward_completed": true,
+        "forward_launched": true,
+        "labels": [
+          "ordinary_training_loss",
+          "fast_loss",
+          "meta_loss"
+        ],
+        "parameter_mapping": "exact H04 projection manifest; detached fast_contexts numerical values, fresh correction graph",
+        "target_bytes": 4
+      }
+    }
+  ],
+  "native_report": {
+    "bytes": 80916,
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m10-20261011/native-functional-v1/metaquant.json",
+    "sha256": "0d35b1f750eaf1c2b667012e15f4d3aed6ad2bf4d31760ee064fcca4c3acdeb0"
+  },
+  "paper_attribution": {
+    "attribution_checked": "primary paper first page; equations independently implemented",
+    "authors": [
+      "Shangyu Chen",
+      "Wenya Wang",
+      "Sinno Jialin Pan"
+    ],
+    "primary_url": "https://papers.nips.cc/paper_files/paper/2019/file/f8e59f4b2fe7c5705bf878bbd494ccdf-Paper.pdf",
+    "project": "csyhhu/MetaQuant@50694404fa010958aa24c96b4c870d5e9442e849",
+    "source_copy_status": "blocked_missing_grant",
+    "title": "MetaQuant: Learning to Quantize by Learning to Penetrate Non-differentiable Quantization",
+    "venue": "NeurIPS 2019"
+  },
+  "release_parity_claimed": false,
+  "schema": "ralup.m10.completed_evidence.v1",
+  "scientific_gate": null,
+  "source_copy_status": "blocked_missing_grant"
+}

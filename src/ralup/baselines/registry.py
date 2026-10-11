@@ -89,7 +89,50 @@ def default_registry(groups: tuple[ParameterGroup,...], *, rule: AdamWUpdateRule
     register_trs_methods(registry,groups)
     register_routing_methods(registry,groups)
     register_scale_noise_methods(registry,groups)
+    register_metaquant_methods(registry,groups)
     return registry
+
+
+METAQUANT_NAMES=('metaquant_uniform_fixture','metaquant_fp4_frozen','metaquant_fp4_online_target_training')
+
+
+def metaquant_record(name,groups,config,*,parity_status='unverified',operations_status='unverified'):
+    from .metaquant import validate_config
+    c=validate_config(config)
+    if name not in METAQUANT_NAMES:raise ValueError('Unknown named MetaQuant method')
+    original=name=='metaquant_uniform_fixture'
+    variant='frozen_theta' if name=='metaquant_fp4_frozen' else 'online_target_training'
+    if not original and c['variant']!=variant:raise ValueError('Named MetaQuant frozen/online config mismatch')
+    if original:
+        from .metaquant import FIXTURE_CONFIG
+        if c!=FIXTURE_CONFIG:raise ValueError('Pinned original DoReFa fixture settings required')
+    settings=({k:c[k] for k in ('widths','meta_seed','meta_lr','meta_betas','meta_eps')}|{
+        'quantizer':'dorefa_uniform_3bit','calibration':'(1-tanh(W)^2)/max(abs(tanh(W))); zero denominator extension one',
+        'refinement':'SGD_identity','learning_rate':.03,'decay':'none','auxiliary':'none',
+        'task':'two scalar squared prediction training losses; first primes; second late pretheta commit'} if original else c)
+    return MethodRecord(name=name,family='MetaQuant',source_revision='NeurIPS2019:f8e59f4b2fe7c5705bf878bbd494ccdf;Eqs1,4,5,10;csyhhu/MetaQuant@50694404fa010958aa24c96b4c870d5e9442e849 inspection-only',
+        adaptation_label='independent_paper_DoReFa_learning_mechanism' if original else f'project_FP4_physical_identity_STE_{variant}',
+        required_operations=('factor_product_matmul','factor_gradient','detached_cancellation')+(
+            ('uniform_DoReFa_calibration','scalar_training_loss_backward','late_SGD_commit') if original else ('functional_H04_target_backward','original_W_base_commit')),
+        ordered_parameter_groups=groups,
+        state_schema=({'optimizer_states':'fixture.original_W.SGD_identity+factor.meta_Adam.v1','proposals':'fixture.late_pretheta_correction.v1',
+            'adapter_mutable_state':'fixture.factor_gradients_prior_quantized_output_gradient_refinement.v1'} if original else {
+            'optimizer_states':'named.original_W.wrapped_backbone+auxiliary.adamw.v1','proposals':'named.proposal.v1',
+            'adapter_mutable_state':'metaquant.factors_gradients_prior_U_outer_counters.v1'}),
+        licenses=('Independent published mathematics for local research; author software reuse grant unknown; no source copied or legal/release assurance',),
+        update_rule_settings={**settings,'source_copy_status':'blocked_missing_grant','equation_implementation_status':'independent_local_research',
+            'release_reproduction_status':'unverified','factor_parameter_count':10200,'meta_Adam_start_lr':.001,
+            'original_calibration':'DoReFa tanh; zero tensor denominator extension one','adaptation_calibration':'cached row range 6*s; physical identity STE',
+            'scientific_scope':'engineering only; no selected controller/final learning budget; target training only'},
+        parity_status=parity_status,operations_status=operations_status,artifact_kind='original_fixture' if original else 'project_adaptation',
+        extra_passes=('priming_training_loss_backward_no_selected_matrix_update',))
+
+
+def register_metaquant_methods(registry,groups):
+    from .metaquant import FIXTURE_CONFIG
+    for name in METAQUANT_NAMES:
+        config={**FIXTURE_CONFIG,'variant':'frozen_theta' if name=='metaquant_fp4_frozen' else 'online_target_training'}
+        registry.register(metaquant_record(name,groups,config))
 
 
 MATRIX_NAMES = ('muon_project_fp32',) + tuple(f'muon_plus_{order}_fp32' for order in ('none','row','col','row_col','col_row'))

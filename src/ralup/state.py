@@ -35,6 +35,7 @@ from .baselines.qar import QarAdjacentAdapter,ADAPTER_FIELDS as QAR_FIELDS,trust
 from .baselines.rounding import RoundingAdapter,trusted_constructor as rounding_constructor
 from .baselines.noise import NoiseAdapter,ADAPTER_FIELDS as NOISE_FIELDS,trusted_constructor as noise_constructor,validate_owned_state as validate_noise_state
 from .baselines.learned_scale import LearnedScaleAdapter,ADAPTER_FIELDS as SCALE_FIELDS,trusted_constructor as scale_constructor,validate_owned_state as validate_scale_state
+from .baselines.metaquant import MetaQuantLMAdapter,ADAPTER_FIELDS as METAQUANT_FIELDS,trusted_constructor as metaquant_constructor,validate_owned_state as validate_metaquant_state
 from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_parameter_groups
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
@@ -111,6 +112,7 @@ register_method_schema('qar_adapter.v1',QarAdjacentAdapter,QAR_FIELDS,qar_constr
 register_method_schema('rounding_adapter.v1',RoundingAdapter,QAR_FIELDS,rounding_constructor)
 register_method_schema('noise_adapter.v1',NoiseAdapter,NOISE_FIELDS,noise_constructor)
 register_method_schema('learned_scale_adapter.v1',LearnedScaleAdapter,SCALE_FIELDS,scale_constructor)
+register_method_schema('metaquant_adapter.v1',MetaQuantLMAdapter,METAQUANT_FIELDS,metaquant_constructor)
 
 
 def _rule_payload(rule):
@@ -138,12 +140,12 @@ def _construct_rule(payload):
 
 def _validated_adapter(payload, prototype, rule):
     _,_,constructor = _METHODS[payload['method_schema']]
-    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor,noise_constructor,scale_constructor,policy_constructor):
+    if constructor in (MatrixMethodAdapter,trusted_constructor,trs_constructor,qar_constructor,rounding_constructor,noise_constructor,scale_constructor,policy_constructor,metaquant_constructor):
         if payload['groups'] != default_parameter_groups(prototype):
             raise IntegrityError('Matrix groups must match exact internal projection manifest and no-decay auxiliaries')
     elif type(rule) is not AdamWUpdateRule:
         raise IntegrityError('Matrix rules require the registered matrix adapter')
-    adapter = (constructor(dict(prototype.named_parameters()),payload['groups'],rule,payload['method']) if constructor is policy_constructor
+    adapter = (constructor(dict(prototype.named_parameters()),payload['groups'],rule,payload['method']) if constructor in (policy_constructor,metaquant_constructor)
                else constructor(dict(prototype.named_parameters()),payload['groups'],rule))
     if payload['method']['snapshot_schema'] != adapter.snapshot_schema:
         raise IntegrityError('Method state schema mismatch')
@@ -353,6 +355,17 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
                 raise IntegrityError('Learned scales require hook-free trainable Parameters')
             if p.grad is not state.method.scale_gradients.get(name):
                 raise IntegrityError('Learned scale gradient owner alias mismatch')
+    if method_name=='metaquant_adapter.v1':
+        for name,p in state.method.theta.items():
+            if type(p) is not torch.nn.Parameter or not p.requires_grad or p._backward_hooks or p._post_accumulate_grad_hooks or p.grad is not state.method.theta_gradients.get(name):
+                raise IntegrityError('MetaQuant requires hook-free factor Parameters and exact gradient owners')
+        def detached_owner(value):
+            if isinstance(value,torch.Tensor):return not value.requires_grad and value.grad_fn is None
+            if isinstance(value,dict):return all(detached_owner(v) for v in value.values())
+            if is_dataclass(value):return all(detached_owner(getattr(value,f.name)) for f in fields(value))
+            return True
+        if any(not detached_owner(getattr(state.method,k)) for k in METAQUANT_FIELDS if k!='theta'):
+            raise IntegrityError('MetaQuant histories/caches/gradients/moments must be detached graph-free owners')
     if set(vars(state.method)) != set(method_fields)|{'parameters','groups','rule'}:
         raise IntegrityError('Unknown adapter fields require registered method schema')
     rule_payload = _rule_payload(state.method.rule)
@@ -568,7 +581,8 @@ def _validated(snapshot):
         completed_step = payload['schedule']['step']
         if type(completed_step) is not int or completed_step < 0: raise IntegrityError('Invalid completed step')
         for name,values in payload['method']['optimizer_states'].items():
-            if completed_step and not values: raise IntegrityError('Completed step is missing optimizer moments')
+            priming_matrix=(payload['method_schema']=='metaquant_adapter.v1' and completed_step==1 and name in payload['groups'][0].parameter_names)
+            if completed_step and not values and not priming_matrix: raise IntegrityError('Completed step is missing optimizer moments')
             if values:
                 parameter_rule = adapter.rule_for_parameter(name)
                 _keys(values,parameter_rule.optimizer_state_fields)
@@ -599,6 +613,8 @@ def _validated(snapshot):
             validate_noise_state(payload['method'],payload['groups'],completed_step,rule,payload['model_cache']['_recipe'])
         if payload['method_schema']=='learned_scale_adapter.v1':
             validate_scale_state(payload['method'],payload['groups'],completed_step,rule,payload['model_cache']['_recipe'],payload['weights'],payload['model_cache']['_runtime'],payload['quantizer_state'])
+        if payload['method_schema']=='metaquant_adapter.v1':
+            validate_metaquant_state(payload['method'],payload['groups'],completed_step,rule,payload['model_cache']['_recipe'],payload['weights'],payload['model_cache']['_contexts'])
         if payload['method_schema'] in ('qar_adapter.v1','rounding_adapter.v1'):
             validate_routing_state(payload['method'],payload['groups'],completed_step,payload['model_cache']['_contexts'],rule,payload['weights'],payload['rng_streams'],payload['model_cache']['_recipe'],rounding=payload['method_schema']=='rounding_adapter.v1')
         if payload['cursor'] is not None: BatchCursor(payload['cursor'])
@@ -640,12 +656,13 @@ def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
             p.grad = None if grad is None else grad.to(device).clone()
         rule = _construct_rule(payload['rule'])
         _,_,constructor = _METHODS[payload['method_schema']]
-        method = (constructor(parameters,payload['groups'],rule,payload['method']) if constructor is policy_constructor
+        method = (constructor(parameters,payload['groups'],rule,payload['method']) if constructor in (policy_constructor,metaquant_constructor)
                   else constructor(parameters,payload['groups'],rule))
         for name,value in payload['method'].items(): setattr(method,name,_device_tree(value,device))
         if payload['method_schema']=='learned_scale_adapter.v1':
             method.restore_owned_parameters()
             method.validate_live_scales()
+        if payload['method_schema']=='metaquant_adapter.v1':method.restore_owned_parameters()
         if payload['method_schema']=='noise_adapter.v1':method.mask_rng_state=payload['method']['mask_rng_state'].clone()
         if payload['method_schema']=='ewgs_adapter.v2':method.probe_rng_state=payload['method']['probe_rng_state'].clone()
         # Noncapturable scalar counters stay CPU; moments remain original-W device.
