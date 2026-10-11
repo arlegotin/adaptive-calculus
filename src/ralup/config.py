@@ -371,3 +371,15 @@ def resolve_config(template: dict, evidence: dict, *, purpose: str) -> ResolvedC
     payload["purpose"] = purpose
     payload["evidence_gates"] = {name: gates[name] for name in required_gates}
     return ResolvedConfig(payload)
+
+
+@dataclass(frozen=True, init=False)
+class ConfirmationManifest:
+    """Exact-byte frozen contract. Synthetic scope never implies science authority."""
+    payload: Mapping
+    sha256: str
+
+    def __init__(self, payload: dict):
+        encoded = canonical_bytes(payload)
+        object.__setattr__(self, 'payload', _freeze(json.loads(encoded)))
+        object.__setattr__(self, 'sha256', hashlib.sha256(encoded).hexdigest())

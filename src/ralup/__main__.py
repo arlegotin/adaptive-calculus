@@ -51,8 +51,11 @@ def main(argv: list[str] | None = None) -> int:
     finalists=subcommands.add_parser('select-finalists',help='explicit fair search, authenticated exploratory selection or supported prerequisite disposition')
     finalists.add_argument('--config',type=Path,required=True)
     planning = subcommands.add_parser('plan-confirmation', help='paired pilot precision/cost design or explicit prerequisite disposition')
-    planning.add_argument('--pilot', type=Path, required=True)
-    planning.add_argument('--resources', type=Path, required=True)
+    planning.add_argument('--pilot', type=Path)
+    planning.add_argument('--resources', type=Path)
+    planning.add_argument('--freeze', action='store_true', help='freeze authenticated scientific evidence; procedural local guard, not OS security')
+    planning.add_argument('--design', type=Path, help='exact E02 design artifact for --freeze')
+    planning.add_argument('--output', type=Path, default=Path('artifacts/confirm_manifest.json'))
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
@@ -60,9 +63,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == 'plan-confirmation':
         from .analysis.power import plan_confirmation_from_files
         try:
-            ref = plan_confirmation_from_files(args.pilot, args.resources)
+            if args.freeze:
+                if args.design is None or args.pilot is not None or args.resources is not None:
+                    raise ValueError('--freeze requires --design and no pilot/resources arguments')
+                from .evaluate import freeze_confirmation
+                from .records import sha256_file
+                ref = freeze_confirmation({'design':{'path':str(args.design),'sha256':sha256_file(args.design)},'output':str(args.output)})
+            else:
+                if args.design is not None or args.pilot is None or args.resources is None:
+                    raise ValueError('planning requires --pilot and --resources; freezing requires --freeze --design')
+                ref = plan_confirmation_from_files(args.pilot, args.resources)
             report = json.loads(ref.path.read_bytes())
-            print(canonical_bytes({'path': str(ref.path), 'sha256': ref.sha256, 'status': report['status']}).decode())
+            print(canonical_bytes({'path': str(ref.path), 'sha256': ref.sha256, 'status': report.get('status', 'frozen')}).decode())
             return 0
         except (OSError, KeyError, TypeError, ValueError, RuntimeError) as error:
             parser.error(str(error))

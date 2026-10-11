@@ -106,3 +106,17 @@ reserved for M07.
 
 [Measured F04 evidence](docs/numerics/f04-evidence.json) retains CPU/MPS report hashes,
 separate sandbox-blocked evidence and the current-suite verification command.
+
+## Frozen confirmation gate
+
+`python -m ralup plan-confirmation --freeze --design PATH` authenticates the E02
+plan and refuses with named missing evidence while B0, final C/LR/B*, the genuine
+paired pilot and locked n remain unresolved. It creates no scientific manifest
+from engineering fixtures or caller eligibility flags. [E03 contracts](docs/harness/e03-contract.md)
+describe the immutable fields, complete terminal inventory, append-only access
+history and synthetic-only engineering verification.
+
+The protected gateway is a procedural local-owner guard, not OS security.
+Training/search cannot open protected targets through it; H01/H02 non-scoring
+data audits remain separate. Protected inspection makes subsequent changed
+claims exploratory and requires fresh independent confirmation.

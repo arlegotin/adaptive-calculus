@@ -265,3 +265,106 @@ class WorkLedger:
         for key in self.passes:
             self.passes[key] += row[key]
         self.elapsed['seconds'] += row['elapsed_seconds']
+
+
+class IntegrityError(ValueError):
+    """An exact artifact, runtime or audit identity no longer matches."""
+
+
+class IncompleteConfirmation(ValueError):
+    """Authentic scientific prerequisites or planned terminal arms are missing."""
+
+
+class ProtectedAccessError(ValueError):
+    """Protected scoring was not authorized by the frozen one-way contract."""
+
+
+def read_artifact(reference: ArtifactRef):
+    """Authenticate the same bytes that are parsed; never executable artifacts."""
+    try:
+        content = reference.path.read_bytes()
+    except OSError as error:
+        raise IntegrityError(f'Artifact unavailable: {reference.path}') from error
+    if hashlib.sha256(content).hexdigest() != reference.sha256:
+        raise IntegrityError(f'Artifact SHA-256 mismatch: {reference.path}')
+    try:
+        value = json.loads(content)
+        canonical_bytes(value)  # Includes strict finite/list/key validation.
+    except (ValueError, TypeError) as error:
+        raise IntegrityError(f'Invalid finite JSON artifact: {reference.path}') from error
+    return value
+
+
+def write_immutable_json(path, payload) -> ArtifactRef:
+    path = Path(path)
+    content = canonical_bytes(payload)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as stream:
+        stream.write(content); stream.flush(); os.fsync(stream.fileno())
+    return ArtifactRef(path, hashlib.sha256(content).hexdigest())
+
+
+class ConfirmationAudit:
+    """Hash-linked, append-only events with a local single-writer advisory lock.
+
+    This detects incomplete/altered history, not rewriting by the local owner.
+    The immutable manifest is separate from access and amendment history.
+    """
+    def __init__(self, reference):
+        self.reference = reference
+        self.path = reference.path.with_suffix('.access.jsonl')
+
+    def _decode(self, content):
+        previous = None
+        rows = []
+        try:
+            for line in content.splitlines(keepends=True):
+                if not line.endswith(b'\n'):
+                    raise ValueError('Incomplete access history')
+                row = json.loads(line)
+                digest = row.pop('event_sha256')
+                if (row['manifest_sha256'] != self.reference.sha256 or row['sequence'] != len(rows)
+                        or row['previous_sha256'] != previous
+                        or hashlib.sha256(canonical_bytes(row)).hexdigest() != digest):
+                    raise ValueError('Access history hash/sequence mismatch')
+                row['event_sha256'] = digest
+                if canonical_bytes(row)+b'\n' != line:
+                    raise ValueError('Noncanonical access history')
+                previous = digest
+                rows.append(row)
+            if not rows or rows[0]['kind'] != 'frozen':
+                raise ValueError('Missing original freeze event')
+        except (KeyError, ValueError, TypeError) as error:
+            raise IntegrityError('Confirmation access history invalid') from error
+        return rows
+
+    def events(self):
+        try:
+            return self._decode(self.path.read_bytes())
+        except OSError as error:
+            raise IntegrityError('Confirmation access history unavailable') from error
+
+    def append(self, kind, details=None, *, initialize=False, guard=None):
+        import fcntl
+        mode = 'x+b' if initialize else 'r+b'
+        try:
+            with self.path.open(mode) as stream:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+                rows = [] if initialize else self._decode(stream.read())
+                if guard is not None:
+                    guard(rows)
+                details = dict(details or {})
+                if kind == 'amendment':
+                    inspected = any(row['kind'] == 'opened' for row in rows)
+                    details.update(claim_status='exploratory' if inspected else 'requires_new_freeze',
+                                   fresh_independent_confirmation_required=inspected)
+                row = {**(details or {}), 'kind': kind, 'manifest_sha256': self.reference.sha256,
+                    'sequence': len(rows), 'previous_sha256': rows[-1]['event_sha256'] if rows else None,
+                    'event_id': __import__('uuid').uuid4().hex,
+                    'utc': datetime.now(timezone.utc).isoformat()}
+                row['event_sha256'] = hashlib.sha256(canonical_bytes(row)).hexdigest()
+                stream.seek(0, os.SEEK_END)
+                stream.write(canonical_bytes(row)+b'\n'); stream.flush(); os.fsync(stream.fileno())
+                return row
+        except FileNotFoundError as error:
+            raise IntegrityError('Confirmation access history unavailable') from error
