@@ -134,14 +134,24 @@ class TrainingState:
 
     def summed_nll(self, batch_slice, *, parameter_overrides=None):
         validate_batch(batch_slice)
+        event=None
         if self._work is not None:
             self._work['forward_context'] += sum(len(b.inputs) for b in batch_slice.block_slices)
             self._work['loss_targets'] += batch_slice.target_count
+            events=self._work.setdefault('loss_pass_events',[])
+            event={'event_id':f'loss:{self.schedule["step"]}:{len(events)}',
+                   'targets':batch_slice.target_count,'forward_completed':False,'backward_launched':False,
+                   'source_offsets':[{'document_id':b.document_id,'offsets':list(b.scored_offsets())} for b in batch_slice.block_slices]}
+            events.append(event)
         loss = summed_nll(self.model,batch_slice,parameter_overrides=parameter_overrides)
         if self._work is not None:
+            event['forward_completed']=True
             # Hook runs when this graph's scalar backward actually starts.
             work = self._work
-            loss.register_hook(lambda grad: _charge_backward(work,batch_slice.target_count,grad))
+            def charge(grad):
+                event['backward_launched']=True
+                return _charge_backward(work,batch_slice.target_count,grad)
+            loss.register_hook(charge)
         return loss
 
 

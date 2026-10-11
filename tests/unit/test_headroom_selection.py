@@ -209,7 +209,7 @@ def test_failed_public_trial_does_not_invent_or_reuse_exposures(tmp_path,monkeyp
     if failure_at=='query_cap':
         from types import SimpleNamespace
         clock=[0.]; actual_score=evaluation.score_blocks
-        monkeypatch.setattr(search,'time',SimpleNamespace(perf_counter=lambda:clock[0]))
+        monkeypatch.setattr(search,'time',SimpleNamespace(perf_counter=lambda:clock[0],time=lambda:clock[0]))
         def slow_score(*args,**kwargs):
             callback=kwargs['progress_callback']
             def advance(row):

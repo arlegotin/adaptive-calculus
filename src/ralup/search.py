@@ -209,6 +209,10 @@ def register_trial(config):
 
 def screen_headroom(trials: list[ArtifactRef]) -> dict:
     rows = [_read(ref) for ref in trials]
+    return _screen_rows(rows)
+
+
+def _screen_rows(rows):
     for row in rows: _development_only(row)
     complete = [r for r in rows if r['status'] == 'completed']
     for r in complete:
@@ -297,6 +301,50 @@ def select_backbone(development_results: list[dict], rationale: dict) -> Artifac
     return _write(rationale['output'],result)
 
 
+def _build_search_method(recipe, parameters, groups):
+    """Route the existing named adapters through the same H06 transaction.
+
+    Construction is not parity, numerical admission or scientific eligibility.
+    Frozen MetaQuant requires a genuine trained-theta producer that does not yet
+    exist; its initialized M10 mechanism fixture must never enter this pool.
+    """
+    name=recipe['method'];config=recipe.get('method_config',{})
+    if name=='metaquant_fp4_frozen':
+        raise ValueError('Frozen MetaQuant search requires a genuine META-trained and selected theta artifact; initialized mechanics are ineligible')
+    if name=='metaquant_fp4_online_target_training':
+        from .baselines.metaquant import MetaQuantLMAdapter,validate_config
+        from .baselines.trs import construct_backbone
+        c=validate_config(config)
+        if c['variant']!='online_target_training':raise ValueError('Named online MetaQuant configuration mismatch')
+        method=MetaQuantLMAdapter(construct_backbone(c['backbone']),c)
+    elif name=='ewgs_fp4':
+        from .baselines.ewgs import EwgsAdapter
+        from .optim.adamw import AdamWUpdateRule
+        base=recipe['backbone_config']
+        return EwgsAdapter(config).bind(parameters,groups,AdamWUpdateRule(betas=tuple(base['betas']),eps=base['eps']))
+    elif name=='trs_backbone_adapter':
+        from .baselines.trs import TrsBackboneAdapter,construct_backbone,validate_config
+        c=validate_config(config);method=TrsBackboneAdapter(construct_backbone(c['backbone']),c)
+    elif name=='learned_fp4_scale':
+        from .baselines.learned_scale import LearnedScaleAdapter
+        method=LearnedScaleAdapter(config)
+    elif name in ('damping_fp4','simple_matrix_mask','magma_matrix_mask'):
+        from .baselines.noise import NoiseAdapter
+        if config['mode']!={'damping_fp4':'damping','simple_matrix_mask':'simple','magma_matrix_mask':'magma'}[name]:
+            raise ValueError('Named damping/masking configuration mismatch')
+        method=NoiseAdapter(config)
+    elif name in ('qar_fp4_adjacent','stochastic_shadow_forward','stochastic_endpoint'):
+        from .baselines.qar import QarAdjacentAdapter
+        from .baselines.rounding import RoundingAdapter
+        if name!='qar_fp4_adjacent' and config['mode']!=('shadow_forward' if name.endswith('forward') else 'endpoint'):
+            raise ValueError('Named stochastic rounding configuration mismatch')
+        method=QarAdjacentAdapter(config) if name=='qar_fp4_adjacent' else RoundingAdapter(config)
+    else:
+        from .baselines.registry import build_matrix_method
+        return build_matrix_method(name,parameters,groups,config)
+    return method.bind(parameters,groups)
+
+
 def create_trial_state(config):
     """Common current-source construction; all arms use the shared OrderedEmbedding."""
     kind = config.get('parent_kind', 'warmstart')
@@ -306,7 +354,6 @@ def create_trial_state(config):
         raise ValueError('derived_model_only parent_kind requires a parent')
     from .config import resolve_config
     from .calibrate import _create, import_warmstart
-    from .baselines.registry import build_matrix_method
     recipe = config['recipe']
     if recipe['method'] == 'adamw' and recipe.get('method_config', {}) != {}:
         raise ValueError('AdamW method_config unsupported; declare betas/epsilon in resolved.optimizer_probe')
@@ -315,13 +362,21 @@ def create_trial_state(config):
     gates = payload.pop('evidence_gates'); payload.pop('purpose')
     resolved = resolve_config(payload, {'gates':gates}, purpose='calibration')
     state = _create(resolved, config['partition'], config['budget'], config['seed'])
+    routing=recipe['method'] in ('qar_fp4_adjacent','stochastic_shadow_forward','stochastic_endpoint')
+    if routing and not config.get('parent'):
+        import torch
+        # Fresh independent CPU draws are the existing routing adapter contract.
+        # Imported parents retain their exact original named RNG owners/state.
+        state.rng_streams['quantizer']=torch.Generator(device='cpu').manual_seed(state.rng_streams['quantizer'].initial_seed())
     if recipe['quantizer'] == 'fp32':
         state.model._recipe = None
         state.model.clear_quantized_views()
     else:
         state.model.configure_quantization({'name':recipe['quantizer'],'rotation':recipe['rotation'],'backward':recipe['backward']})
     if recipe['method'] != 'adamw':
-        state.method = build_matrix_method(recipe['method'],dict(state.model.named_parameters()),state.method.groups,recipe.get('method_config',{}))
+        if recipe['method']=='ewgs_fp4':
+            recipe={**recipe,'backbone_config':dict(state.method.rule.configuration)}
+        state.method = _build_search_method(recipe,dict(state.model.named_parameters()),state.method.groups)
         state.optimizer_state = state.method.optimizer_states
     state.microbatch=config['packing']; state.clip_norm=recipe.get('clip_norm')
     if config.get('parent'):
@@ -330,6 +385,8 @@ def create_trial_state(config):
             from .warmstart import import_derived_warmstart
             importer = import_derived_warmstart
         state = importer(ArtifactRef(**config['parent']),state,partition=config['partition'],continuation_targets=config['budget'])
+        if routing and state.rng_streams['quantizer'].device.type!='cpu':
+            raise ValueError('Routing requires an independently generated compatible CPU-quantizer-RNG parent; exact imported RNG cannot be converted or reseeded')
     state.configuration.update(search_trial=config, artifact_role='warmstart' if config['role']=='warmstart' else 'continuation')
     return state
 
@@ -360,15 +417,23 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
     _validate_admission(config,gate)
     output=Path(config['output']); output.mkdir(parents=True,exist_ok=False)
     _write(output/'trial.json',{'trial':asdict(trial),'config':config})
-    started=time.perf_counter(); state=None; curve=[]; checkpoint=None; status='failed'; failure=None
+    started=time.perf_counter();wall_start=time.time(); state=None; curve=[]; checkpoint=None; status='failed'; failure=None
+    executions=[]
+    from .analysis.cost import source_intervals,extra_execution_events
+    corpus=config['resolved']['data']['manifest']['sha256']
     query_attempts=[]; unknown_partial_query_work=False; unknown_partial_training_work=False
     try:
         state=create_trial_state(config)
         state.configuration['trial_id']=trial.config_hash
         manifest=config['resolved']['data']['manifest']
         query_cursor=BatchCursor.from_manifest(Path(manifest['path']),manifest['sha256'],partition='development',seed=config['query_seed'],run_target_budget=config['query_bytes'])
+        # Indexed document IDs carry the authenticated raw-source namespace.
+        # A changed partition/manifest must not create fresh global unique bytes.
+        corpus=query_cursor.state['source'].get('hashes',{}).get('source_sha256',corpus)
         query=next_logical_batch(query_cursor,config['query_bytes'])
-        _write(output/'query-inputs.json',{'partition':'development','seed':config['query_seed'],'offsets':_offsets(query)})
+        ordered_query=sorted(query.block_slices,key=lambda b:(b.document_id,b.target_start,b.target_end,b.scored_offsets()))
+        _write(output/'query-inputs.json',{'partition':'development','seed':config['query_seed'],
+            'offsets':_offsets(query),'blocks':[{k:list(v) if isinstance(v,tuple) else v for k,v in asdict(b).items()} for b in query.block_slices]})
         with _Sampler(config['resolved']['runtime']['device'],_limits(config['resolved'])) as sampler:
             def cap():
                 sampler.sample()
@@ -384,6 +449,12 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
                         def progress(update):
                             nonlocal stopped_at_boundary
                             completed.update(update)
+                            if update['phase']=='block_completed':
+                                block=ordered_query[update['completed_blocks']-1]
+                                executions.append({'event_id':f'{trial.config_hash}:query:{step}:block:{update["completed_blocks"]}',
+                                    'kind':'loss','targets':sum(block.score_mask),'stream_targets':0,
+                                    'classifications':['query','additional_loss'],
+                                    'source_intervals':source_intervals(corpus,[{'document_id':block.document_id,'offsets':list(block.scored_offsets())}])})
                             progress_log.write(canonical_bytes({'exposure_id':f'{trial.config_hash}:query:{step}',
                                 **update,'elapsed_seconds':time.perf_counter()-t}).decode()+'\n');progress_log.flush()
                             stopped_at_boundary=True
@@ -408,7 +479,9 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
                     query_attempts.append({'exposure_id':f'{trial.config_hash}:query:{step}',
                         'step':step,'status':'completed','actual_completed_targets':score.target_count,
                         'unknown_partial_work':False})
-                row={'step':step,'budget':step*8192,'development_bpb':score.bpb,'per_article':score.per_article}
+                row={'step':step,'budget':step*8192,'development_bpb':score.bpb,'per_article':score.per_article,
+                    'execution_ids':[e['event_id'] for e in executions],
+                    'wall_interval':{'clock':'UTC','start':wall_start,'end':wall_start+time.perf_counter()-started}}
                 curve.append(row); _write(output/f'curve-{step}.json',row)
             observe(0)
             total=trial.budget//8192
@@ -431,6 +504,15 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
                         attempted_status='failed'; unknown_partial_training_work=True
                         raise
                     finally:
+                        for work in state.ledger.events[event_start:]:
+                            for loss in work.get('loss_pass_events',[]):
+                                if not loss['forward_completed']:continue
+                                executions.append({'event_id':f'{trial.config_hash}:{loss["event_id"]}',
+                                    'kind':'loss','targets':loss['targets'],
+                                    'stream_targets':loss['targets'] if work['status']=='completed_step' else 0,
+                                    'classifications':['ordinary_training']+(['backward'] if loss['backward_launched'] else []),
+                                    'source_intervals':source_intervals(corpus,loss['source_offsets'])})
+                            executions.extend(extra_execution_events(f'{trial.config_hash}:step:{step}',work.get('extra_pass_events',[])))
                         raw.write(canonical_bytes({'exposure_id':f'{trial.config_hash}:step:{step}',
                             'step':step,'inputs':inputs,'events':state.ledger.events[event_start:],
                             'attempt_status':attempted_status,'unknown_partial_work':attempted_status=='failed'}).decode()+'\n');raw.flush()
@@ -449,20 +531,30 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
     center=curve[-1]['development_bpb'] if curve else None
     radius=max([abs(v-center) for v in values],default=0.) if values else None
     report={'schema_version':1,'trial_id':trial.config_hash,'family':trial.family,'seed':trial.seed,'budget':trial.budget,
+            'trial_config':_ref(ArtifactRef(Path('artifacts/search/configs')/(trial.config_hash+'.json'),
+                sha256_file(Path('artifacts/search/configs')/(trial.config_hash+'.json')))),
+            'query_inputs':_ref(ArtifactRef(output/'query-inputs.json',sha256_file(output/'query-inputs.json'))) if (output/'query-inputs.json').exists() else None,
+            'parent_protocol':config.get('parent_protocol'),'source_applicability':config['admission'],
             'source_revision':trial.source_revision,'source_identity':config['source_identity'],'data_sha256':config['resolved']['data']['manifest']['sha256'],
             'model':config['resolved']['profile'],'partition':config['partition'],'status':status,'failure':failure,
             'query_attempts':query_attempts,'unknown_partial_query_work':unknown_partial_query_work,
+            'executions':executions,
             'unknown_partial_training_work':unknown_partial_training_work,
             'failed_count_scope':'known recorded completed work is a lower bound when unknown partial work is flagged; attempted query maxima are not actual completed counts',
             'recipe':config['recipe'],'evidence_kind':'real_data','curve':curve,'full_budget':False,
             'development_interval':[max(0.,center-radius),center+radius] if center is not None else None,
             'uncertainty':'observed article spread, not a confidence interval; single seed is unresolved',
             'settled':False,'lr_bracketed':False,'edge':True,'missing_mechanism':False,'eliminates_headroom':False,
-            'cost':{'complete_seconds':time.perf_counter()-started,'ledger':None if state is None else {'stream':state.ledger.stream,'passes':state.ledger.passes,'elapsed':state.ledger.elapsed,'events':state.ledger.events},
+            'cost':{'complete_seconds':time.perf_counter()-started,
+                    'wall_interval':{'clock':'UTC','start':wall_start,'end':wall_start+time.perf_counter()-started},
+                    'ledger':None if state is None else {'stream':state.ledger.stream,'passes':state.ledger.passes,'elapsed':state.ledger.elapsed,'events':state.ledger.events},
                     'parent':config.get('parent'),'common_unknown_engineering_seconds':None},
             'memory':memory,'checkpoint':None if checkpoint is None else _ref(checkpoint),'configuration':config}
     if config['role']=='warmstart' and status=='completed':
-        _write(output/'warmstart.json',warmstart_report(checkpoint,config['partition'],report['cost']))
+        result_ref=_write(output/'result.json',report)
+        _write(output/'warmstart.json',warmstart_report(checkpoint,config['partition'],
+            {**report['cost'],'execution_record':_ref(result_ref)}))
+        return result_ref
     return _write(output/'result.json',report)
 
 
@@ -489,3 +581,302 @@ def run_headroom(path):
         raise ValueError('headroom requires explicit frozen development-bootstrap envelope; no final-gate fallback')
     refs=[run_search_trial(TrialSpec(**trial)) for trial in envelope['trials']]
     return {'trials':[_ref(ref) for ref in refs],'screen':screen_headroom(refs)}
+
+
+def allocate_search(families: list[dict], allowance_seconds: float, evidence: list[dict]) -> list[TrialSpec]:
+    """Freeze a round of risk-ordered S26 trials within equal family envelopes.
+
+    allowance_seconds is the TOTAL round allowance, divided over all families,
+    including reserved blocked families. Trial counts may differ. Each supplied
+    proposal has a measured finite forecast; a separate extension round needs an
+    authenticated unsettled/edge/overlap/mechanism observation. No automatic grid
+    or conversion from wall seconds to scientific training budgets is performed.
+    """
+    _development_only(families);_development_only(evidence)
+    if type(allowance_seconds) not in (int,float) or not math.isfinite(allowance_seconds) or allowance_seconds<=0:
+        raise ValueError('Finite positive synchronized search allowance required')
+    names=[f['family'] for f in families]
+    if not names or len(set(names))!=len(names):raise ValueError('Distinct search families required')
+    if any(f['status'] not in ('eligible','blocked') for f in families):raise ValueError('Explicit family eligibility required')
+    active=[f for f in families if f['status']=='eligible']
+    if active and any(f['generic_improvements']!=active[0]['generic_improvements'] for f in active):
+        raise ValueError('Compatible generic improvements must be shared across families')
+    if active and any(f['development_information']!=active[0]['development_information'] for f in active):
+        raise ValueError('Equal development information required')
+    blocked={f['family']:f['reason'] for f in families if f['status']=='blocked'}
+    if any(not reason for reason in blocked.values()):raise ValueError('Blocked family reason required')
+    per_family=allowance_seconds/len(families);queues=[]
+    for family in active:
+        reasons=[];stage=family.get('stage','initial')
+        if stage not in ('initial','extension'):raise ValueError('Known allocation stage required')
+        if stage=='extension':
+            ref=ArtifactRef(**family['extension_evidence']);observed=_read(ref)
+            if observed not in evidence or observed['family']!=family['family']:
+                raise ValueError('Extension must bind its actual family evidence')
+            screen=_screen_rows(evidence);reasons=screen['reasons'][observed['trial_id']]
+            if observed['trial_id'] not in screen['advance']:
+                raise ValueError('Extension requires unresolved development evidence')
+        if family.get('policy_family') or family['family'] in ('affine45','learned_lr49','static3'):
+            access=family.get('information_contract',{})
+            if access!={'features':14,'history':True,'loss_ema':True,'meta_information':'matched','own_policy_refresh':True}:
+                raise ValueError('Each policy family needs full features/history/EMA and own-policy refresh')
+        remaining=per_family;queue=[]
+        for proposal in family['trials']:
+            config=json.loads(canonical_bytes(proposal));forecast=config['finite_forecast_seconds']
+            if type(forecast) not in (int,float) or not math.isfinite(forecast) or forecast<=0:
+                raise ValueError('Finite positive measured trial forecast required')
+            if config['family']!=family['family']:raise ValueError('Proposal family mismatch')
+            if forecast>remaining:break
+            config['allocation']={'stage':stage,'initial_allowance_seconds':per_family,
+                'round_allowance_seconds':allowance_seconds,'extension_reasons':reasons,
+                'extension_evidence':family.get('extension_evidence'),'blocked_families':blocked,
+                'generic_improvements':family['generic_improvements'],
+                'development_information':family['development_information'],
+                'fixed_trial_count_fairness':False}
+            queue.append(register_trial(config));remaining-=forecast
+        queues.append(queue)
+    return [queue[i] for i in range(max(map(len,queues),default=0)) for queue in queues if i<len(queue)]
+
+
+def _rank_development(rows, fresh_seeds):
+    """Pure fixture-testable ranking; public selection authenticates first."""
+    seeds=set(fresh_seeds)
+    if len(seeds)<2 or len(seeds)!=len(fresh_seeds) or any(type(s) is not int or s<0 for s in seeds):
+        raise ValueError('Distinct full-budget fresh development seeds required')
+    groups={};ids=set();budgets=set()
+    for row in rows:
+        if row['trial_id'] in ids:raise ValueError('Duplicate trial identity')
+        ids.add(row['trial_id'])
+        if row['status']!='completed':raise ValueError('Failed/diverged contender cannot be silently replaced by completed runs')
+        if (any(row.get(k) is not True for k in ('full_budget','fresh_seed','settled','lr_bracketed'))
+                or row.get('edge') is not False or row.get('missing_mechanism') is not False or row['model']!='core'):
+            raise ValueError('Unsettled/bracket-edge or missing fresh full-budget core evidence')
+        if row['curve'][-1]['budget']!=row['budget']:raise ValueError('Incomplete full-budget endpoint')
+        score=row['curve'][-1]['development_bpb'];seconds=row['cost']['complete_seconds']
+        if any(type(x) not in (int,float) or not math.isfinite(x) or x<0 for x in (score,seconds)) or seconds==0:
+            raise ValueError('Finite development score and positive complete cost required')
+        key=hashlib.sha256(canonical_bytes(row['recipe'])).hexdigest()
+        groups.setdefault(key,[]).append(row);budgets.add(row['budget'])
+    if not groups or len(budgets)!=1:raise ValueError('Matched full-budget contender pool required')
+    alternatives=[]
+    for key,observations in groups.items():
+        if {r['seed'] for r in observations}!=seeds or len(observations)!=len(seeds):
+            raise ValueError('Every alternative requires identical fresh seeds without duplicates')
+        alternatives.append({'recipe_sha256':key,'recipe':observations[0]['recipe'],
+            'mean_bpb':sum(r['curve'][-1]['development_bpb'] for r in observations)/len(observations),
+            'end_to_end_seconds':sum(r['cost']['complete_seconds'] for r in observations),
+            'seeds':sorted(seeds),'results':[r['trial_id'] for r in observations]})
+    alternatives.sort(key=lambda r:(r['mean_bpb'],r['end_to_end_seconds'],r['recipe_sha256']))
+    return {'winner':alternatives[0],'alternatives':alternatives}
+
+
+def _prerequisite_disposition(eligibility):
+    """Read the indexed measured scientific gates, never a caller's gate label."""
+    root=Path(__file__).resolve().parents[2]
+    b0_index=json.loads((root/'docs/harness/m07-closing-evidence.json').read_bytes())
+    meta_index=json.loads((root/'docs/harness/m11-evidence.json').read_bytes())
+    b0_ref=b0_index['disposition']
+    meta_ref=next(a['files']['disposition.json'] for a in meta_index['attempts'] if a['attempt']=='closure-v1')
+    if eligibility.get('b0_evidence')!=b0_ref or eligibility.get('controller_evidence')!=meta_ref:
+        raise ValueError('Disposition requires indexed measured B0 and controller prerequisite authority')
+    b0=_read(ArtifactRef(**b0_ref));meta=_read(ArtifactRef(**meta_ref))
+    if not (b0.get('wp04')=='inconclusive' and b0.get('b0') is None and
+            meta.get('status')=='NEEDS_REVISION' and meta.get('selected_controller') is None):
+        raise ValueError('Historical prerequisite disposition no longer describes the indexed gates')
+    for ref in meta['evidence'].values():_read(ArtifactRef(**ref))
+    return {'status':'inconclusive','WP04':'inconclusive','WP06':'NEEDS_REVISION',
+        'B0':None,'B_star':None,'candidate':None,'learned_lr':None,'static':None,
+        'prerequisite_evidence':{'B0':b0_ref,'controller':meta_ref},
+        'reason':meta['reason'], 'required_advancement':meta['required_advancement']+[
+            {'owner':'E01','action':'Independent strongest B* tournament: all locally competitive families, LR/betas/decay/schedule brackets, genuine META-trained frozen MetaQuant, full-budget fresh development replication and data/compute-augmented ordinary training.'}],
+        'measured_non_advantage':False,'completed_tournament':False,'global_unaffordability':False}
+
+
+def _replication_authority(results, eligibility):
+    """Finite prospective full-budget contract, separate from bootstrap labels.
+
+    The completed M07 analysis binds the raw results. This additional design
+    binds the entire proposed inventory BEFORE work, including failed runs;
+    post-run assessments can retain an uncertain contender but cannot silently
+    convert an old short run into a fresh full-budget replication.
+    """
+    analysis=_read(ArtifactRef(**eligibility['selection_analysis']))
+    if not analysis.get('replication_design') or not analysis.get('replication_completion'):
+        raise ValueError('Prospective full-budget replication authority missing; bootstrap flags are ineligible')
+    design_ref=analysis['replication_design'];design=_read(ArtifactRef(**design_ref))
+    completion=_read(ArtifactRef(**analysis['replication_completion']))
+    if (design.get('schema')!='ralup.finalist_replication_design.v1' or design.get('synthetic') is not False
+            or design.get('source_identity')!=source_identity()):
+        raise ValueError('Current genuine prospective replication design required')
+    if completion.get('schema')!='ralup.finalist_replication_completion.v1' or completion.get('status')!='completed' or completion.get('design')!=design_ref:
+        raise ValueError('Completed replication inventory authority required')
+    refs=[r['evidence'] for r in results]
+    if completion.get('result_refs')!=refs or len(design['trial_configs'])!=len(refs) or len(completion['producers'])!=len(refs):
+        raise ValueError('Every planned replication, including failures, must remain in the inventory')
+    if design['fresh_seeds']!=eligibility['fresh_seeds'] or set(design['fresh_seeds'])&set(design['tuning_seeds']):
+        raise ValueError('Replication seeds must be prospective and disjoint from tuning')
+    required={'AdamW','Muon','Muon+','SOAP','Madam','EWGS','TRS','QuEST','QAR',
+              'stochastic_rounding','learned_scale','damping_masking','MetaQuant'}
+    if set(design['family_status'])!=required:raise ValueError('Complete required family inventory must preserve unresolved competitors')
+    for family,record in design['family_status'].items():
+        if record['status'] not in ('included','blocked','unresolved') or not record['reason'] or not record['evidence']:
+            raise ValueError('Explicit source/fidelity and applicability disposition required for every family')
+        for ref in record['evidence']:_read(ArtifactRef(**ref))
+    if {r['family'] for r in results}!={k for k,v in design['family_status'].items() if v['status']=='included'}:
+        raise ValueError('Every included family must receive full-budget replication; unresolved families cannot be silently omitted')
+    assessed=[]
+    from .analysis.cost import trial_cost_record,cost_quality_frontier
+    from .meta.selection import _query_count,DATA_INDEX
+    accepted=json.loads(DATA_INDEX.read_bytes());corpus=_read(ArtifactRef(**accepted['manifest']))
+    for row,config_ref,receipt in zip(results,design['trial_configs'],completion['producers']):
+        config=_read(ArtifactRef(**config_ref));startup=_read(ArtifactRef(**receipt['startup']));finish=_read(ArtifactRef(**receipt['finish']))
+        source={k:v['sha256'] for k,v in startup['source'].items() if k.startswith('src/')}
+        if source!=design['source_identity'] or design_ref not in startup.get('inputs',[]):
+            raise ValueError('Replication producer must bind exact complete source and frozen design before work')
+        if row['source_identity']!=source or config['source_identity']!=source or row['trial_id']!=hashlib.sha256(canonical_bytes(config)).hexdigest():
+            raise ValueError('Replication result/config differ from exact producing source and trial identity')
+        dates=[datetime.fromisoformat(v) for v in (design['created_utc'],startup['utc'],startup['launcher_started_utc'])]
+        if any(d.tzinfo is None for d in dates) or dates[0]>dates[1] or dates[2]>dates[1]:
+            raise ValueError('Replication design postdates producer startup')
+        if row['trial_config']!=config_ref or config['budget']!=design['full_budget'] or config['seed'] not in design['fresh_seeds']:
+            raise ValueError('Replication config differs from prospective full-budget seed inventory')
+        if row['cost'].get('parent')!=config.get('parent'):
+            raise ValueError('Replication cost must retain its exact model parent ancestry')
+        if config['resolved']['data']['manifest']['sha256']!=accepted['manifest']['sha256']:
+            raise ValueError('Replication needs the indexed accepted corpus authority')
+        _query_count(row['query_inputs'],'development',corpus,accepted)
+        produced={(str((Path(receipt['finish']['path']).parent/o['path']).resolve()),o['sha256']) for o in finish['completed_objects']}
+        if (str(Path(row['evidence']['path']).resolve()),row['evidence']['sha256']) not in produced:
+            raise ValueError('Replication result lacks authenticated completed producer receipt')
+        if finish['exit_code']!=0 or row['status']!='completed':raise ValueError('Failed full-budget replication must retain substantive failure status')
+        cost_run=trial_cost_record(ArtifactRef(**row['evidence']))
+        if cost_run['unknown_ancestor_cost'] or cost_run['unknown_partial_work']:
+            raise ValueError('Complete physical execution and parent costs required for full-budget selection')
+        started=datetime.fromisoformat(startup['launcher_started_utc']).timestamp()
+        cost_run['wall_intervals']=[{'clock':'UTC','start':started,'end':started+finish['elapsed_seconds']}]
+        totals=cost_quality_frontier([cost_run],'total')['totals']
+        if totals['total_targets'] is None or totals['seconds'] is None:
+            raise ValueError('Unresolved complete replication cost')
+        recipe_key=hashlib.sha256(canonical_bytes(row['recipe'])).hexdigest()
+        judgment=completion['assessments'][recipe_key]
+        if not judgment.get('tuning_evidence'):raise ValueError('Measured bracket/schedule/generic-improvement assessment required')
+        tuning=_read(ArtifactRef(**judgment['tuning_evidence']))
+        if tuning.get('replication_design')!=design_ref or tuning.get('status')!='completed' or not tuning.get('result_refs'):
+            raise ValueError('Tuning assessment must bind actual retained trial results and replication design')
+        for ref in tuning['result_refs']:_read(ArtifactRef(**ref))
+        assessed.append({**row,'full_budget':True,'fresh_seed':True,
+            **{k:judgment[k] for k in ('settled','lr_bracketed','edge','missing_mechanism')},
+            'cost':{**row['cost'],'complete_seconds':totals['seconds']}})
+    if len(assessed)!=len(results):raise ValueError('Missing completed replication producer inventory')
+    return assessed,design
+
+
+def _export_finalist_configs(value, output):
+    refs={};directory=Path(output).parent/'finalist-configs'
+    for name in ('B_star','candidate','learned_lr','static'):
+        payload=value[name];digest=hashlib.sha256(canonical_bytes(payload)+b'\n').hexdigest();path=directory/(digest+'.json')
+        if path.exists():
+            if sha256_file(path)!=digest:raise ValueError('Existing immutable finalist config changed')
+            ref=ArtifactRef(path,digest)
+        else:ref=_write(path,payload)
+        refs[name]=_ref(ref)
+    return refs
+
+
+def select_finalists(results: list[dict], eligibility: dict) -> ArtifactRef:
+    """Authenticate independent B* evidence and M11 two-stage family nominations.
+
+    A supported prerequisite disposition deliberately publishes null finalists.
+    Current M11 selection authority is exploratory, so even genuine nominated
+    policies cannot silently authorize confirmation or resolve accepted B0.
+    """
+    _development_only(results);_development_only(eligibility)
+    if eligibility.get('disposition')=='inconclusive':
+        if results:raise ValueError('Prerequisite disposition cannot relabel trial rows as finalists')
+        value=_prerequisite_disposition(eligibility)
+        value.update(alternatives=[],defeated_methods=[],blocked_methods=eligibility.get('blocked_methods',{}),
+                     unresolved_methods=eligibility.get('unresolved_methods',{}))
+    else:
+        if not eligibility.get('selection_analysis') or not eligibility.get('controller_stages'):
+            raise ValueError('Finalist prerequisite authority required: independent B* analysis and matched controller stages')
+        # Same authenticated M07 recipe/source/numerics/parent/query/parity
+        # boundary; B* ranking is independent of B0's method or adapter support.
+        assessed,design=_replication_authority(results,eligibility)
+        _final_selection_evidence(results,eligibility)
+        for row in results:
+            if row.get('evidence_kind')!='real_data':raise ValueError('Real full-budget development evidence required')
+            _validate_recipe_metadata(row['recipe'])
+        rank=_rank_development(assessed,eligibility['fresh_seeds'])
+        from .meta.selection import select_controller
+        stages=eligibility['controller_stages']
+        select_controller(stages['meta-development'],stages['development'])
+        nominees={}
+        for row in stages['development']:
+            artifact=row['controller'];value_json=artifact.to_json()
+            if artifact.family in nominees and nominees[artifact.family]!=value_json:
+                raise ValueError('Official stage must have one nominee per policy family')
+            nominees[artifact.family]=value_json
+        value={'status':'selected_exploratory','B0':None,'B_star':rank['winner'],
+               'candidate':nominees['affine45'],'learned_lr':nominees['learned_lr49'],'static':nominees['static3'],
+               'alternatives':rank['alternatives'],'selection_inputs':results,
+               'family_source_fidelity_status':design['family_status'],
+               'selection_authority':eligibility['selection_analysis'],
+               'fresh_development_seeds':design['fresh_seeds'],'full_budget_targets':design['full_budget'],
+               'blocked_methods':{k:v for k,v in design['family_status'].items() if v['status']!='included'},'defeated_methods':[],
+               'scope':'Independent measured B* and exploratory M11 nominees; accepted B0/recipe transfer remains unresolved.'}
+        value['configs']=_export_finalist_configs(value,eligibility['output'])
+    value.update(schema='ralup.finalist_selection.v1',created_utc=datetime.now(timezone.utc).isoformat(),
+                 uses_protected_scores=False,confirmation_eligible=False,source_identity=source_identity())
+    return _write(eligibility['output'],value)
+
+
+def run_finalist_tournament(path) -> ArtifactRef:
+    """Explicit CLI actions; a failed resolution never falls back to execution."""
+    envelope=json.loads(Path(path).read_bytes());_development_only(envelope)
+    action=envelope.get('action')
+    if action in ('disposition','select'):
+        eligibility=envelope['eligibility']
+        if (action=='disposition')!=(eligibility.get('disposition')=='inconclusive'):
+            raise ValueError('Explicit selection versus prerequisite disposition action required')
+        if action=='select':
+            from .policy.controllers import ControllerArtifact
+            for rows in eligibility['controller_stages'].values():
+                for row in rows:row['controller']=ControllerArtifact.from_json(row['controller'])
+        results=[{**_read(ArtifactRef(**ref)),'evidence':ref} for ref in envelope['results']]
+        return select_finalists(results,eligibility)
+    if action not in ('allocate','search'):raise ValueError('Explicit allocate/search/select/disposition action required')
+    trials=allocate_search(envelope['families'],envelope['allowance_seconds'],envelope['evidence'])
+    result={'schema':'ralup.finalist_search.v1','action':action,'trials':[asdict(t) for t in trials],
+        'results':[],'unrun_trials':[],'family_elapsed_seconds':{},'defeated_methods':[],
+        'blocked_families':{f['family']:f['reason'] for f in envelope['families'] if f['status']=='blocked'},
+        'confirmation_eligible':False,'uses_protected_scores':False}
+    if action=='search':
+        cost_runs=[]
+        for trial in trials:
+            config=json.loads((Path('artifacts/search/configs')/(trial.config_hash+'.json')).read_bytes())
+            spent=result['family_elapsed_seconds'].get(trial.family,0.)
+            if config['finite_forecast_seconds']>config['allocation']['initial_allowance_seconds']-spent:
+                result['unrun_trials'].append({'trial':asdict(trial),'reason':'remaining family allowance below frozen forecast'})
+                continue
+            started=time.perf_counter();wall_start=datetime.now(timezone.utc).timestamp();cost_run=None
+            try:
+                ref=run_search_trial(trial);result['results'].append(_ref(ref))
+                from .analysis.cost import trial_cost_record
+                cost_run=trial_cost_record(ref)
+            except (ValueError,OSError,RuntimeError) as error:
+                # Pre-launch/admission failure is also retained. A bad arm is
+                # neither silently replaced nor turned into another purpose.
+                result['unrun_trials'].append({'trial':asdict(trial),'reason':f'{type(error).__name__}: {error}'})
+            finally:
+                elapsed=time.perf_counter()-started
+                result['family_elapsed_seconds'][trial.family]=spent+elapsed
+                if cost_run is None:
+                    cost_run={'run_id':trial.config_hash,'family':trial.family,'status':'failed','parents':[],
+                        'events':[],'development_bpb':None,'unknown_partial_work':True,'common_engineering_seconds':None}
+                cost_run['wall_intervals']=[{'clock':'UTC','start':wall_start,'end':wall_start+elapsed}]
+                if cost_run.get('checkpoints'):
+                    cost_run['checkpoints'][-1]['wall_intervals']=cost_run['wall_intervals']
+                cost_runs.append(cost_run)
+        from .analysis.cost import cost_quality_frontier
+        result['cost_quality_curves']={ledger:cost_quality_frontier(cost_runs,ledger) for ledger in ('stream','total','seconds','unique')}
+    return _write(envelope['output'],result)

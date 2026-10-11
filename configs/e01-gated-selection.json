@@ -1,0 +1,109 @@
+{
+  "action": "disposition",
+  "eligibility": {
+    "b0_evidence": {
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m07-20261011/closing-disposition-v2/b0-disposition.json",
+      "sha256": "28ed3fa513dfc4b5d56b8f4755caceb0d3f25093f69d279580ae16dab236da45"
+    },
+    "blocked_methods": {
+      "MetaQuant Muon/Muon+ composition": {
+        "reason": "Constructor-admitted only; actual composition/native model scope remains unverified."
+      },
+      "MetaQuant SOAP/Madam composition": {
+        "reason": "Unsupported trusted backbone envelope; neither baseline is defeated or excluded from B0/Bstar."
+      },
+      "MetaQuant frozen": {
+        "reason": "No genuine META-trained/META-development-selected theta artifact; M10 initialized mechanics are not eligible."
+      }
+    },
+    "controller_evidence": {
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/disposition.json",
+      "sha256": "81c6764d049c23d71d019c45c628327e15ab7295f2b54514051ef941c83d9445"
+    },
+    "disposition": "inconclusive",
+    "output": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/selection.json",
+    "unresolved_methods": {
+      "AdamW": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "EWGS": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "Madam": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "MetaQuant": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "Muon": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "Muon+": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "QAR": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "QuEST": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "SOAP": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "TRS": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "affine45": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "damping_masking": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "learned_lr49": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "learned_scale": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "static3": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      },
+      "stochastic_rounding": {
+        "owner": "E01/reopened WP06",
+        "reason": "No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.",
+        "status": "unresolved"
+      }
+    }
+  },
+  "results": []
+}

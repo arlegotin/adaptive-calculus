@@ -48,10 +48,18 @@ def main(argv: list[str] | None = None) -> int:
     calibration.add_argument('--config', type=Path, required=True)
     meta = subcommands.add_parser('meta-train',help='frozen full-state exploratory ES campaign')
     meta.add_argument('--config',type=Path,required=True)
+    finalists=subcommands.add_parser('select-finalists',help='explicit fair search, authenticated exploratory selection or supported prerequisite disposition')
+    finalists.add_argument('--config',type=Path,required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command=='select-finalists':
+        from .search import run_finalist_tournament
+        try:
+            ref=run_finalist_tournament(args.config)
+            print(canonical_bytes({'path':str(ref.path),'sha256':ref.sha256}).decode());return 0
+        except (OSError,KeyError,TypeError,ValueError,RuntimeError) as error:parser.error(str(error))
     if args.command == 'meta-train':
         from .meta.es import run_campaign
         try:
