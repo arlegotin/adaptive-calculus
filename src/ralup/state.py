@@ -396,7 +396,7 @@ def _array(value,shape,dtype,label):
     if dtype == torch.uint8 and bool((value > 14).any()): raise IntegrityError(f'{label} invalid code ordinal')
 
 
-def _validate_quantized_owners(payload,prototype):
+def _validate_quantized_owners(payload,prototype,adapter):
     """Versioned H06 shared owners; future extras require method declarations."""
     cfg=payload['configuration'].get('policy_features')
     if cfg is not None and (type(cfg) is not dict or set(cfg)!={'enabled','full_horizon','trace_cadence'} or cfg['enabled'] is not True
@@ -493,6 +493,16 @@ def _validate_quantized_owners(payload,prototype):
             for key in ('numerical_displacement','refresh_endpoint_displacement'):
                 value=getattr(history,key)
                 if type(value) not in (int,float) or not math.isfinite(value) or value<0:raise IntegrityError('Invalid history endpoint diagnostic')
+            # The adapter/rule has already been reconstructed from H07's finite
+            # trusted constructors. Its exact moment inventory determines
+            # whether enabled feature 4 owns a fallback EMA; never infer this
+            # requirement from the possibly omitted history value itself.
+            moment_fields=adapter.rule_for_parameter(name).optimizer_state_fields
+            needs_common_ema=cfg is not None and not {'exp_avg','momentum'}.intersection(moment_fields)
+            if needs_common_ema and history.common_gradient_ema is None:
+                raise IntegrityError('Completed feature history is missing required common gradient EMA')
+            if not needs_common_ema and history.common_gradient_ema is not None:
+                raise IntegrityError('Unexpected common gradient EMA owner for trusted rule/mode')
             if history.common_gradient_ema is not None:_array(history.common_gradient_ema,shape,torch.float32,'Common gradient EMA')
             if cfg is not None or history.last_features is not None:_array(history.last_features,(14,),torch.float32,'Last features')
             if cfg is None and (history.last_features is not None or history.common_gradient_ema is not None):raise IntegrityError('Undeclared common feature/history EMA mode')
@@ -571,7 +581,7 @@ def _validated(snapshot):
         _,names,_ = _METHODS[payload['method_schema']]
         _keys(payload['method'],names)
         if payload['method']['proposals']: raise IncompleteStep('Uncommitted proposals in snapshot')
-        _validate_quantized_owners(payload,prototype)
+        _validate_quantized_owners(payload,prototype,adapter)
         if payload['method_schema']=='ewgs_adapter.v2':
             if type(rule) is not AdamWUpdateRule:raise IntegrityError('EWGS owns original-W AdamW only')
             if payload['model_cache']['_recipe'] is None or payload['model_cache']['_recipe'].get('backward')!='ewgs':raise IntegrityError('EWGS requires explicit backward recipe')

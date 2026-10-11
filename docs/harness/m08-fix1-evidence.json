@@ -1,0 +1,171 @@
+{
+  "administrative_attempts": "Separate index/commit receipts; excluded to avoid live/circular hashes.",
+  "attempts": [
+    {
+      "elapsed_seconds": 5.98672258300212,
+      "exit_code": 1,
+      "name": "fix1-red-common-ema",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-red-common-ema/finish.json",
+          "sha256": "d336dc7994b6acb305b18ce55549a39d51d162aadf501e8d6c8ac65fdbfe2c58"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-red-common-ema/startup.json",
+          "sha256": "c7d16a695d676cbb16ba532f62c8d210458fcec68bc19450a7cf1e7c054d35d0"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-red-common-ema/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-red-common-ema/stdout.txt",
+          "sha256": "8b29864f28e9db94ba20f1273e4c675a3f044aaf780f2fdfb3179f6998255ce6"
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 5.302759250000236,
+      "exit_code": 0,
+      "name": "fix1-green-common-ema",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-common-ema/finish.json",
+          "sha256": "aef70f6a5fef57563e7f18ba3cf7d35c192f8bce060fe3f7b6b9be5c00549271"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-common-ema/startup.json",
+          "sha256": "bd381367380a30c9738e1f62d141ae34655436bde6ff541918e1adc86a1b2eb6"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-common-ema/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-common-ema/stdout.txt",
+          "sha256": "6ebae3c049b7a6fd4d56605f7a32ca7fbc637fc880e4793173a03eda70431b64"
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 10.065587417000643,
+      "exit_code": 0,
+      "name": "fix1-green-affected-h07-history",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-affected-h07-history/finish.json",
+          "sha256": "9c672df6992c62cb7583ceddf3be8ae59f84e220f9987757667036b7cee4a5ff"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-affected-h07-history/startup.json",
+          "sha256": "85e3023018288c9563fca51abc48d95181c8d1d0f716d0f6d290222dbff98754"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-affected-h07-history/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/fix1-green-affected-h07-history/stdout.txt",
+          "sha256": "9629f6985a0665b75607d2013032bf01dc784d9b10c27fd88d0ffc4b2bfbe003"
+        }
+      }
+    }
+  ],
+  "changed_product_sources": [
+    "src/ralup/state.py"
+  ],
+  "fix_base": "ca56636634f01e94d2046f9fe6939179b879c5cf",
+  "issue": "I1 required common-gradient EMA ownership",
+  "native_applicability": "Historical ProjectMuon measurement remains scoped to original producer. Its collector/momentum/numerical paths are unchanged; I1 only strengthens finite trusted rule/mode ownership validation. No current universal numerical/source claim.",
+  "prior_index": {
+    "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/m08-feature-evidence.json",
+    "sha256": "47a0f623802c4281fb46994c438f697d6981fcfb59d5a2e8e9ea130e4815402a"
+  },
+  "prior_native_primary": {
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m08-20261011/native-feature-diagnostic-v2/feature-results.json",
+    "sha256": "778fd73f95be258fae1b7392512f9a1b7319a2a54dbd208a69ab522094070b44"
+  },
+  "review": {
+    "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/M08-review.md",
+    "sha256": "e33113c035495c858abc37cff783307e234908a3335d34ad5f060f25fe0e46c3"
+  },
+  "schema": "ralup.m08_fix1_evidence.v1",
+  "scope": "CPU fixture-only common EMA capture/strict restore guard, initialization/raw ownership, and affected H07/history tests; no genuine-data/native/broad-suite execution.",
+  "source_identity": {
+    "src/ralup/__init__.py": "ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd",
+    "src/ralup/__main__.py": "03ccfd03f1b813950746787a73d88290f451e80f958cf43009f71faf504f695f",
+    "src/ralup/baselines/__init__.py": "19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f",
+    "src/ralup/baselines/checks.py": "9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b",
+    "src/ralup/baselines/ewgs.py": "00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff",
+    "src/ralup/baselines/learned_scale.py": "d3b3e092245149c4ad36926f33d041a12f7c64d5ecedf1cbbcc17da5569a7b22",
+    "src/ralup/baselines/muon_checks.py": "ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11",
+    "src/ralup/baselines/noise.py": "4fb6514e055274805531ae4926500a8db952caa3486535c46dd028eb8a1c861f",
+    "src/ralup/baselines/qar.py": "a309831c37e9b55e68e109dd5dd4d672bcf3e7aee98371c34bd549d5336437ea",
+    "src/ralup/baselines/references/__init__.py": "6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f",
+    "src/ralup/baselines/references/soap_reference.py": "9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b",
+    "src/ralup/baselines/registry.py": "f94635e36ca8f28a478e2ac19b24f3a15fa862298789bc30346ecb429374c5e7",
+    "src/ralup/baselines/rounding.py": "21f9e162ad8c4a6b10df51049ff9f80389c67fafe24583fb3d8a131024a1d7fa",
+    "src/ralup/baselines/soap_madam_checks.py": "d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b",
+    "src/ralup/baselines/trs.py": "6c759a7ee85b0b92c7027e43c59dcadd435773f651d7c5a650c8a95a2a0edf8d",
+    "src/ralup/calibrate.py": "1e26bd718902ad4639978eac7ec0f8e30bbeaae6eb7b68a34b29204573b2518b",
+    "src/ralup/config.py": "96bf4a3ee4ffe8a3c27dfdefbd7679ae804a41c8243357857b7ef39da085a350",
+    "src/ralup/data/__init__.py": "6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0",
+    "src/ralup/data/articles.py": "1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c",
+    "src/ralup/data/batches.py": "5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750",
+    "src/ralup/data/blocks.py": "c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe",
+    "src/ralup/data/checks.py": "cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f",
+    "src/ralup/data/cursor.py": "2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af",
+    "src/ralup/data/dedup.py": "c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f",
+    "src/ralup/data/partitions.py": "551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9",
+    "src/ralup/data/source.py": "fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f",
+    "src/ralup/diagnostics/__init__.py": "ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00",
+    "src/ralup/diagnostics/quadratics.py": "3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840",
+    "src/ralup/environment.py": "0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160",
+    "src/ralup/evaluate.py": "ecd6780a8a005466d69b901889051e13d131fec5697e47e489abfff57ff17886",
+    "src/ralup/models/__init__.py": "7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752",
+    "src/ralup/models/checks.py": "f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a",
+    "src/ralup/models/embedding.py": "11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1",
+    "src/ralup/models/linear.py": "f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546",
+    "src/ralup/models/transformer.py": "4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05",
+    "src/ralup/optim/__init__.py": "ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae",
+    "src/ralup/optim/adamw.py": "c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c",
+    "src/ralup/optim/base.py": "61bacd5807767a7b92b261651cb4b0b0eecfa48f21db00929c98d33cf6ccb4bb",
+    "src/ralup/optim/madam.py": "afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6",
+    "src/ralup/optim/matrix_adapter.py": "45f6d5600e0470c8e3ad63be349b8fc06c8ad0bb17ee5d6352bb4bac94b575bc",
+    "src/ralup/optim/muon.py": "c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35",
+    "src/ralup/optim/muon_plus.py": "0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d",
+    "src/ralup/optim/soap.py": "f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b",
+    "src/ralup/policy/__init__.py": "2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4",
+    "src/ralup/policy/actions.py": "f4830341e79fb54c863fcbdf0d02d20a6f288e74f8918742b440b0808b5cf4f5",
+    "src/ralup/policy/checks.py": "f603f6fb17836a6ede48f1c18c5d4192674711f9ce5ba5f8dd7b8ccaba2b33a3",
+    "src/ralup/policy/features.py": "ecf71391cbe95162d084d96489d4ef40e4e9839795fd576035dd323ab5cadf84",
+    "src/ralup/policy/history.py": "b750ccd592eeaa6c2a71ad21f149418dada2e8abb6694fb49816a6a41611c1c8",
+    "src/ralup/policy/normalizer.py": "efb5362bcbf90ccf58f5afe9cc63316fe88db0b5fbd2471429c8da2aef5b8929",
+    "src/ralup/quantization/__init__.py": "733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16",
+    "src/ralup/quantization/checks.py": "fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2",
+    "src/ralup/quantization/context.py": "3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c",
+    "src/ralup/quantization/formats.py": "a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896",
+    "src/ralup/quantization/fp32.py": "ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5",
+    "src/ralup/quantization/oracle.py": "78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c",
+    "src/ralup/quantization/rotation.py": "a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d",
+    "src/ralup/quantization/scales.py": "17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64",
+    "src/ralup/quantization/surrogates.py": "a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614",
+    "src/ralup/records.py": "243aeec2352531a03a695267b00e04b7a5675c687e1932f90058cc5f96702faf",
+    "src/ralup/search.py": "9c02615f9f3a00877ce4ef33d8f2fbd1ac1985b47bd89aa57deea55347843356",
+    "src/ralup/state.py": "9c5aed8d376158c3c95ad0792a418e351c8ef7aee29b1c2fafb22ab19f2fe711",
+    "src/ralup/train.py": "e7dd035ee7b58faa3ac6f748f046e3a0887cca04b0e9e9abe6421fb0f12c443f",
+    "src/ralup/warmstart.py": "ade8c8301389b92f1d0eb1c00dc3ee5404e133ef2617cb41fc76b562cad13406"
+  },
+  "sum_test_attempt_wall_seconds": 21.355069250002998,
+  "test_results": {
+    "affected": "103 passed",
+    "green": "4 passed / 12 deselected",
+    "red": "3 failed / 1 passed / 12 deselected (two actual missing guards; existing raw rejection message mismatch)"
+  },
+  "unknown_costs": [
+    "editing",
+    "tools",
+    "enclosing orchestration",
+    "total synthetic fixture update/target count"
+  ]
+}
