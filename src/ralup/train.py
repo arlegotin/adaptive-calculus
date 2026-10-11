@@ -24,6 +24,8 @@ from .evaluate import summed_nll, validate_batch
 from .optim.base import SchedulePoint
 from .quantization.context import prepare_context
 from .records import WorkLedger
+from .policy.history import MatrixHistory, LossObservation, commit_history, resolve_realized_history
+from .policy.features import collect_step_features
 
 
 def _clone(value):
@@ -126,6 +128,9 @@ class TrainingState:
             if type(value) is not int or value < 0:
                 raise ValueError('Work counts must be nonnegative integers')
             self._work[name] += value
+
+    def collect_policy_features(self, proposals, schedule):
+        return collect_step_features(self, proposals, schedule)
 
     def summed_nll(self, batch_slice, *, parameter_overrides=None):
         validate_batch(batch_slice)
@@ -235,37 +240,53 @@ def _restore(state, snapshot):
 
 def _contexts(state, step):
     # Exceptional endpoint/noise preparation is within snapshot/rollback/time.
+    old_histories = _clone(state.histories)
     prepare = getattr(state.method,'prepare_contexts',None)
     contexts = (prepare(state,step) if prepare is not None else
                 ({} if state.model._recipe is None else
                  state.model.prepare_quantized_views(step,state.rng_streams.get('quantizer'))))
+    if not _equal(old_histories,state.histories):
+        raise ValueError('Adapter changed shared history during context preparation')
+    resolve_start = time.perf_counter()
+    resolved = 0
     for name,context in contexts.items():
+        if name in state.histories:
+            resolved += int(state.histories[name].pending)
+            state.histories[name] = resolve_realized_history(state.histories[name],context)
         if 'fixed' in context.recipe:
             handoff = {'previous_scales':context.scales.clone(),
                        'previous_zero_groups':context.scale_zero_groups.clone()}
             state.quantizer_state[name] = handoff
             state.model._runtime[name] = handoff
+    state._work['history_work'] = {'resolve_seconds':time.perf_counter()-resolve_start,'matrix_refreshes':resolved}
     return contexts
 
 
 def _transition(state, contexts, nll, count):
+    from dataclasses import replace
+    commit_start = time.perf_counter()
     telemetry = {}
     parameters = dict(state.model.named_parameters())
     for name,context in contexts.items():
-        # Endpoint codes on the cached scale are telemetry, never a graph/RNG draw.
-        cached = prepare_context(parameters[name],{'name':'tensor_fixed_max' if context.grouping=='whole_tensor' else 'row_fixed_max','rotation':context.rotation,
-                         'backward':context.backward,'previous_scales':context.scales},context.step,None)
-        old = state.histories.get(name,{})
-        telemetry[name] = {'cached_transitions':int((context.codes != cached.codes).sum()),
-                           'realized_refresh_transitions':None if not old else int((old['cached_codes'] != context.codes).sum()),
-                           'scale_changed':False if not old else not torch.equal(old['scales'],context.scales)}
-        state.histories[name] = {'previous_codes':context.codes.clone(),
-                                'two_steps_ago_codes':old.get('previous_codes'),
-                                'cached_codes':cached.codes.clone(),'scales':context.scales.clone()}
-    loss = nll/count
-    old_loss = state.histories.get('loss_ema')
-    state.histories['loss_ema'] = loss if old_loss is None else .95*old_loss+.05*loss
+        old = state.histories.get(name,MatrixHistory())
+        # Actual pre-step W is captured after trusted endpoint initialization.
+        # The transaction-entry snapshot still owns exact rollback operands.
+        before = state._work['before_weights'][name]
+        new = commit_history(old,before,parameters[name],context)
+        new = replace(new,common_gradient_ema=state._work.get('common_gradient_ema',{}).get(name,old.common_gradient_ema),
+                      last_features=state._work.get('feature_tensors',{}).get(name,old.last_features))
+        state.histories[name] = new
+        telemetry[name] = {'cached_transitions':int((context.codes!=new.cached_codes).sum()),
+                           'realized_refresh_transitions':None if not old.realized_valid else round(old.disagreement_fraction*context.codes.numel()),
+                           'scale_changed':False if old.previous_scales is None else not torch.equal(old.previous_scales,context.scales),
+                           'reversal_fraction':new.reversal_fraction,'reversal_coverage':new.reversal_coverage,
+                           'numerical_endpoint_displacement':new.numerical_displacement,
+                           'refresh_endpoint_displacement':old.refresh_endpoint_displacement,'history_bytes':new.tensor_bytes}
+    state.histories['loss_ema'] = LossObservation(state.histories.get('loss_ema'),nll/count).prospective_ema
     state.histories['loss_updates'] = state.histories.get('loss_updates',0)+1
+    state._work['history_work'].update(commit_seconds=time.perf_counter()-commit_start,
+                                       matrix_commits=len(contexts),cached_quantizer_calls=len(contexts),
+                                       tensor_bytes=sum(state.histories[name].tensor_bytes for name in contexts))
     return telemetry
 
 
@@ -286,6 +307,8 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
     nll_values = []
     try:
         contexts = _contexts(state,step)
+        prepared_history = _clone(state.histories)
+        state._work['before_weights'] = {name:state.method.parameters[name].detach().clone() for name in contexts}
         # First-step owners may be constructed during context preparation inside
         # this transaction. Bind the prepared inventory before backward/commit,
         # while retaining every owner that already existed at transaction entry.
@@ -310,7 +333,8 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
             norm = float(torch.nn.utils.clip_grad_norm_(state.model.parameters(),state.clip_norm,error_if_nonfinite=True))
         # H05 separately constructs/validates all proposals and explicitly updates
         # named internal/auxiliary groups; identity uses rule.commit addcdiv order.
-        before_history = snapshot['state']['histories']
+        state._work['training_loss'] = nll/batch.target_count
+        before_history = prepared_history
         updates = state.method.finish_step(state,state.schedule['point'])
         if state.histories.keys() != before_history.keys() or any(
                 not _equal(state.histories[k],before_history[k]) for k in before_history):
@@ -340,7 +364,13 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
         if state._pending is not None:
             staged = state._pending[1]
             unique = staged.unique_target_count-state.cursor.unique_target_count
-        work = {**state._work,'step':step,'stream':batch.target_count,'unique':unique,'nll_sum':nll,
+        features = state._work.get('features',{})
+        feature_work = state._work.get('feature_work')
+        public_work = {k:v for k,v in state._work.items() if k not in ('before_weights','training_loss','features','feature_tensors','common_gradient_ema')}
+        if feature_work is not None:
+            public_work['policy_seconds'] = feature_work['scan_seconds']
+        if feature_work is not None and not feature_work['detailed_trace']:features = {}
+        work = {**public_work,'step':step,'stream':batch.target_count,'unique':unique,'nll_sum':nll,
                 'nll_count':batch.target_count,'status':'completed_step','nonfinite_count':0,
                 'matrices':matrices,'candidate_validation_updates':updates.get('candidate_validation_updates',0)}
         _synchronize(state.model)
@@ -349,9 +379,9 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
         if state._pending is not None:
             state.cursor.__dict__.update(state._pending[1].__dict__)
         state._pending = None
-        return StepResult(nll,batch.target_count,work,{'gradient_norm_before_clip':norm,'matrices':matrices,**updates})
+        return StepResult(nll,batch.target_count,work,{'gradient_norm_before_clip':norm,'matrices':matrices,'features':features,**updates})
     except Exception as error:
-        work = dict(state._work)
+        work = {k:v for k,v in state._work.items() if k not in ('before_weights','training_loss','features','feature_tensors','common_gradient_ema')}
         nonfinite = _nonfinite_count((tuple(state.model.parameters()),tuple(p.grad for p in state.model.parameters()),
                                       state.method.optimizer_states,state.method.proposals))+sum(not math.isfinite(v) for v in nll_values)
         _restore(state,snapshot)
@@ -410,6 +440,8 @@ def _finite(value):
         return all(_finite(item) for item in value.values())
     if isinstance(value,(list,tuple)):
         return all(_finite(item) for item in value)
+    if is_dataclass(value):
+        return all(_finite(getattr(value,f.name)) for f in fields(value))
     return not isinstance(value,float) or math.isfinite(value)
 
 
@@ -420,6 +452,8 @@ def _equal(left,right):
         return left.keys() == right.keys() and all(_equal(left[k],right[k]) for k in left)
     if isinstance(left,(list,tuple)):
         return len(left) == len(right) and all(_equal(a,b) for a,b in zip(left,right))
+    if is_dataclass(left):
+        return type(left) is type(right) and all(_equal(getattr(left,f.name),getattr(right,f.name)) for f in fields(left))
     return left == right
 
 

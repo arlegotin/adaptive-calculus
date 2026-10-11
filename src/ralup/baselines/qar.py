@@ -216,7 +216,9 @@ class _QuantizedAdapter(MethodAdapter):
         if not self.endpoint_only:
             result=super().finish_step(state,schedule);self.observations+=1
             return {**result,'routing_rounding':{'persistent_shadow':True,'clipped_probability_count':0,'method':'stochastic_shadow_forward'}}
-        proposals=self.collect_proposals(schedule);candidates={};next_endpoints={};clipped=0;probabilities={}
+        proposals=self.collect_proposals(schedule)
+        state.collect_policy_features(proposals,schedule)
+        candidates={};next_endpoints={};clipped=0;probabilities={}
         device=next(iter(self.parameters.values())).device;_sync(device);start=time.perf_counter()
         for name,p in proposals.items():
             if name not in self.endpoint_states:

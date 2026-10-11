@@ -30,4 +30,6 @@ class MatrixMethodAdapter(MethodAdapter):
         return super().schedule_for_group(group,schedule)
 
     def finish_step(self, training_state, schedule):
-        return self.commit_proposals(self.collect_proposals(schedule,work_recorder=training_state.record_work))
+        proposals = self.collect_proposals(schedule,work_recorder=training_state.record_work)
+        training_state.collect_policy_features(proposals,schedule)
+        return self.commit_proposals(proposals)

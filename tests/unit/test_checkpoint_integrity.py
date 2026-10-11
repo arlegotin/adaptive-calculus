@@ -341,7 +341,9 @@ def test_completed_quantization_owners_cannot_be_omitted(omission):
     if omission == 'ema': del state.histories['loss_ema']
     elif omission == 'loss_updates': del state.histories['loss_updates']
     elif omission == 'matrix_history': del state.histories[name]
-    elif omission in ('previous_codes','two_steps_ago_codes'): del state.histories[name][omission]
+    elif omission in ('previous_codes','two_steps_ago_codes'):
+        from dataclasses import replace
+        state.histories[name] = replace(state.histories[name],**{omission:None})
     elif omission == 'contexts': state.model._contexts.clear()
     elif omission == 'context_step': state.model._context_step = None
     elif omission == 'runtime': state.model._runtime.clear()
@@ -359,9 +361,9 @@ def test_completed_quantization_owner_geometry_and_consistency_are_checked(damag
     from ralup.state import capture_snapshot, IntegrityError
     state = trained_fixture()
     name = next(iter(state.model._contexts))
-    if damage == 'history_dtype': state.histories[name]['previous_codes'] = state.histories[name]['previous_codes'].float()
-    elif damage == 'history_shape': state.histories[name]['cached_codes'] = torch.zeros(1,dtype=torch.uint8)
-    elif damage == 'history_scale': state.histories[name]['scales'] = state.histories[name]['scales']*2
+    if damage == 'history_dtype': state.histories[name] = replace(state.histories[name],previous_codes=state.histories[name].previous_codes.float())
+    elif damage == 'history_shape': state.histories[name] = replace(state.histories[name],cached_codes=torch.zeros(1,dtype=torch.uint8))
+    elif damage == 'history_scale': state.histories[name] = replace(state.histories[name],previous_scales=state.histories[name].previous_scales*2)
     elif damage == 'context_step': state.model._contexts[name] = replace(state.model._contexts[name],step=99)
     elif damage == 'context_shape': state.model._contexts[name] = replace(state.model._contexts[name],storage_u=torch.zeros(1))
     elif damage == 'context_type': state.model._contexts[name] = replace(state.model._contexts[name],zero_groups=torch.zeros(8,1))

@@ -39,6 +39,9 @@ from .optim.base import MethodAdapter, ParameterGroup, SchedulePoint, default_pa
 from .quantization.scales import grouping_for
 from .quantization.surrogates import BACKWARD_RULES
 from .quantization.context import QuantizationContext
+from .policy.history import MatrixHistory
+from .policy.features import FeatureVector
+from .policy.normalizer import FrozenNormalizer
 from .records import ArtifactRef, RunLedger, WorkLedger, sha256_file
 from .train import TrainingState, _rng_state, _restore_rng
 
@@ -88,7 +91,8 @@ def register_method_schema(name, cls, field_names, constructor, *, shared_fields
 
 
 for _name,_cls in [('model_config.v1',ModelConfig),('schedule_point.v1',SchedulePoint),
-                   ('parameter_group.v1',ParameterGroup),('quantization_context.v1',QuantizationContext)]:
+                   ('parameter_group.v1',ParameterGroup),('quantization_context.v1',QuantizationContext),('matrix_history.v1',MatrixHistory),
+                   ('feature_vector.v1',FeatureVector),('frozen_normalizer.v1',FrozenNormalizer)]:
     register_state_schema(_name,_cls,tuple(f.name for f in fields(_cls)))
 register_method_schema('ordinary_adapter.v1',MethodAdapter,
                        ('optimizer_states','proposals','snapshot_schema'),MethodAdapter)
@@ -394,6 +398,12 @@ def _array(value,shape,dtype,label):
 
 def _validate_quantized_owners(payload,prototype):
     """Versioned H06 shared owners; future extras require method declarations."""
+    cfg=payload['configuration'].get('policy_features')
+    if cfg is not None and (type(cfg) is not dict or set(cfg)!={'enabled','full_horizon','trace_cadence'} or cfg['enabled'] is not True
+                            or any(type(cfg[k]) is not int or cfg[k]<=0 for k in ('full_horizon','trace_cadence'))):
+        raise IntegrityError('Invalid finite explicit common feature mode')
+    normalizer=payload['histories'].get('feature_normalizer')
+    if normalizer is not None and (cfg is None or type(normalizer) is not FrozenNormalizer):raise IntegrityError('Registered frozen normalizer required')
     cache = payload['model_cache']
     recipe = cache['_recipe']
     shared = _SHARED_FIELDS[payload['method_schema']]
@@ -401,7 +411,7 @@ def _validate_quantized_owners(payload,prototype):
         if type(cache['_contexts']) is not dict or cache['_contexts'] or cache['_context_step'] is not None:
             raise IntegrityError('FP32 context cache must be an empty mapping with no marker')
         for key,value in (('histories',payload['histories']),('quantizer_state',payload['quantizer_state']),('runtime',cache['_runtime'])):
-            allowed = set(shared[key]) | ({'loss_ema','loss_updates'} if key == 'histories' else set())
+            allowed = set(shared[key]) | ({'loss_ema','loss_updates','feature_normalizer'} if key == 'histories' else set())
             if type(value) is not dict or set(value)-allowed: raise IntegrityError('FP32 owner has undeclared state')
         step = payload['schedule']['step']
         history = payload['histories']
@@ -422,7 +432,7 @@ def _validate_quantized_owners(payload,prototype):
     names = {item['name'] for item in prototype.quantized_matrix_manifest()}
     shared = _SHARED_FIELDS[payload['method_schema']]
     histories,quantizer,runtime = payload['histories'],payload['quantizer_state'],cache['_runtime']
-    for owner,allowed in ((histories,names|{'loss_ema','loss_updates'}|set(shared['histories'])),
+    for owner,allowed in ((histories,names|{'loss_ema','loss_updates','feature_normalizer'}|set(shared['histories'])),
                           (quantizer,names|set(shared['quantizer_state'])),(runtime,names|set(shared['runtime']))):
         if type(owner) is not dict or set(owner)-allowed: raise IntegrityError('Unknown undeclared quantizer/history/runtime owner')
     contexts = cache['_contexts']
@@ -459,13 +469,34 @@ def _validate_quantized_owners(payload,prototype):
             if step or context.scale_zero_groups is not None: _array(context.scale_zero_groups,scale_shape,torch.bool,'Context initialization zero groups')
         if name in histories:
             history = histories[name]
-            _keys(history,('previous_codes','two_steps_ago_codes','cached_codes','scales'))
-            _array(history['previous_codes'],shape,torch.uint8,'History previous codes')
-            _array(history['cached_codes'],shape,torch.uint8,'History cached codes')
-            _array(history['scales'],scale_shape,torch.float32,'History scales')
-            if step > 1: _array(history['two_steps_ago_codes'],shape,torch.uint8,'History two-step codes')
-            elif history['two_steps_ago_codes'] is not None: raise IntegrityError('First-step two-step history must be null')
-            if context is None or not torch.equal(history['previous_codes'],context.codes) or not torch.equal(history['scales'],context.scales):
+            if type(history) is not MatrixHistory: raise IntegrityError('Registered matrix history required')
+            if history.last_step!=step-1 or history.updates!=step or history.pending is not True:
+                raise IntegrityError('Completed history must own pending next-forward resolution and one commit per step')
+            for key in ('previous_codes','cached_codes'):
+                _array(getattr(history,key),shape,torch.uint8,'History '+key)
+                if not bool((getattr(history,key)<=14).all()):raise IntegrityError('History ordinals out of range')
+            _array(history.previous_scales,scale_shape,torch.float32,'History scales')
+            if not bool((history.previous_scales>0).all()):raise IntegrityError('History scales must be positive')
+            for key,dtype,expected_shape in (('two_steps_ago_codes',torch.uint8,shape),('two_steps_ago_scales',torch.float32,scale_shape)):
+                value=getattr(history,key)
+                if step>1:
+                    _array(value,expected_shape,dtype,'History '+key)
+                    invalid = not bool((value<=14).all()) if dtype==torch.uint8 else not bool((value>0).all())
+                    if invalid:raise IntegrityError('Invalid older code/scale history')
+                elif value is not None:raise IntegrityError('First-step older history must be null')
+            if any(type(getattr(history,key)) is not bool for key in ('reversal_valid','realized_valid','pending')):
+                raise IntegrityError('History validity must be boolean')
+            if history.reversal_valid!=(step>1) or history.realized_valid!=(step>1):raise IntegrityError('History validity/counter mismatch')
+            for key in ('transition_fraction','reversal_fraction','disagreement_fraction','reversal_coverage'):
+                value=getattr(history,key)
+                if type(value) not in (int,float) or not math.isfinite(value) or not 0<=value<=1:raise IntegrityError('Invalid history fraction')
+            for key in ('numerical_displacement','refresh_endpoint_displacement'):
+                value=getattr(history,key)
+                if type(value) not in (int,float) or not math.isfinite(value) or value<0:raise IntegrityError('Invalid history endpoint diagnostic')
+            if history.common_gradient_ema is not None:_array(history.common_gradient_ema,shape,torch.float32,'Common gradient EMA')
+            if cfg is not None or history.last_features is not None:_array(history.last_features,(14,),torch.float32,'Last features')
+            if cfg is None and (history.last_features is not None or history.common_gradient_ema is not None):raise IntegrityError('Undeclared common feature/history EMA mode')
+            if context is None or not torch.equal(history.previous_codes,context.codes) or not torch.equal(history.previous_scales,context.scales):
                 raise IntegrityError('Context/history cross-owner mismatch')
         for owner in (runtime,quantizer):
             if name not in owner: continue
@@ -781,6 +812,10 @@ def exact_cpu_state_hash(state: TrainingState) -> str:
     payload['ledger'].pop('elapsed')
     for row in payload['ledger']['events']:
         row.pop('elapsed_seconds',None)
+        row.pop('policy_seconds',None)
+        row.get('feature_work',{}).pop('scan_seconds',None)
+        row.get('history_work',{}).pop('resolve_seconds',None)
+        row.get('history_work',{}).pop('commit_seconds',None)
         for name in TIMING_FIELDS: row.get('optimizer_work',{}).pop(name,None)
         row.get('ewgs_work',{}).pop('seconds',None)
         row.get('learned_scale_work',{}).pop('scale_seconds',None)

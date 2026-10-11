@@ -231,6 +231,7 @@ class TrsBackboneAdapter(MethodAdapter):
 
     def finish_step(self,training_state,schedule):
         proposals=self.collect_proposals(schedule)
+        training_state.collect_policy_features(proposals,schedule)
         next_states={};telemetry={}
         for name in self.groups[0].parameter_names:
             if name not in proposals:raise ValueError('Missing TRS projection gradient')

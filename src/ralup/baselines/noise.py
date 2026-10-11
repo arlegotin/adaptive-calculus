@@ -115,6 +115,7 @@ class NoiseAdapter(MethodAdapter):
     def finish_step(self,state,schedule):
         import time
         start=time.perf_counter();proposals=self.collect_proposals(schedule)
+        state.collect_policy_features(proposals,schedule)
         if self.config['mode']=='damping':
             return self.commit_proposals(proposals)
         rng=torch.Generator();rng.set_state(self.mask_rng_state.cpu())

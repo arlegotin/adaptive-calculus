@@ -175,7 +175,8 @@ def test_affine_hvp_accounting_and_trusted_v2_reconstruction(monkeypatch):
     from ralup.state import capture_snapshot,restore_snapshot,IntegrityError
     # Scoped affine scorer fixture: no Transformer forward/neural wave executes.
     # Estimator substitutes its real normalized leaf -> detached physical scale.
-    def affine_target_losses(model,batch,*,contexts=None):
+    def affine_target_losses(model,batch,*,contexts=None,parameter_overrides=None):
+        assert parameter_overrides is None
         if contexts is not None:
             leaf_view=next(c for c in contexts.values() if type(c) is m.NormalizedLeafView)
             return (100+leaf_view.storage_values.sum()).reshape(1)

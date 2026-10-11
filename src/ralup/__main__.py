@@ -33,6 +33,13 @@ def main(argv: list[str] | None = None) -> int:
     baselines.add_argument("--suite", choices=("adamw", "muon", "soap-madam", "ewgs", "trs", "routing-rounding", "scale-noise"), required=True)
     baselines.add_argument("--device", choices=("cpu", "mps"), default="cpu")
     baselines.add_argument("--output", type=Path, default=Path("artifacts/checks/adamw-results.json"))
+    policy = subcommands.add_parser('test-policy',help='finite actual feature/history checks on the typed exploratory development protocol')
+    policy.add_argument('--suite',choices=('features',),required=True)
+    policy.add_argument('--backbone',type=Path,required=True)
+    policy.add_argument('--purpose',choices=('exploratory-development-bootstrap',),required=True)
+    policy.add_argument('--design',type=Path,required=True)
+    policy.add_argument('--device',choices=('cpu','mps'),default='mps')
+    policy.add_argument('--output',type=Path,required=True)
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
     run.add_argument("--phase", choices=("explore",), required=True)
     run.add_argument("--config", type=Path, required=True)
@@ -43,6 +50,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == 'test-policy':
+        from .policy.checks import check_features
+        try:
+            ref=check_features(args.backbone,args.design,args.device,args.output,purpose=args.purpose)
+            report=json.loads(ref.path.read_bytes())
+            print(canonical_bytes({'path':str(ref.path),'sha256':ref.sha256,'status':report['status'],'scope':report['limits']}).decode())
+            return 0 if report['status']=='pass' else 1
+        except (OSError,TypeError,ValueError,RuntimeError) as error:
+            parser.error(str(error))
     if args.command == "run":
         try:
             if args.suite == 'headroom':

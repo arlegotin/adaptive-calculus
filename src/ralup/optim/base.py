@@ -197,4 +197,6 @@ class MethodAdapter:
                 'extra_forward_passes':0,'extra_backward_passes':0}
 
     def finish_step(self, training_state, schedule: SchedulePoint) -> dict:
-        return self.commit_proposals(self.collect_proposals(schedule))
+        proposals = self.collect_proposals(schedule)
+        if training_state is not None:training_state.collect_policy_features(proposals,schedule)
+        return self.commit_proposals(proposals)

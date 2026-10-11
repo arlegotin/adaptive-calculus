@@ -210,7 +210,9 @@ class LearnedScaleAdapter(NoiseAdapter):
         for n,p in scale_proposals.items():
             candidate=self.log_scales[n].detach().clone();scale_rule.commit(candidate,p)
             if not bool(torch.isfinite(candidate).all()):raise ValueError('Nonfinite scale candidate')
-        result=self.commit_proposals(self.collect_proposals(schedule))
+        proposals=self.collect_proposals(schedule)
+        state.collect_policy_features(proposals,schedule)
+        result=self.commit_proposals(proposals)
         with torch.no_grad():
             for n,p in scale_proposals.items():
                 scale_rule.commit(self.log_scales[n],p);self.log_scales[n].clamp_(*self.config['log_scale_range'])
