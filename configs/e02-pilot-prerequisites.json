@@ -1,0 +1,17 @@
+{
+  "assumptions": {
+    "bootstrap_seed": 8128,
+    "confirmation_seeds": [],
+    "decision_rationale": "No final trained/selected arms exist; no actual pilot variance or measured precision/cost choice is available. Preserve null design pending E01/reopened WP06.",
+    "pilot_seeds": [],
+    "purpose": "scientific-development",
+    "sd_upper_coverage": 0.95,
+    "selection": {
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/selection.json",
+      "sha256": "00f6bb750d3c6602ee1eb00afcaabdeda3ec7f2b6f08b740bd04ac45e87be1f3"
+    },
+    "target_delta_bpb": null,
+    "tuning_seeds": []
+  },
+  "pilot_runs": []
+}

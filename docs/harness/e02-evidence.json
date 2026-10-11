@@ -1,0 +1,375 @@
+{
+  "actual_scientific_pilot_runs": 0,
+  "administration_locations": {
+    "commit": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/administration-v1/commit.json",
+    "finish": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/administration-v1/finish.json",
+    "report": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/administration-v1/E02-report.md",
+    "startup": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/administration-v1/startup.json"
+  },
+  "administration_locations_are_not_yet_completed_evidence": true,
+  "attempts": [
+    {
+      "actual_attempt_bytes": 110413988,
+      "attempt": "focused-final",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py",
+        "tests/unit/test_config_records.py",
+        "tests/unit/test_finalist_selection.py"
+      ],
+      "data_free_after": 75425959936,
+      "elapsed_seconds": 17.7936303749957,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/focused-final/finish.json",
+          "sha256": "8d6aa34310bb9f1be1027bfab56cd25ba4536c74ae5640fdf11ae50beaddbbab"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/focused-final/runtime-observation.json",
+          "sha256": "8478e492bb60740937a9679b0eb8f4667a23a57cd61c28ad36ad70eac8616ce1"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/focused-final/startup.json",
+          "sha256": "42f096ea2ea498052d88745dfb2ef43aef7f651d7cca955afc2146a7e0a49e66"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/focused-final/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/focused-final/stdout.txt",
+          "sha256": "f03d00e90b291b098e271caf6074fe42cb99272d14587884d63b665822ebb387"
+        }
+      },
+      "git_free_after": 7031791616,
+      "storage_before": {
+        "allocated_bytes": 23241980060,
+        "complete_remaining_fix_forecast_bytes": 268435456,
+        "data_free_before": 75538288640,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7031758848
+      },
+      "summary": [
+        "186 passed in 12.41s"
+      ],
+      "utc": "2026-10-11T22:45:43.206400+00:00"
+    },
+    {
+      "actual_attempt_bytes": 39614468,
+      "attempt": "green-numerics",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py"
+      ],
+      "data_free_after": 75746897920,
+      "elapsed_seconds": 5.167789958002686,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-numerics/finish.json",
+          "sha256": "91afeb424fe5e23aacdfc86ed0c0d1bf80f6f0a686be0fb0baf2cf379af1c368"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-numerics/runtime-observation.json",
+          "sha256": "47c03b68cd6081444e5132bbeb6bf5c9c2e79711f5838e0091edb143d7796bb8"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-numerics/startup.json",
+          "sha256": "f442ff8a6d09cacd0ed3f40b2fd99378b583af7419ed7021137cefbb1d11e34b"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-numerics/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-numerics/stdout.txt",
+          "sha256": "1486e7c36f400bea3b7391d78be22c4a0b3367bfbf5f045b0fa70e488b65fe0a"
+        }
+      },
+      "git_free_after": 7031296000,
+      "storage_before": {
+        "allocated_bytes": 23083028172,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75770585088,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7032135680
+      },
+      "summary": [
+        "20 passed in 0.46s"
+      ],
+      "utc": "2026-10-11T22:41:50.241691+00:00"
+    },
+    {
+      "actual_attempt_bytes": 39802357,
+      "attempt": "green-planning",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py"
+      ],
+      "data_free_after": 75640635392,
+      "elapsed_seconds": 5.796977792000689,
+      "exit_code": 1,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning/finish.json",
+          "sha256": "77acbc67ddf9233288a4fd454b71725d66655d8a4aa54cd32e68bcc130ba5804"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning/runtime-observation.json",
+          "sha256": "0d991be68361403080d3a13af03f1ceb303f2d47db3dab0dddd64ebe903a898a"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning/startup.json",
+          "sha256": "75dc552066bfe70786bc9560fabd6d6915d4ad04553469d06873effa39c3774d"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning/stdout.txt",
+          "sha256": "07ea0498eb4def199a41ea48b52f2bd9282718aaad7c6515785ed8d6972d5691"
+        }
+      },
+      "git_free_after": 7031869440,
+      "storage_before": {
+        "allocated_bytes": 23162317389,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75682185216,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7031861248
+      },
+      "summary": [
+        "5 failed, 30 passed in 1.03s"
+      ],
+      "utc": "2026-10-11T22:44:26.716518+00:00"
+    },
+    {
+      "actual_attempt_bytes": 39860314,
+      "attempt": "green-planning-v2",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py"
+      ],
+      "data_free_after": 75603116032,
+      "elapsed_seconds": 5.524350957995921,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning-v2/finish.json",
+          "sha256": "a9197eb1a6b0d71516abf463c0a8be31952b30c9ce38dd568da111a56bb37c77"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning-v2/runtime-observation.json",
+          "sha256": "0be79bd0dddf4ceee6e621c133ea80f06a9b93ba51c99f5b93bf7954a4aceb95"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning-v2/startup.json",
+          "sha256": "8eda5a6b1a8aff54a1f26c3ed0acd58b0445aac90789f70f520ab4589c1ae9fb"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning-v2/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/green-planning-v2/stdout.txt",
+          "sha256": "c4d05229fd309c9b765f61b04828132774c8037ccd7a7a8a4243db511070dccb"
+        }
+      },
+      "git_free_after": 7031869440,
+      "storage_before": {
+        "allocated_bytes": 23202119746,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75656134656,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7031824384
+      },
+      "summary": [
+        "35 passed in 0.82s"
+      ],
+      "utc": "2026-10-11T22:44:43.286626+00:00"
+    },
+    {
+      "actual_attempt_bytes": 41351316,
+      "attempt": "plan-confirmation-v1",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "ralup",
+        "plan-confirmation",
+        "--pilot",
+        "configs/e02-pilot-prerequisites.json",
+        "--resources",
+        "configs/e02-resources.json"
+      ],
+      "data_free_after": 75381178368,
+      "elapsed_seconds": 5.685045416998037,
+      "exit_code": 0,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json",
+          "sha256": "e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/runtime-observation.json",
+          "sha256": "a5c0dfd9b9c3cfb71447cbc54e815b5edeefeb193c2dad54ded4bbe5d08e130f"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/startup.json",
+          "sha256": "34e7904781ba6e3f577a5f205d2e1b56bdd6b812f5a063c3383baeac50568ce9"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/stdout.txt",
+          "sha256": "d64d017498add1f71b867d69c673c8720a612fdb64a50e0f082f8b62d4730d33"
+        }
+      },
+      "git_free_after": 7031701504,
+      "storage_before": {
+        "allocated_bytes": 23352394048,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75423150080,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7030644736
+      },
+      "summary": [
+        "{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json\",\"sha256\":\"d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4\",\"status\":\"prerequisite_unresolved\"}"
+      ],
+      "utc": "2026-10-11T22:46:42.967974+00:00"
+    },
+    {
+      "actual_attempt_bytes": 39607754,
+      "attempt": "red-numerics",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py"
+      ],
+      "data_free_after": 75785224192,
+      "elapsed_seconds": 9.058945333003066,
+      "exit_code": 1,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-numerics/finish.json",
+          "sha256": "97f18bee8c6497d6f88db031b1c4a0f78e61b774380388af4b39670c3b49719a"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-numerics/runtime-observation.json",
+          "sha256": "bf06cd62b624eebf870f12aeb1e256a647041f616846602bd1d758c414f9a49d"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-numerics/startup.json",
+          "sha256": "624abf13fa378fd696fbcc16bf85ff0376bd23a70b1368b078b84e55d253bbcf"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-numerics/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-numerics/stdout.txt",
+          "sha256": "159ebf17d52ab3c0f38a346f671d1a2abf511dcfc78dae1da589aba0771ea2c2"
+        }
+      },
+      "git_free_after": 7032221696,
+      "storage_before": {
+        "allocated_bytes": 23043420418,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75829231616,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7032197120
+      },
+      "summary": [
+        "20 failed in 4.34s"
+      ],
+      "utc": "2026-10-11T22:40:54.140019+00:00"
+    },
+    {
+      "actual_attempt_bytes": 39674749,
+      "attempt": "red-planning",
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_power_design.py"
+      ],
+      "data_free_after": 75706613760,
+      "elapsed_seconds": 5.300406666006893,
+      "exit_code": 1,
+      "files": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-planning/finish.json",
+          "sha256": "c28477136aa6968bf5b030bb15f4d8c6cd2db17016ad0bbc9b5550541cd86eac"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-planning/runtime-observation.json",
+          "sha256": "f67f566988b72f4ae6b06bee8e11274feeeb2f83f26ff1d9377055463858a0a3"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-planning/startup.json",
+          "sha256": "4f6638f1ae98ab2127ebd2fc27847dfd5e465daac1235ce6861a85d8e14b1c7b"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-planning/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/red-planning/stdout.txt",
+          "sha256": "59d97c3dbf86cf42f6d44e97258eee26bf8556a948ae887e221a13482a046ede"
+        }
+      },
+      "git_free_after": 7031980032,
+      "storage_before": {
+        "allocated_bytes": 23122642640,
+        "complete_remaining_fix_forecast_bytes": 16777216,
+        "data_free_before": 75730305024,
+        "forecast_scope": "current E02 attempt archived source/test/helper/lock/F02/native receipts, CPU fixture temps and pointer/commit attempts",
+        "git_free_before": 7031988224
+      },
+      "summary": [
+        "15 failed, 20 passed in 0.55s"
+      ],
+      "utc": "2026-10-11T22:43:11.602371+00:00"
+    }
+  ],
+  "disposition": {
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+    "sha256": "d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4"
+  },
+  "enumerated_launcher_seconds": 54.32714649900299,
+  "full_project_engineering_seconds": null,
+  "local_observation": "2026-10-12T00:47:04.244076+02:00",
+  "observed_utc": "2026-10-11T22:47:04.243954+00:00",
+  "research_cutoff": "2026-10-03",
+  "schema": "ralup.e02_evidence.v1"
+}

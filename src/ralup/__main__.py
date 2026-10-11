@@ -50,10 +50,22 @@ def main(argv: list[str] | None = None) -> int:
     meta.add_argument('--config',type=Path,required=True)
     finalists=subcommands.add_parser('select-finalists',help='explicit fair search, authenticated exploratory selection or supported prerequisite disposition')
     finalists.add_argument('--config',type=Path,required=True)
+    planning = subcommands.add_parser('plan-confirmation', help='paired pilot precision/cost design or explicit prerequisite disposition')
+    planning.add_argument('--pilot', type=Path, required=True)
+    planning.add_argument('--resources', type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == 'plan-confirmation':
+        from .analysis.power import plan_confirmation_from_files
+        try:
+            ref = plan_confirmation_from_files(args.pilot, args.resources)
+            report = json.loads(ref.path.read_bytes())
+            print(canonical_bytes({'path': str(ref.path), 'sha256': ref.sha256, 'status': report['status']}).decode())
+            return 0
+        except (OSError, KeyError, TypeError, ValueError, RuntimeError) as error:
+            parser.error(str(error))
     if args.command=='select-finalists':
         from .search import run_finalist_tournament
         try:

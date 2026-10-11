@@ -1,0 +1,13 @@
+{
+  "costs": {
+    "paired_bytes": null,
+    "paired_seconds": null,
+    "scope": "Complete common warmstart and every target/query/gradient/HVP/reset/snapshot/failure cost required; actual paired run costs unknown. Shared-parent project dedup remains separate."
+  },
+  "output": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+  "precision_choices": [],
+  "resources": {
+    "bytes": null,
+    "seconds": null
+  }
+}
