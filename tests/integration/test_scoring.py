@@ -49,6 +49,43 @@ def test_official_test_and_nonbyte_target_rejected():
         score_blocks(state.model,[replace(block,labels=(256,)+block.labels[1:])],evaluation_context={'partition':'fixture'})
 
 
+def test_block_progress_cap_stops_before_next_forward_and_preserves_state():
+    from ralup.evaluate import score_blocks
+    from ralup.state import exact_cpu_state_hash
+    from ralup.train import train_step
+    state = fixture(); train_step(state,batch())
+    blocks = tile_article(article(b'x'*270))
+    before = exact_cpu_state_hash(state); forwards=[]; observed=[]
+    hook = state.model.register_forward_pre_hook(lambda *args: forwards.append(True))
+    def monitor(row):
+        observed.append(row)
+        if row['completed_blocks'] == 1:
+            raise TimeoutError('declared block boundary cap')
+    try:
+        with pytest.raises(TimeoutError,match='block boundary cap'):
+            score_blocks(state.model,blocks,evaluation_context={'partition':'fixture'},progress_callback=monitor)
+    finally: hook.remove()
+    assert len(forwards) == 1
+    assert observed[-1]['completed_targets'] == 128
+    assert observed[-1]['block_targets'] == 128
+    assert observed[-1]['forward_context'] == len(blocks[0].inputs)
+    assert exact_cpu_state_hash(state) == before
+
+
+def test_progress_observation_preserves_exact_full_score_and_actual_counts():
+    from ralup.evaluate import score_blocks
+    state = fixture(); blocks=tile_article(article(b'x'*270))
+    baseline=score_blocks(state.model,blocks,evaluation_context={'partition':'fixture'})
+    rows=[]
+    observed=score_blocks(state.model,blocks,evaluation_context={'partition':'fixture'},progress_callback=rows.append)
+    assert observed == baseline
+    completed=[r for r in rows if r['phase']=='block_completed']
+    assert [r['block_targets'] for r in completed] == [128,128,14]
+    assert rows[-1]['completed_targets'] == 270
+    assert rows[-1]['forward_context'] == sum(len(b.inputs) for b in blocks)
+    assert sum(r['block_nll_sum'] for r in completed) == pytest.approx(baseline.nll_sum,abs=1e-12)
+
+
 def test_evaluation_hashes_complete_training_state_unchanged():
     import hashlib
     import random

@@ -398,10 +398,19 @@ def _validate_quantized_owners(payload,prototype):
     recipe = cache['_recipe']
     shared = _SHARED_FIELDS[payload['method_schema']]
     if recipe is None:
-        if payload['schedule']['step'] or cache['_contexts'] or cache['_context_step'] is not None:
-            raise IntegrityError('Completed/active context state requires a recipe')
+        if type(cache['_contexts']) is not dict or cache['_contexts'] or cache['_context_step'] is not None:
+            raise IntegrityError('FP32 context cache must be an empty mapping with no marker')
         for key,value in (('histories',payload['histories']),('quantizer_state',payload['quantizer_state']),('runtime',cache['_runtime'])):
-            if type(value) is not dict or set(value)-set(shared[key]): raise IntegrityError('Unconfigured initial owner has undeclared state')
+            allowed = set(shared[key]) | ({'loss_ema','loss_updates'} if key == 'histories' else set())
+            if type(value) is not dict or set(value)-allowed: raise IntegrityError('FP32 owner has undeclared state')
+        step = payload['schedule']['step']
+        history = payload['histories']
+        if not step and ({'loss_ema','loss_updates'} & history.keys()):
+            raise IntegrityError('Unconfigured initial FP32 state has completed history')
+        if step and (type(history.get('loss_updates')) is not int or history['loss_updates'] != step
+                     or type(history.get('loss_ema')) not in (int,float)
+                     or not math.isfinite(history['loss_ema']) or history['loss_ema'] < 0):
+            raise IntegrityError('Completed FP32 loss history missing or invalid')
         return
     if type(recipe) is not dict: raise IntegrityError('Quantization recipe must be explicit')
     if set(recipe)-{'name','rotation','backward'} or 'name' not in recipe: raise IntegrityError('Unknown recipe fields')

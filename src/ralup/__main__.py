@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
     run.add_argument("--phase", choices=("explore",), required=True)
     run.add_argument("--config", type=Path, required=True)
-    run.add_argument('--suite', choices=('warmstart',), help='separate bounded partition warmstarts')
+    run.add_argument('--suite', choices=('warmstart','headroom'), help='separate bounded partition warmstarts')
     calibration = subcommands.add_parser('calibrate', help='bounded measured engineering capacity; no scientific duration selection')
     calibration.add_argument('--config', type=Path, required=True)
     args = parser.parse_args(argv)
@@ -45,7 +45,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "run":
         try:
-            print(canonical_bytes(_run_warmstarts(args.config) if args.suite == 'warmstart' else _run_explore(args.config)).decode())
+            if args.suite == 'headroom':
+                from .search import run_headroom
+                result = run_headroom(args.config)
+            else:
+                result = _run_warmstarts(args.config) if args.suite == 'warmstart' else _run_explore(args.config)
+            print(canonical_bytes(result).decode())
             return 0
         except (OSError, TypeError, ValueError, RuntimeError) as error:
             parser.error(str(error))

@@ -103,8 +103,22 @@ def evaluation_contexts(model, evaluation_context: dict):
 
 
 @torch.no_grad()
-def score_blocks(model, blocks, *, evaluation_context: dict) -> ScoreResult:
+def score_blocks(model, blocks, *, evaluation_context: dict, progress_callback=None) -> ScoreResult:
+    """Score in stable block order, optionally reporting interruptible boundaries.
+
+    A callback may enforce a deadline before preparation, after preparation and
+    after each completed block. Reported counts are completed work, including
+    the last block when the callback raises; an exception inside a forward can
+    still leave unknown partial work. Numeric scoring/reduction is unchanged.
+    """
+    completed_targets = forward_context = 0
+    def progress(phase, completed_blocks, **details):
+        if progress_callback is not None:
+            progress_callback({'phase':phase, 'completed_blocks':completed_blocks,
+                               'completed_targets':completed_targets, 'forward_context':forward_context, **details})
+    progress('before_contexts', 0)
     contexts = evaluation_contexts(model,evaluation_context)
+    progress('contexts_ready', 0)
     # Cursor-backed callers materialize only the declared development/query list.
     ordered = sorted(blocks,key=lambda b:(b.document_id,b.target_start,b.target_end,b.scored_offsets()))
     if not ordered:
@@ -127,6 +141,10 @@ def score_blocks(model, blocks, *, evaluation_context: dict) -> ScoreResult:
         counts.append(count)
         article_values.setdefault(block.document_id,[]).append(value)
         article_counts[block.document_id] = article_counts.get(block.document_id,0)+count
+        completed_targets += count
+        forward_context += len(block.inputs)
+        progress('block_completed',len(values),block_targets=count,block_nll_sum=value,
+                 document_id=block.document_id,target_start=block.target_start,target_end=block.target_end)
     nll, count = math.fsum(values),sum(counts)
     per_article = {key:{'nll_sum':math.fsum(article_values[key]),'target_count':article_counts[key],
                         'bpb':math.fsum(article_values[key])/(math.log(2)*article_counts[key])}

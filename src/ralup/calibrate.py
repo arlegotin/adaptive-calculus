@@ -610,6 +610,11 @@ def train_warmstart(config: ResolvedConfig, partition: str, seed: int) -> Artifa
                        'elapsed_seconds': 0., 'status': 'project_elapsed_observation', 'project_elapsed_seconds': time.perf_counter()-start})
 
 
+def validate_warmstart_partition(parent, target):
+    if parent not in PARTITIONS or target not in PARTITIONS or parent != target:
+        raise IntegrityError('Warmstart partition ancestry must remain separated')
+
+
 def import_warmstart(reference: ArtifactRef, fresh: TrainingState, *, partition: str, continuation_targets: int) -> TrainingState:
     """Restricted historical import; full restore_snapshot compatibility stays strict.
 
@@ -618,6 +623,7 @@ def import_warmstart(reference: ArtifactRef, fresh: TrainingState, *, partition:
     Constructor/optimizer/quantizer/history/schedule are from the fresh runtime.
     Cursor, named/global RNG and all parent costs retain their historical identity.
     """
+    validate_warmstart_partition(fresh.configuration.get('source_partition'), partition)
     original_reference = reference
     parent_report = None
     if reference.path.name == 'warmstart.json':
@@ -632,6 +638,13 @@ def import_warmstart(reference: ArtifactRef, fresh: TrainingState, *, partition:
     payload = _validated(snapshot)
     if 'resolved' in payload['configuration'] and (parent_report is None or payload['configuration'].get('artifact_role') != 'warmstart'):
         raise IntegrityError('Generated warmstart requires its cost-complete warmstart artifact reference')
+    return _import_authenticated_parent(reference, original_reference, parent_report, snapshot, payload,
+                                        producer_manifest, fresh, partition=partition, continuation_targets=continuation_targets)
+
+
+def _import_authenticated_parent(reference, original_reference, parent_report, snapshot, payload,
+                                 producer_manifest, fresh, *, partition, continuation_targets):
+    """Private shared model-only body; callers authenticate their distinct role schemas."""
     if partition not in PARTITIONS or payload['configuration'].get('source_partition') != partition:
         raise IntegrityError('Wrong partition ancestry for warmstart')
     if type(continuation_targets) is not int or continuation_targets <= 0:
