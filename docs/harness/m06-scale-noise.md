@@ -50,6 +50,11 @@ Existing strict source/lock/F02 identity checks remain mandatory. Validation
 checks, bytes and seconds are retained as engineering telemetry and excluded
 from scientific replay hashing, like existing process/wall costs. Rollback
 rebinds the original scale Parameter objects and their stored gradients.
+Successful transactions also bind the complete post-context method-owned
+Parameter inventory and identities before backward/commit. First-step scale
+construction remains inside the transaction; pre-existing owners must survive
+preparation, and replacement, removal or addition after binding rejects the
+step before publication and follows the same rollback and charged-work path.
 
 The first actual MPS attempt failed because CPU validation recomputed exp and
 demanded equality to MPS exp. That failure remains immutable. An exp-only

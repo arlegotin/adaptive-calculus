@@ -146,6 +146,49 @@ def test_failed_scale_commit_rolls_back_every_owner_parameter_identity(monkeypat
     with pytest.raises(ValueError):capture_snapshot(state)
 
 
+@pytest.mark.parametrize('mutation',['replace','remove','add'])
+def test_successful_scale_owner_mutation_is_rejected_and_rolled_back(monkeypatch,mutation):
+    from ralup.train import train_step,TrainingFailure
+    state,batch=fixture();train_step(state,batch)
+    method=state.method;owners=dict(method.log_scales)
+    values={n:p.detach().clone() for n,p in owners.items()}
+    gradients={n:p.grad.clone() for n,p in owners.items()}
+    weights={n:p.detach().clone() for n,p in state.model.named_parameters()}
+    original=type(method).finish_step
+    def mutate(self,state_,schedule):
+        result=original(self,state_,schedule)
+        name=next(iter(self.log_scales));p=self.log_scales[name]
+        if mutation=='replace':
+            replacement=torch.nn.Parameter(p.detach().clone())
+            replacement.grad=p.grad.clone()
+            self.log_scales[name]=replacement;self.scale_gradients[name]=replacement.grad
+        elif mutation=='remove':del self.log_scales[name]
+        else:self.log_scales['extra']=torch.nn.Parameter(p.detach().clone())
+        return result
+    monkeypatch.setattr(type(method),'finish_step',mutate)
+    with pytest.raises(TrainingFailure,match='method-owned Parameter inventory or identity'):
+        train_step(state,batch)
+    assert set(method.log_scales)==set(owners)
+    for n,p in owners.items():
+        assert method.log_scales[n] is p
+        assert torch.equal(p,values[n]) and torch.equal(p.grad,gradients[n])
+        assert method.scale_optimizer_states[n]['step'].item()==1
+    for n,p in state.model.named_parameters():assert torch.equal(p,weights[n])
+    assert state.schedule['step']==1 and state.failed and not state.checkpointable
+    event=state.ledger.events[-1]
+    assert event['status']=='failed' and event['stream']==0
+    assert event['backward']==event['loss_targets']==batch.target_count
+
+
+def test_first_step_creates_scale_owners_then_preserves_their_identity():
+    from ralup.train import train_step
+    state,batch=fixture();assert state.method.transaction_parameters()=={}
+    train_step(state,batch);owners=dict(state.method.transaction_parameters())
+    assert set(owners)==set(state.method.groups[0].parameter_names)
+    train_step(state,batch)
+    for n,p in owners.items():assert state.method.log_scales[n] is p
+
+
 def test_registry_public_cli_and_information_contract(tmp_path):
     from ralup.baselines.registry import default_registry
     from ralup.optim.base import ParameterGroup

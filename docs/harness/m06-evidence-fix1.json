@@ -1,0 +1,117 @@
+{
+  "active_publication_stdout": "omitted; exact completed publication/commit stream and finish identities appear in subsequent M06-report.md FIX1 appendix",
+  "attempts": [
+    {
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_learned_scale.py::test_successful_scale_owner_mutation_is_rejected_and_rolled_back"
+      ],
+      "complete_scoped_cost": {
+        "child_cpu_system_seconds": 0.199097,
+        "child_cpu_user_seconds": 0.816732,
+        "elapsed_seconds": 6.992201708000152,
+        "launcher_cpu_system_seconds": 0.242338,
+        "launcher_cpu_user_seconds": 0.29300699999999996
+      },
+      "exit_code": 1,
+      "name": "red",
+      "objects": {
+        "finish.json": {
+          "bytes": 20216,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/red/finish.json",
+          "sha256": "69ea969f435cd222239a31886b042853defef21ab68e08b8855dfd78d498deb8"
+        },
+        "runtime-observation.json": {
+          "bytes": 866,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/red/runtime-observation.json",
+          "sha256": "e20b35f39ef26456aaf225a35819968807f91c8cdbe19839cfcb3b1e69a8ad2e"
+        },
+        "startup.json": {
+          "bytes": 2767047,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/red/startup.json",
+          "sha256": "b5a78aa0eb151777c2f44f5a74d3f0bb803616e3fd03363a03188d710b581310"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/red/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "bytes": 5650,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/red/stdout.txt",
+          "sha256": "5908f27fb9f95d92b44236fd0ad35617b2c40cfbd2ebf291f296aadabacf2275"
+        }
+      },
+      "scope": "current-runtime CPU engineering regression; classifications may overlap; enclosing/editing/tool costs unknown"
+    },
+    {
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_learned_scale.py::test_successful_scale_owner_mutation_is_rejected_and_rolled_back",
+        "tests/unit/test_learned_scale.py::test_first_step_creates_scale_owners_then_preserves_their_identity",
+        "tests/unit/test_learned_scale.py::test_failed_scale_commit_rolls_back_every_owner_parameter_identity",
+        "tests/unit/test_learned_scale.py::test_actual_scale_parameters_optimizer_export_evaluation_and_safe_replay",
+        "tests/integration/test_logical_step.py::test_failed_transaction_restores_scientific_state_and_charges_work",
+        "tests/integration/test_logical_step.py::test_success_commits_staged_rollover_once_without_serializing_index",
+        "tests/integration/test_logical_step.py::test_failure_restores_cursor_schedule_ledger_and_adapter_nested_mutables",
+        "tests/integration/test_logical_step.py::test_adapter_cannot_publish_shared_state_early_or_nonfinite_moments"
+      ],
+      "complete_scoped_cost": {
+        "child_cpu_system_seconds": 0.318607,
+        "child_cpu_user_seconds": 1.8914309999999999,
+        "elapsed_seconds": 4.133257209000021,
+        "launcher_cpu_system_seconds": 0.15162399999999998,
+        "launcher_cpu_user_seconds": 0.293521
+      },
+      "exit_code": 0,
+      "name": "green",
+      "objects": {
+        "finish.json": {
+          "bytes": 20224,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/green/finish.json",
+          "sha256": "d8e45963c8fd7af5b75ce180a18666e631f4f3f78f766b729bc0bbabb256866a"
+        },
+        "runtime-observation.json": {
+          "bytes": 866,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/green/runtime-observation.json",
+          "sha256": "9947ec9553f56600a64b033f738144396d0debd373bafe0e10319895f7589f8e"
+        },
+        "startup.json": {
+          "bytes": 2781635,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/green/startup.json",
+          "sha256": "b94a1129b56449c23c7e3ff8bca9d0be04aa0b172b052ffd3f6323bfdcd10063"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/green/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "bytes": 99,
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m06-fix1-20261011/green/stdout.txt",
+          "sha256": "fa917ddc75cb1adbf84bae068bdedba3db2854276489d8e23bd1abf18c6ff4d7"
+        }
+      },
+      "scope": "current-runtime CPU engineering regression; classifications may overlap; enclosing/editing/tool costs unknown"
+    }
+  ],
+  "fix": "Bind complete prepared method-owned Parameter inventory/identities before backward and verify them before successful publication; preserve existing owners and first-step construction inside original rollback transaction",
+  "fix_base": "439eef1",
+  "historical_evidence": "docs/harness/m06-evidence.json and all earlier attempts unchanged; research cutoff 3 October unchanged",
+  "result": "3 expected RED failures; 18 focused GREEN passes in 3.25s; no warnings/skips/stderr",
+  "round": "FIX1",
+  "runtime": "11 October 2026 observations macOS 26.7.1 arm64; historical F02/4 October MPS receipts are not current native admission; no old-runtime restore or new scientific/native claim",
+  "source_identity": "all current product bytes and affected test authenticated against GREEN startup; fixed requirements.lock preserved",
+  "task": "M06",
+  "task_base": "b0b471e"
+}

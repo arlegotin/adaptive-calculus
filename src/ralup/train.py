@@ -285,6 +285,12 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
     nll_values = []
     try:
         contexts = _contexts(state,step)
+        # First-step owners may be constructed during context preparation inside
+        # this transaction. Bind the prepared inventory before backward/commit,
+        # while retaining every owner that already existed at transaction entry.
+        prepared_owned = dict(getattr(state.method,'transaction_parameters',lambda:{})())
+        if any(prepared_owned.get(name) is not p for name,p in snapshot['owned_parameters'].items()):
+            raise ValueError('Method changed method-owned Parameter inventory or identity during preparation')
         state.model.zero_grad(set_to_none=True)
         state.method.prepare_step(state,batch)
         for microbatch in pack_microbatches(batch,state.microbatch):
@@ -321,6 +327,9 @@ def train_step(state: TrainingState, batch: LogicalBatch) -> StepResult:
             raise ValueError('Nonfinite committed optimizer state')
         if {n:id(p) for n,p in state.model.named_parameters()} != {n:id(p) for n,p in snapshot['parameters'].items()}:
             raise ValueError('Method replaced a Parameter in place of preserving identity')
+        committed_owned = getattr(state.method,'transaction_parameters',lambda:{})()
+        if {n:id(p) for n,p in committed_owned.items()} != {n:id(p) for n,p in prepared_owned.items()}:
+            raise ValueError('Method changed method-owned Parameter inventory or identity during commit')
         if not all(bool(torch.isfinite(p).all()) for p in state.model.parameters()):
             raise ValueError('Nonfinite committed model')
         matrices = _transition(state,contexts,nll,batch.target_count)
