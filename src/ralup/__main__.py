@@ -46,10 +46,17 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument('--suite', choices=('warmstart','headroom'), help='separate bounded partition warmstarts')
     calibration = subcommands.add_parser('calibrate', help='bounded measured engineering capacity; no scientific duration selection')
     calibration.add_argument('--config', type=Path, required=True)
+    meta = subcommands.add_parser('meta-train',help='frozen full-state exploratory ES campaign')
+    meta.add_argument('--config',type=Path,required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == 'meta-train':
+        from .meta.es import run_campaign
+        try:
+            print(canonical_bytes(run_campaign(args.config)).decode());return 0
+        except (OSError,TypeError,ValueError,RuntimeError) as error:parser.error(str(error))
     if args.command == 'test-policy':
         from .policy.checks import check_features,check_controllers
         try:

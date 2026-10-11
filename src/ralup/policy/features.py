@@ -97,7 +97,7 @@ def collect_step_features(state, proposals, schedule):
     if 'features' in state._work:raise ValueError('Repeated feature scan in one logical step')
     device=next(state.model.parameters()).device
     if device.type=='mps':torch.mps.synchronize()
-    start=time.perf_counter();features={};common={};raw={};clipped=total=0
+    start=time.perf_counter();features={};common={};raw={};clipped=total=0;clipped_by_feature=[0]*14
     for name,context in state.model._contexts.items():
         p=proposals[name];history=state.histories.get(name,MatrixHistory());gradient=state.method.parameters[name].grad
         moment,ema,source=proposal_first_moment(state.method.rule_for_parameter(name),p,gradient,history)
@@ -106,13 +106,16 @@ def collect_step_features(state, proposals, schedule):
                            state.schedule['step']/cfg['full_horizon'])
         if ema is not None:common[name]=ema
         features[name]=f
-        normalized=f.values;clip={'clipped':0,'total':14}
+        normalized=f.values;clip={'clipped':0,'total':14,'clipped_by_feature':[0]*14}
         if state.histories.get('feature_normalizer') is not None:normalized,clip=state.histories['feature_normalizer'].normalize(f.values)
         clipped+=clip['clipped'];total+=clip['total']
-        raw[name]={'values':f.values.cpu().tolist(),'normalized':normalized.cpu().tolist(),'coverage':f.coverage,'moment_source':source}
+        clipped_by_feature=[a+b for a,b in zip(clipped_by_feature,clip['clipped_by_feature'])]
+        raw[name]={'values':f.values.cpu().tolist(),'normalized':normalized.cpu().tolist(),'coverage':f.coverage,'moment_source':source,
+                   'clipped_by_feature':clip['clipped_by_feature']}
     if device.type=='mps':torch.mps.synchronize()
     state._work['features']=raw;state._work['feature_tensors']={name:f.values for name,f in features.items()}
     state._work['common_gradient_ema']=common
     state._work['feature_work']={'scan_seconds':time.perf_counter()-start,'matrix_scans':len(features),'clipped':clipped,'scalars':total,
+                                 'clipped_by_feature':clipped_by_feature,
                                  'trace_cadence':cfg['trace_cadence'],'detailed_trace':state.schedule['step']%cfg['trace_cadence']==0}
     return features

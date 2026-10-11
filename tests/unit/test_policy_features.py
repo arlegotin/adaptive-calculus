@@ -76,6 +76,7 @@ def test_normalizer_floor_clip_and_immutable_fit_provenance():
     result,info=n.normalize(v)
     assert result.tolist()==[0.,1.,2.,3.,4.,5.,5.,5.,5.,5.,5.,5.,5.,5.]
     assert info['clipped']==8 and info['total']==14
+    assert info['clipped_by_feature']==[0]*6+[1]*8
     assert n.mean.tolist()==[0.]*14 and n.std.tolist()==[1.]*14
 
 

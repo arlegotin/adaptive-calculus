@@ -35,7 +35,9 @@ class FrozenNormalizer:
     def normalize(self,values):
         if values.shape!=(14,) or not bool(torch.isfinite(values).all()):raise ValueError('Normalize fourteen finite features')
         standardized=(values-self.mean.to(values.device))/self.std.to(values.device).clamp_min(1e-6)
-        return standardized.clamp(-5,5),{'clipped':int((standardized.abs()>5).sum()),'total':14}
+        mask=(standardized.abs()>5)
+        return standardized.clamp(-5,5),{'clipped':int(mask.sum()),'total':14,
+                                       'clipped_by_feature':[int(v) for v in mask.cpu().tolist()]}
 
 
 def fit_normalizer(trajectories: list[ArtifactRef]) -> FrozenNormalizer:
