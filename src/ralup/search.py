@@ -63,6 +63,27 @@ def source_identity():
     return {str(p.relative_to(root)): sha256_file(p) for p in sorted((root/'src/ralup').rglob('*.py'))}
 
 
+def _validate_recipe_metadata(recipe):
+    """Declared annotations must describe the path actually selected by name.
+
+    Normalization means the extra named matrix normalization order. Original-W
+    moment coordinates are independent of that order and of storage grouping.
+    """
+    from .quantization.scales import grouping_for
+    if 'quantizer' in recipe:
+        expected = 'none' if recipe['quantizer']=='fp32' else grouping_for(recipe['quantizer'])
+        aliases = {'none':{'none'}, 'last_axis_row':{'row','last_axis_row'},
+                   'whole_tensor':{'tensor','whole_tensor'}}
+        if 'grouping' in recipe and recipe['grouping'] not in aliases[expected]:
+            raise ValueError('Declared grouping differs from the named quantizer')
+    method = recipe['method']
+    normalization = method.removeprefix('muon_plus_').removesuffix('_fp32') if method.startswith('muon_plus_') else 'none'
+    if 'normalization' in recipe and recipe['normalization'] != normalization:
+        raise ValueError('Declared normalization differs from the named matrix method; moment coordinates are separate')
+    if recipe.get('moment_coordinates','original_W') != 'original_W':
+        raise ValueError('Moment coordinates must remain original_W')
+
+
 def register_trial(config):
     """Freeze config before running; existing byte-identical registrations are safe."""
     _development_only(config)
@@ -123,6 +144,7 @@ def select_backbone(development_results: list[dict], rationale: dict) -> Artifac
         if any(not r.get('cost') or not r.get('source_revision') or not r.get('data_sha256') for r in development_results):
             raise ValueError('Measured disposition needs source/data/cost evidence')
     else:
+        for row in development_results: _validate_recipe_metadata(row['recipe'])
         contenders = [r for r in development_results if r['recipe']['quantizer'] != 'fp32']
         if not contenders: raise ValueError('Quantized contender pool required; FP32 is a reference only')
         if any(not r.get('settled') or not r.get('lr_bracketed') or r.get('edge') or
@@ -153,7 +175,7 @@ def select_backbone(development_results: list[dict], rationale: dict) -> Artifac
         if hashlib.sha256(canonical_bytes(chosen['recipe'])).hexdigest() != best:
             raise ValueError('Requested winner is not minimum mean development BPB/cost')
         result['family_means_and_costs'] = {k:list(v) for k,v in means.items()}
-        required = {'method','quantizer','grouping','rotation','backward','schedule','learning_rate','normalization'}
+        required = {'method','quantizer','grouping','rotation','backward','schedule','learning_rate','normalization','moment_coordinates'}
         if not required <= chosen['recipe'].keys(): raise ValueError('Incomplete exact B0 recipe')
         result.update(b0={'recipe':chosen['recipe'],'budget':chosen['budget'], 'evidence':chosen},wp04='pass')
     return _write(rationale['output'],result)
@@ -172,6 +194,7 @@ def create_trial_state(config):
     recipe = config['recipe']
     if recipe['method'] == 'adamw' and recipe.get('method_config', {}) != {}:
         raise ValueError('AdamW method_config unsupported; declare betas/epsilon in resolved.optimizer_probe')
+    _validate_recipe_metadata(recipe)
     payload = json.loads(canonical_bytes(config['resolved']))
     gates = payload.pop('evidence_gates'); payload.pop('purpose')
     resolved = resolve_config(payload, {'gates':gates}, purpose='calibration')

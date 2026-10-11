@@ -15,7 +15,7 @@ def record(tmp_path, name, **updates):
         edge=False, missing_mechanism=False, eliminates_headroom=False,
         recipe={'method':'adamw','quantizer':'row_dynamic_max','grouping':'row',
                 'rotation':'identity','backward':'ste','schedule':'constant',
-                'learning_rate':.001,'normalization':'original_W'},
+                'learning_rate':.001,'normalization':'none','moment_coordinates':'original_W'},
         evidence_kind='synthetic_curve_fixture')
     row.update(updates)
     path=tmp_path/(name+'.json');path.write_bytes(canonical_bytes(row))
@@ -135,7 +135,9 @@ def test_fp32_reference_does_not_block_best_eligible_quantized_backbone(tmp_path
                 model='core',full_budget=True,settled=True,lr_bracketed=True,evidence_kind='real_data',
                 curve=[{'budget':32768,'development_bpb':score}],development_interval=[score,score],
                 cost={'complete_seconds':10.},source_revision='fixture',data_sha256='a'*64).path.read_bytes())
-            row['recipe']['quantizer']=quantizer;rows.append(row)
+            row['recipe']['quantizer']=quantizer
+            row['recipe']['grouping']='none' if quantizer=='fp32' else 'row'
+            rows.append(row)
     result=select_backbone(rows,{'output':str(tmp_path/'b0.json'),'winner':'quantized-71',
         'equal_initial_compute':True,'parity_evidence':['fixture'],'fresh_seeds':[71,72]})
     value=json.loads(result.path.read_bytes())
@@ -147,6 +149,41 @@ def test_adamw_recipe_cannot_silently_ignore_declared_overrides():
     from ralup.search import create_trial_state
     with pytest.raises(ValueError,match='AdamW.*(unsupported|resolved)'):
         create_trial_state({'recipe':{'method':'adamw','method_config':{'betas':[.95,.999]}}})
+
+
+@pytest.mark.parametrize('recipe,field',[
+    ({'method':'muon_project_fp32','quantizer':'row_dynamic_max','grouping':'none'},'grouping'),
+    ({'method':'muon_project_fp32','quantizer':'quest_fp4_tensor_reference','grouping':'row'},'grouping'),
+    ({'method':'adamw','quantizer':'fp32','grouping':'row'},'grouping'),
+    ({'method':'muon_plus_row_col_fp32','quantizer':'row_dynamic_max','normalization':'original_W'},'normalization'),
+    ({'method':'muon_project_fp32','quantizer':'row_dynamic_max','moment_coordinates':'rotated'},'coordinates'),
+])
+def test_public_construction_rejects_false_recipe_annotations_before_model_creation(recipe,field):
+    from ralup.search import create_trial_state
+    with pytest.raises(ValueError,match=field):
+        create_trial_state({'recipe':recipe})
+
+
+def test_recipe_metadata_distinguishes_grouping_normalization_and_moment_coordinates():
+    from ralup.search import _validate_recipe_metadata
+    for grouping in ('row','last_axis_row'):
+        _validate_recipe_metadata({'method':'muon_plus_row_col_fp32','quantizer':'quest_fp4_row_reference',
+            'grouping':grouping,'normalization':'row_col','moment_coordinates':'original_W'})
+    _validate_recipe_metadata({'method':'adamw','quantizer':'fp32','grouping':'none','normalization':'none'})
+    _validate_recipe_metadata({'method':'muon_project_fp32','quantizer':'quest_fp4_tensor_reference',
+        'grouping':'whole_tensor','normalization':'none','moment_coordinates':'original_W'})
+
+
+def test_final_selection_cannot_publish_a_false_grouping_label(tmp_path):
+    from ralup.search import select_backbone
+    rows=[]
+    for seed in (71,72):
+        row=json.loads(record(tmp_path,f'candidate-{seed}',seed=seed,model='core',full_budget=True,
+            settled=True,lr_bracketed=True,evidence_kind='real_data',cost={'complete_seconds':1.}).path.read_bytes())
+        row['recipe']['grouping']='none';rows.append(row)
+    with pytest.raises(ValueError,match='grouping'):
+        select_backbone(rows,{'output':str(tmp_path/'bad.json'),'winner':'candidate-71',
+            'equal_initial_compute':True,'parity_evidence':['fixture'],'fresh_seeds':[71,72]})
 
 
 @pytest.mark.parametrize('failure_at',['training','query','query_cap'])

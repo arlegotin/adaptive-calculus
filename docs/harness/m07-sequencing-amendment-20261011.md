@@ -1,0 +1,13 @@
+# M07 → M08–M11 sequencing amendment — 11 October 2026
+
+Root accepted this minimal sequencing amendment under the existing execution authorization after measured ordinary development. M07 initial selection is INCONCLUSIVE; B0 remains null and WP04 does not pass. Insufficient evidence is deferred, not proof of no headroom or global unaffordability.
+
+One typed `ralup.exploratory_backbone.v1` artifact freezes the exact measured, numerically supported ProjectMuon / row-max / identity / STE recipe and partition-separated typed-parent protocol before policy outcomes. It enables real M08–M11 engineering, development and rollouts while robust B0 remains pending. It is explicitly exploratory, not a selected B0. The exact artifact and its source/runtime/parent/evidence hashes are indexed by `m07-closing-evidence.json`.
+
+This replaces only the M07 accepted-B0 prerequisite for beginning that development and the corresponding M11 development stage-exit dependency. M11 may report provisional development completion against this typed protocol, with robust-backbone selection still pending. It cannot report the original confirmatory/production exit. All original S31 confirmation guards remain closed; no final budgets, strongest-recipe claim or protected-test authorization follows from this amendment.
+
+Robust B0 and strongest-recipe assessment remain required before the original confirmatory claim and E01 completion, or a separately supported final disposition. E01 retains SOAP, Madam, QuEST, rotations, normalization and other unsettled contenders; none was defeated by a short pilot, adapter restriction or source-code-grant uncertainty. Local clean mathematical routes remain distinct from author software/release rights.
+
+The exploratory choice uses measured operation, duration/LR evidence, cost and defined causal features. It is not chosen to enlarge policy headroom. A later backbone change requires a prospective compatibility/transfer decision or diagnosed retraining. Existing controllers cannot be relabelled. The cost if this choice is wrong is provisional artifacts that cannot support a strongest-recipe claim and may need retraining/reselection; all expenditure remains charged.
+
+Each policy owner must prospectively freeze its own finite engineering/development horizon and numerical composition scope. Progress means actual continuation step divided by that declared horizon, independent of inherited parent ledger updates and local rollout indices. Final scientific budgets remain unresolved. Genuine meta-train and target-train parents, saved cursor/RNG, declared resets, mixed-optimizer ancestry and source compatibility remain mandatory.
