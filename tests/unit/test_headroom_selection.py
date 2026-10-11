@@ -121,9 +121,9 @@ def test_selection_cannot_honor_arbitrary_winner_or_missing_competitor(tmp_path)
                 curve=[{'budget':32768,'development_bpb':score}],
                 cost={'complete_seconds':10.},source_revision='actual',data_sha256='a'*64).path.read_bytes()))
             rows[-1]['recipe']['learning_rate']=.001 if family=='better' else .002
+    rationale=bind_selection(tmp_path,rows);rationale['winner']='worse-71'
     with pytest.raises(ValueError,match='winner|minimum|mean|pool'):
-        select_backbone(rows,{'output':str(tmp_path/'b0'),'winner':'worse-71',
-            'equal_initial_compute':True,'parity_evidence':['fixture'],'fresh_seeds':[71,72]})
+        select_backbone(rows,rationale)
 
 
 def test_fp32_reference_does_not_block_best_eligible_quantized_backbone(tmp_path):
@@ -138,8 +138,8 @@ def test_fp32_reference_does_not_block_best_eligible_quantized_backbone(tmp_path
             row['recipe']['quantizer']=quantizer
             row['recipe']['grouping']='none' if quantizer=='fp32' else 'row'
             rows.append(row)
-    result=select_backbone(rows,{'output':str(tmp_path/'b0.json'),'winner':'quantized-71',
-        'equal_initial_compute':True,'parity_evidence':['fixture'],'fresh_seeds':[71,72]})
+    rationale=bind_selection(tmp_path,rows);rationale['winner']='quantized-71'
+    result=select_backbone(rows,rationale)
     value=json.loads(result.path.read_bytes())
     assert value['b0']['recipe']['quantizer']=='row_dynamic_max'
     assert len(value['selection_inputs'])==4  # The stronger reference stays visible.
@@ -223,13 +223,17 @@ def test_failed_public_trial_does_not_invent_or_reuse_exposures(tmp_path,monkeyp
     gate=tmp_path/'admission.json'
     gate.write_bytes(canonical_bytes({'status':'pass','source_identity':search.source_identity(),
         'scopes':[['core','adamw','fp32','identity','ste',1]],'maximum_steps':1}))
-    trial=search.register_trial({'family':'AdamW','seed':17,'budget':8192,'source_revision':'fixture',
+    config={'family':'AdamW','seed':17,'budget':8192,'source_revision':'fixture',
         'source_identity':search.source_identity(),'purpose':'development-bootstrap','finite_forecast_seconds':30.,
         'resolved':{'synthetic':False,'profile':'core','runtime':{'device':'cpu'},'data':{'manifest':{'path':'fixture-injected','sha256':'f'*64}}},
         'admission':{'path':str(gate),'sha256':hashlib.sha256(gate.read_bytes()).hexdigest()},
         'recipe':{'method':'adamw','quantizer':'fp32','rotation':'identity','backward':'ste','schedule':'constant','learning_rate':.001},
         'partition':'target_train','role':'continuation','packing':1,'output':str(tmp_path/'run'),
-        'query_seed':17,'query_bytes':8,'milestones':[1]})
+        'query_seed':17,'query_bytes':8,'milestones':[1]}
+    config['resolved'].update(model={'layers':1,'width':8,'heads':2},optimizer_probe={'betas':[.9,.99],'eps':1e-8})
+    config['resolved']['data'].update(context_length=256,logical_batch_bytes=8192,target_block_bytes=128,vocabulary_size=257,boundary_token=256)
+    config['admission']=write_evidence(tmp_path,'bound-admission',admission_fixture(tmp_path,config))
+    trial=search.register_trial(config)
     result=json.loads(search.run_search_trial(trial).path.read_bytes())
     assert result['status']=='failed'
     assert ('envelope' if failure_at=='query_cap' else 'injected failure') in result['failure']
@@ -326,3 +330,171 @@ def test_real_search_refuses_synthetic_payload_before_execution(tmp_path,monkeyp
         'resolved':{'synthetic':True}})
     with pytest.raises(ValueError,match='synthetic|real-data'):
         run_search_trial(trial)
+
+
+def write_evidence(tmp_path, name, value):
+    path=tmp_path/(name+'.json');path.write_bytes(canonical_bytes(value))
+    return {'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def operation_config():
+    return {'source_identity':{'fixture.py':'a'*64},'source_revision':'fixture','family':'SOAP',
+        'seed':71,'budget':32768,'packing':32,'partition':'target_train','role':'continuation',
+        'purpose':'development-bootstrap','finite_forecast_seconds':10.,
+        'resolved':{'profile':'core','synthetic':False,'model':{'layers':4,'width':256,'heads':4},
+            'runtime':{'device':'cpu','dtype':'float32'},'optimizer_probe':{'betas':[.9,.99],'eps':1e-8},
+            'data':{'context_length':256,'logical_batch_bytes':8192,'target_block_bytes':128,'vocabulary_size':257,'boundary_token':256,
+                'manifest':{'path':'fixture-corpus','sha256':'a'*64}}},
+        'recipe':{'method':'soap','method_config':{'precondition_frequency':10},'quantizer':'row_dynamic_max',
+            'grouping':'row','rotation':'identity','backward':'ste','schedule':'constant','learning_rate':.001,
+            'normalization':'none','moment_coordinates':'original_W','clip_norm':1.,'decay':0.}}
+
+
+def operation_contract_fixture(config):
+    return {'model':config['resolved']['model'],'runtime':config['resolved']['runtime'],
+        'optimizer_probe':config['resolved']['optimizer_probe'],'packing':config['packing'],
+        'data_geometry':{k:config['resolved']['data'][k] for k in ('context_length','logical_batch_bytes','target_block_bytes','vocabulary_size','boundary_token')},
+        'recipe':config['recipe']}
+
+
+def admission_fixture(tmp_path, config):
+    proof=write_evidence(tmp_path,'operation-proof-'+hashlib.sha256(canonical_bytes(operation_contract_fixture(config))).hexdigest(),{'status':'pass','scope':operation_contract_fixture(config),'source_identity':config['source_identity'],'maximum_steps':4})
+    return {'status':'pass','source_identity':config['source_identity'],
+        'scopes':[['core',config['recipe']['method'],config['recipe']['quantizer'],'identity','ste',config['packing']]],'maximum_steps':4,
+        'operation_scopes':[{'contract':operation_contract_fixture(config),'maximum_steps':4,'evidence':proof}]}
+
+
+@pytest.mark.parametrize('change',['model','refresh','clipping','schedule'])
+def test_admission_rejects_unqualified_actual_operation_before_construction(tmp_path,monkeypatch,change):
+    import copy
+    import ralup.search as search
+    monkeypatch.chdir(tmp_path);config=operation_config();config['source_identity']=search.source_identity()
+    gate=admission_fixture(tmp_path,copy.deepcopy(config))
+    if change=='model':config['resolved']['model']['width']=512
+    elif change=='refresh':config['recipe']['method_config']['precondition_frequency']=1
+    elif change=='clipping':config['recipe']['clip_norm']=2.
+    else:config['recipe']['schedule']='cosine'
+    config.update(output=str(tmp_path/'run'),admission=write_evidence(tmp_path,'admission',gate))
+    def forbidden(config):raise AssertionError('unadmitted operation reached construction')
+    monkeypatch.setattr(search,'create_trial_state',forbidden)
+    with pytest.raises(ValueError,match='admission|operation'):
+        search.run_search_trial(search.register_trial(config))
+    assert not (tmp_path/'run').exists()
+
+
+def bind_selection(tmp_path, rows):
+    """Explicit tiny file-backed fixtures for the final analysis contract."""
+    import copy
+    protocol=write_evidence(tmp_path,'parent-protocol',{'schema':'ralup.parent_protocol.v1','partition':'target_train','description':'fixture same-seed parent protocol'})
+    refs=[]
+    for row in rows:
+        config=operation_config();config.update(seed=row['seed'],budget=row['budget'],family=row['family'],recipe=copy.deepcopy(row['recipe']))
+        config['parent']=write_evidence(tmp_path,f'parent-{row["seed"]}',{'partition':'target_train','seed':row['seed']})
+        config['source_revision']=row.get('source_revision','fixture')
+        row.update(source_revision=config['source_revision'],source_identity=config['source_identity'],data_sha256='a'*64,
+            trial_config=write_evidence(tmp_path,row['trial_id']+'-config',config),parent_protocol=protocol,
+            query_inputs=write_evidence(tmp_path,f'query-{row["seed"]}',{'partition':'development','seed':1707,'offsets':[{'document_id':'doc','offsets':[1,2]}]}))
+        gate=admission_fixture(tmp_path,config)
+        row['source_applicability']=write_evidence(tmp_path,row['trial_id']+'-admission',gate)
+        # May intentionally encode failed/nonfinite rows for negative cases.
+        path=tmp_path/(row['trial_id']+'-result.json');path.write_text(json.dumps(row,sort_keys=True))
+        row['evidence']={'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()};refs.append(row['evidence'])
+    parity=write_evidence(tmp_path,'parity',{'status':'pass','methods':sorted({r['recipe']['method'] for r in rows}),
+        'source_identities':[rows[0]['source_identity']]})
+    compute=write_evidence(tmp_path,'equal-search',{'status':'completed','result_refs':refs,
+        'equal_initial_compute':True,'equal_development_information':True,
+        'family_initial_compute':{r['family']:100. for r in rows}})
+    analysis=write_evidence(tmp_path,'selection-analysis',{'schema':'ralup.backbone_selection_analysis.v1','status':'completed',
+        'result_refs':refs,'parity_evidence':[parity],'equal_search_evidence':compute})
+    return {'output':str(tmp_path/'selected.json'),'winner':rows[0]['trial_id'],'equal_initial_compute':True,
+        'parity_evidence':[parity],'fresh_seeds':sorted({r['seed'] for r in rows}),'selection_analysis':analysis}
+
+
+def final_rows(tmp_path, scores=(3.,3.)):
+    return [json.loads(record(tmp_path,f'A-{seed}',seed=seed,model='core',full_budget=True,settled=True,
+        lr_bracketed=True,evidence_kind='real_data',curve=[{'budget':32768,'development_bpb':score}],
+        cost={'complete_seconds':10.},source_revision='fixture',data_sha256='a'*64).path.read_bytes())
+        for seed,score in zip((71,72),scores)]
+
+
+@pytest.mark.parametrize('bad',['failed','missing_source','missing_data','nan_score','negative_cost','short_endpoint','tampered_row','query_mismatch','parent_mismatch','unbound_analysis'])
+def test_final_selection_rejects_unbound_or_incomparable_completed_evidence(tmp_path,bad):
+    from ralup.search import select_backbone
+    rows=final_rows(tmp_path)
+    if bad=='failed':rows[0]['status']='failed'
+    elif bad=='nan_score':rows[0]['curve'][-1]['development_bpb']=float('nan')
+    elif bad=='negative_cost':rows[0]['cost']['complete_seconds']=-1.
+    elif bad=='short_endpoint':rows[0]['curve'][-1]['budget']=8192
+    rationale=bind_selection(tmp_path,rows)
+    if bad=='missing_source':rows[0].pop('source_revision')
+    elif bad=='missing_data':rows[0].pop('data_sha256')
+    elif bad=='tampered_row':rows[0]['curve'][-1]['development_bpb']=1.
+    elif bad in ('query_mismatch','parent_mismatch'):
+        # Add a second competing recipe with a different matched-seed input/protocol.
+        other=json.loads(json.dumps(rows[0]));other.pop('evidence');other['trial_id']='B-71';other['recipe']['learning_rate']=.002
+        other2=json.loads(json.dumps(rows[1]));other2.pop('evidence');other2['trial_id']='B-72';other2['recipe']['learning_rate']=.002
+        rows.extend([other,other2]);rationale=bind_selection(tmp_path,rows)
+        key='query_inputs' if bad=='query_mismatch' else 'parent_protocol'
+        original=json.loads(Path(rows[2][key]['path']).read_bytes())
+        original['seed' if bad=='query_mismatch' else 'description']=999 if bad=='query_mismatch' else 'other protocol'
+        rows[2][key]=write_evidence(tmp_path,'mismatched-'+key,original)
+        saved={k:v for k,v in rows[2].items() if k!='evidence'}
+        rows[2]['evidence']=write_evidence(tmp_path,'mismatched-row',saved)
+        # Rebind analysis to actual modified rows, so the comparison must reject.
+        analysis=json.loads(Path(rationale['selection_analysis']['path']).read_bytes());analysis['result_refs']=[r['evidence'] for r in rows]
+        compute=json.loads(Path(analysis['equal_search_evidence']['path']).read_bytes());compute['result_refs']=analysis['result_refs']
+        analysis['equal_search_evidence']=write_evidence(tmp_path,'rebound-compute',compute)
+        rationale['selection_analysis']=write_evidence(tmp_path,'rebound-analysis',analysis)
+    elif bad=='unbound_analysis':rationale.pop('selection_analysis')
+    with pytest.raises(ValueError,match='evidence|completed|finite|endpoint|matched|analysis|source|cost|protocol'):
+        select_backbone(rows,rationale)
+
+
+def test_duplicate_seed_winner_inversion_and_duplicate_trial_ids_rejected(tmp_path):
+    import copy
+    from ralup.search import select_backbone
+    rows=final_rows(tmp_path,(1.,5.))
+    for row in copy.deepcopy(rows):
+        row['trial_id']=row['trial_id'].replace('A','B');row['family']='other';row['recipe']['learning_rate']=.002
+        row['curve'][-1]['development_bpb']=2.5;rows.append(row)
+    rationale=bind_selection(tmp_path,rows);rationale['winner']='B-71'
+    assert json.loads(select_backbone(rows,rationale).path.read_bytes())['b0']['evidence']['trial_id']=='B-71'
+    duplicate=copy.deepcopy(rows[0]);duplicate.pop('evidence');duplicate['trial_id']='A-71-duplicate'
+    rows.append(duplicate);rationale=bind_selection(tmp_path,rows);rationale['winner']='A-71';rationale['output']=str(tmp_path/'duplicate.json')
+    with pytest.raises(ValueError,match='Duplicate.*seed'):
+        select_backbone(rows,rationale)
+    rows.pop();rows[2]['trial_id']=rows[0]['trial_id'];rationale=bind_selection(tmp_path,rows)
+    with pytest.raises(ValueError,match='Duplicate.*trial'):
+        select_backbone(rows,rationale)
+
+
+def test_unknown_schedule_rejected_before_model_or_query():
+    from ralup.search import create_trial_state
+    with pytest.raises(ValueError,match='schedule'):
+        create_trial_state({'recipe':{'method':'adamw','quantizer':'fp32','schedule':'cosin'}})
+
+
+def test_operation_scope_cannot_borrow_unrelated_pass_proof(tmp_path):
+    from ralup.search import _validate_admission
+    config=operation_config();gate=admission_fixture(tmp_path,config)
+    gate['operation_scopes'][0]['evidence']=write_evidence(tmp_path,'unrelated-proof',{'status':'pass','scope':{'unrelated':True}})
+    with pytest.raises(ValueError,match='admission|operation'):
+        _validate_admission(config,gate)
+
+
+def test_scalar_lr_stress_needs_bound_delta_and_cannot_change_refresh(tmp_path):
+    import copy
+    from ralup.search import _validate_admission
+    config=operation_config();gate=admission_fixture(tmp_path,copy.deepcopy(config))
+    _validate_admission(config,gate)
+    config['recipe']['learning_rate']=.01
+    with pytest.raises(ValueError,match='admission|operation'):_validate_admission(config,gate)
+    delta={'schema':'ralup.scalar_lr_applicability.v1','status':'pass','source_identity':config['source_identity'],
+        'admitted_contract':gate['operation_scopes'][0]['contract'],'requested_contract':operation_contract_fixture(config),
+        'numerical_evidence':gate['operation_scopes'][0]['evidence'],'risk_rationale':'Explicit finite scalar-rate stress; identical model, refresh, primitives and horizon; instability retained.'}
+    config['operation_applicability']=write_evidence(tmp_path,'lr-delta',delta)
+    _validate_admission(config,gate)
+    config['recipe']['method_config']['precondition_frequency']=1
+    delta['requested_contract']=operation_contract_fixture(config)
+    config['operation_applicability']=write_evidence(tmp_path,'invalid-refresh-delta',delta)
+    with pytest.raises(ValueError,match='admission|operation'):_validate_admission(config,gate)

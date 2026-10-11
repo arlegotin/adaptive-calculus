@@ -70,6 +70,8 @@ def _validate_recipe_metadata(recipe):
     moment coordinates are independent of that order and of storage grouping.
     """
     from .quantization.scales import grouping_for
+    if 'schedule' in recipe and recipe['schedule'] not in ('constant','cosine','warmup_stable_decay'):
+        raise ValueError('Unsupported schedule name')
     if 'quantizer' in recipe:
         expected = 'none' if recipe['quantizer']=='fp32' else grouping_for(recipe['quantizer'])
         aliases = {'none':{'none'}, 'last_axis_row':{'row','last_axis_row'},
@@ -82,6 +84,115 @@ def _validate_recipe_metadata(recipe):
         raise ValueError('Declared normalization differs from the named matrix method; moment coordinates are separate')
     if recipe.get('moment_coordinates','original_W') != 'original_W':
         raise ValueError('Moment coordinates must remain original_W')
+
+
+def operation_contract(config):
+    """Exact execution settings; profile labels and absent defaults are not proof."""
+    try:
+        resolved=config['resolved']; data=resolved['data']
+        return {'model':resolved['model'],'runtime':resolved['runtime'],
+                'optimizer_probe':resolved['optimizer_probe'],'packing':config['packing'],
+                'data_geometry':{k:data[k] for k in ('context_length','logical_batch_bytes','target_block_bytes','vocabulary_size','boundary_token')},
+                'recipe':config['recipe']}
+    except KeyError as error:
+        raise ValueError('Incomplete actual operation admission contract') from error
+
+
+def _validate_admission(config, gate):
+    if gate.get('status')!='pass' or gate.get('source_identity')!=config['source_identity']:
+        raise ValueError('Source numerical admission mismatch')
+    actual=operation_contract(config)
+    if config['budget']%8192: raise ValueError('Operation budget must be divisible by8192')
+    for scope in gate.get('operation_scopes',[]):
+        if config['budget']//8192>scope['maximum_steps']: continue
+        proof=_read(ArtifactRef(**scope['evidence']))
+        if (proof.get('status')!='pass' or proof.get('scope')!=scope['contract']
+                or proof.get('source_identity')!=config['source_identity']
+                or scope['maximum_steps']>proof.get('maximum_steps',0)): continue
+        if actual==scope['contract']: return
+        # Deliberate scalar rate stress is a separately authenticated analysis,
+        # never a blanket waiver for changed model/refresh/schedule/coordinates.
+        if config.get('operation_applicability'):
+            delta=_read(ArtifactRef(**config['operation_applicability']))
+            if (delta.get('schema')!='ralup.scalar_lr_applicability.v1' or delta.get('status')!='pass'
+                    or delta.get('source_identity')!=config['source_identity']
+                    or delta.get('admitted_contract')!=scope['contract'] or delta.get('requested_contract')!=actual
+                    or delta.get('numerical_evidence')!=scope['evidence'] or not delta.get('risk_rationale')): continue
+            old=json.loads(canonical_bytes(scope['contract']));new=json.loads(canonical_bytes(actual))
+            for recipe in (old['recipe'],new['recipe']):
+                rate=recipe.pop('learning_rate',None)
+                if type(rate) not in (int,float) or not math.isfinite(rate) or rate<=0:
+                    raise ValueError('Finite positive scalar LR applicability required')
+                auxiliary=recipe.get('method_config',{}).pop('auxiliary_lr',None)
+                if auxiliary is not None and (type(auxiliary) not in (int,float) or not math.isfinite(auxiliary) or auxiliary<=0):
+                    raise ValueError('Finite positive auxiliary LR applicability required')
+            if old==new: return
+    raise ValueError('Numerical admission does not cover the actual operation contract/horizon')
+
+
+def _final_selection_evidence(rows, rationale):
+    """Validate the narrow, file-bound completed analysis before final ranking."""
+    if not rationale.get('selection_analysis'):
+        raise ValueError('Authenticated selection analysis required')
+    analysis=_read(ArtifactRef(**rationale['selection_analysis']))
+    references=[row.get('evidence') for row in rows]
+    if (analysis.get('schema')!='ralup.backbone_selection_analysis.v1' or analysis.get('status')!='completed'
+            or analysis.get('result_refs')!=references or any(not ref for ref in references)):
+        raise ValueError('Completed selection analysis must bind every result evidence')
+    matched={};protocols=set();methods=set();sources=[]
+    for row in rows:
+        if row.get('status')!='completed': raise ValueError('Final evidence must be completed')
+        terminal=row.get('curve',[])[-1] if row.get('curve') else {}
+        score=terminal.get('development_bpb');cost=row.get('cost',{}).get('complete_seconds')
+        if type(score) not in (int,float) or not math.isfinite(score) or score<0:
+            raise ValueError('Finite nonnegative terminal evidence score required')
+        if type(cost) not in (int,float) or not math.isfinite(cost) or cost<=0:
+            raise ValueError('Finite positive complete evidence cost required')
+        if terminal.get('budget')!=row.get('budget') or type(row.get('budget')) is not int or row['budget']<=0:
+            raise ValueError('Actual completed endpoint must equal declared budget')
+        bound=_read(ArtifactRef(**row['evidence']))
+        if bound!={k:v for k,v in row.items() if k!='evidence'}:
+            raise ValueError('Result evidence differs from submitted row')
+        required=('source_revision','source_identity','data_sha256','trial_config','query_inputs','parent_protocol','source_applicability')
+        if any(not row.get(k) for k in required): raise ValueError('Missing source/data/analysis evidence binding')
+        config=_read(ArtifactRef(**row['trial_config']))
+        if (any(row[k]!=config.get(k) for k in ('source_revision','source_identity','recipe','seed','budget','partition'))
+                or row['data_sha256']!=config['resolved']['data']['manifest']['sha256']
+                or row['model']!=config['resolved']['profile'] or row['partition']!='target_train'):
+            raise ValueError('Result source/config/data/partition evidence mismatch')
+        _validate_admission(config,_read(ArtifactRef(**row['source_applicability'])))
+        query=_read(ArtifactRef(**row['query_inputs']))
+        if query.get('partition')!='development' or not query.get('offsets'):
+            raise ValueError('Completed development input evidence required')
+        protocol=_read(ArtifactRef(**row['parent_protocol']))
+        if protocol.get('partition')!='target_train': raise ValueError('Target parent protocol required')
+        if not config.get('parent'): raise ValueError('Matched parent evidence required')
+        _read(ArtifactRef(**config['parent']))
+        protocols.add(row['parent_protocol']['sha256'])
+        comparison=(row['data_sha256'],row['query_inputs']['sha256'],config['parent']['sha256'],canonical_bytes(config['resolved']['model']))
+        if row['seed'] in matched and matched[row['seed']]!=comparison:
+            raise ValueError('Finalists need matched per-seed development inputs/model/parent evidence')
+        matched[row['seed']]=comparison;methods.add(row['recipe']['method'])
+        if row['source_identity'] not in sources:sources.append(row['source_identity'])
+    if len(protocols)!=1: raise ValueError('Finalists require one matched parent protocol')
+    parity=analysis.get('parity_evidence',[])
+    if not parity: raise ValueError('Authenticated parity evidence required')
+    covered=set()
+    for reference in parity:
+        proof=_read(ArtifactRef(**reference))
+        if proof.get('status')!='pass' or any(source not in proof.get('source_identities',[]) for source in sources):
+            raise ValueError('Parity/source applicability evidence mismatch')
+        covered.update(proof.get('methods',[]))
+    if not methods<=covered: raise ValueError('Parity evidence misses finalist methods')
+    if not analysis.get('equal_search_evidence'): raise ValueError('Bound equal-search analysis required')
+    compute=_read(ArtifactRef(**analysis['equal_search_evidence']))
+    values=compute.get('family_initial_compute',{})
+    if (compute.get('status')!='completed' or compute.get('result_refs')!=references
+            or compute.get('equal_initial_compute') is not True or compute.get('equal_development_information') is not True
+            or set(values)!={r['family'] for r in rows} or not values
+            or any(type(v) not in (int,float) or not math.isfinite(v) or v<=0 for v in values.values())
+            or len(set(values.values()))!=1):
+        raise ValueError('Matched measured initial-search compute/information evidence required')
 
 
 def register_trial(config):
@@ -145,6 +256,11 @@ def select_backbone(development_results: list[dict], rationale: dict) -> Artifac
             raise ValueError('Measured disposition needs source/data/cost evidence')
     else:
         for row in development_results: _validate_recipe_metadata(row['recipe'])
+        trial_ids=[r['trial_id'] for r in development_results]
+        if len(trial_ids)!=len(set(trial_ids)): raise ValueError('Duplicate trial identity')
+        pairs=[(canonical_bytes(r['recipe']),r['seed']) for r in development_results]
+        if len(pairs)!=len(set(pairs)): raise ValueError('Duplicate recipe/seed observation')
+        _final_selection_evidence(development_results,rationale)
         contenders = [r for r in development_results if r['recipe']['quantizer'] != 'fp32']
         if not contenders: raise ValueError('Quantized contender pool required; FP32 is a reference only')
         if any(not r.get('settled') or not r.get('lr_bracketed') or r.get('edge') or
@@ -240,9 +356,8 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
         raise ValueError('Explicit finite measured-development bootstrap purpose required')
     gate = _read(ArtifactRef(**config['admission']))
     if gate['status'] != 'pass' or gate['source_identity'] != source_identity(): raise ValueError('Current source numerical admission required')
-    scope = [config['resolved']['profile'], config['recipe']['method'], config['recipe']['quantizer'], config['recipe']['rotation'], config['recipe']['backward'], config['packing']]
-    if scope not in gate['scopes']: raise ValueError('Numerical admission does not cover this actual method/model/packing')
-    if config['budget']//8192 > gate['maximum_steps']: raise ValueError('Horizon exceeds prospective admission')
+    _validate_recipe_metadata(config['recipe'])
+    _validate_admission(config,gate)
     output=Path(config['output']); output.mkdir(parents=True,exist_ok=False)
     _write(output/'trial.json',{'trial':asdict(trial),'config':config})
     started=time.perf_counter(); state=None; curve=[]; checkpoint=None; status='failed'; failure=None
@@ -301,7 +416,11 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
             with (output/'steps.jsonl').open('x') as raw:
                 for step in range(total):
                     cap(); progress=step/max(1,total-1); recipe=config['recipe']
-                    multiplier=1. if recipe['schedule']=='constant' else .5*(1+math.cos(math.pi*progress)) if recipe['schedule']=='cosine' else min(1.,(step+1)/max(1,total//10))*min(1.,(total-step)/max(1,total//5))
+                    if recipe['schedule']=='constant': multiplier=1.
+                    elif recipe['schedule']=='cosine': multiplier=.5*(1+math.cos(math.pi*progress))
+                    elif recipe['schedule']=='warmup_stable_decay':
+                        multiplier=min(1.,(step+1)/max(1,total//10))*min(1.,(total-step)/max(1,total//5))
+                    else: raise ValueError('Unsupported schedule name')
                     state.schedule['point']=SchedulePoint(recipe['learning_rate']*multiplier,recipe.get('decay',0.),progress)
                     batch=select_logical_batch(state,8192)
                     inputs=_offsets(batch)
