@@ -101,3 +101,28 @@ and failure work. Shared-parent project costs are deduplicated separately throug
 E01/E07 accounting. Unknown historical/engineering work stays unknown. E02 test
 launcher times are engineering costs; synthetic fixture differences and assigned
 costs are not scientific measurements. No protected scores are accessed.
+
+## Recorder storage correction (E02 review I1)
+
+The original 16 MiB routine-attempt forecast omitted the encoded complete-store
+inventory: startup receipts were about 38–40 MB and complete attempts about
+40–41 MB. Original receipts remain immutable, with their actual underforecasts
+reported in the fix evidence. The observed attempts stayed inside the store/free
+reserves, but their original preflight calculation was incomplete.
+
+The recorder now captures exact source/config/helper bytes, runtime observation
+and Git diff in memory, serializes the complete startup including inventory, and
+converges its self-reported size fields before creating any attempt directory.
+Admission includes those exact fixed bytes plus a separately recorded child
+output allowance (default 16 MiB, prospectively configurable) and finish-receipt
+allowance (8 MiB). An explicit caller forecast below that complete sum rejects
+before directory creation; absent one, the computed complete sum is used.
+The 16 MiB source/Git transaction reserve is a distinct boundary, not the total
+Data artifact allowance.
+
+After the child, actual outputs are checked against their declared allowance;
+an overrun preserves the produced objects and marks the attempt unsuccessful.
+The finish receipt has a separate pre-write size/reserve check. Complete-store
+bytes and both free-space reserves are checked again after finish publication.
+These allowances are scoped forecasts for known bounded commands, not a general
+filesystem quota or a promise to preempt arbitrary child writes.
