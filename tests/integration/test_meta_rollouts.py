@@ -209,3 +209,26 @@ def test_controller_rebind_preserves_completed_action_telemetry(tmp_path,monkeyp
         return real_step(state,batch)
     monkeypatch.setattr(tasks,'train_step',observed_step)
     tasks.rollout(task,freeze_controller(Affine45()),1)
+
+
+def test_rollout_retains_completed_actions_with_disposable_final_state(tmp_path):
+    """S32 action/bound evidence survives deletion of successful final tensors."""
+    import json
+    from ralup.meta.tasks import rollout
+    from ralup.policy.controllers import ControllerState
+    task,_=task_fixture(tmp_path)
+    task.provenance['journal']=str(tmp_path/'actions.jsonl')
+    parameters=freeze_controller(Affine45()).parameters
+    parameters[-3:]=torch.tensor([.2,.05,.875])
+    result=rollout(task,ControllerState('affine45',parameters),2)
+    assert result.final_snapshot_ref is None
+    journal=[json.loads(line) for line in (tmp_path/'actions.jsonl').read_text().splitlines()]
+    rows=[row['work'] for row in journal if row['event']=='step']
+    assert len(rows)==2
+    for work,retained in zip(rows,result.work['steps']):
+        actions=work['policy_actions']
+        assert actions==retained['policy_actions']
+        assert set(actions)==set(work['matrices'])
+        for info in actions.values():
+            assert {'alpha','h','tau','assistance_bypassed','accepted_bound_excess_max'}<=set(info)
+            assert info['alpha']>0 and info['tau']<1

@@ -137,8 +137,9 @@ def rollout(task: MetaTask,controller,horizon: int) -> RolloutResult:
             actual=select_logical_batch(state,expected.target_count)
             if actual!=expected:raise ValueError('Frozen inner batch list differs from complete snapshot cursor replay')
             result=train_step(state,actual)
-            steps.append(result.work)
-            record({'event':'step','work':result.work,'inputs':[{'document_id':b.document_id,'offsets':list(b.scored_offsets())} for b in actual.block_slices]})
+            step_work={**result.work,'policy_actions':copy.deepcopy(state.method.last_actions)}
+            steps.append(step_work)
+            record({'event':'step','work':step_work,'inputs':[{'document_id':b.document_id,'offsets':list(b.scored_offsets())} for b in actual.block_slices]})
         final=query();snapshot_start=time.perf_counter()
         final_hash=exact_cpu_state_hash(state)
         ref=None
