@@ -1,9 +1,102 @@
-"""E03 uses only independently authored synthetic protected bytes."""
+"""Portable test setup; production source/runtime guards remain unchanged."""
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def pytest_addoption(parser):
+    parser.addoption('--local-evidence', action='store_true',
+                     help='Run historical tests requiring retained local evidence/data')
+    parser.addoption('--cpu-only', action='store_true',
+                     help='Disable native execution and native RNG inspection in this test run')
+
+
+def pytest_configure(config):
+    config._ralup_cpu_only = config.getoption('--cpu-only') or os.environ.get('RALUP_CPU_TESTS') == '1'
+    if config._ralup_cpu_only:
+        # Replay children must see the same CPU RNG scope as their parent.
+        config._ralup_cpu_environment = {key: os.environ.get(key) for key in
+                                        ('RALUP_CPU_TESTS', 'PYTHONPATH')}
+        os.environ['RALUP_CPU_TESTS'] = '1'
+        os.environ['PYTHONPATH'] = os.pathsep.join((str(ROOT/'tests/cpu_scope'),
+            str(ROOT/'src'), os.environ.get('PYTHONPATH', '')))
+
+
+def pytest_unconfigure(config):
+    if hasattr(config, '_ralup_cpu_environment'):
+        for key, value in config._ralup_cpu_environment.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def pytest_report_header(config):
+    scope = 'CPU only; native tests and native RNG inspection disabled' if config._ralup_cpu_only else 'native execution follows actual device availability'
+    return f'RALUP test scope: {scope}; historical local evidence requires --local-evidence'
+
+
+
+def pytest_terminal_summary(terminalreporter, config):
+    if config._ralup_cpu_only:
+        terminalreporter.write_line('RALUP CPU-only scope: native execution and native RNG inspection disabled; no native validation.')
+
+
+def pytest_collection_modifyitems(config, items):
+    for item in items:
+        if item.get_closest_marker('local_evidence') and not config.getoption('--local-evidence'):
+            item.add_marker(pytest.mark.skip(reason='Historical local evidence is opt-in: --local-evidence'))
+        device = getattr(item, 'callspec', None)
+        if device is not None and device.params.get('device') == 'mps':
+            item.add_marker(pytest.mark.native)
+        if item.get_closest_marker('native') and config._ralup_cpu_only:
+            item.add_marker(pytest.mark.skip(reason='Native execution disabled by explicit CPU-only test scope'))
+
+
+@pytest.fixture(scope='session', autouse=True)
+def engineering_environment():
+    """Prepare fresh real discovery only when absent; never borrow an archive."""
+    from ralup.config import canonical_bytes
+    from ralup.environment import discover_environment
+    path = ROOT/'artifacts/environment/environment.json'
+    owned = None
+    if not path.exists():
+        report = discover_environment()
+        report['test_preparation'] = {'scope': 'portable engineering tests',
+            'scientific_gate': None, 'native_validation': False,
+            'historical_reproduction': False}
+        content = canonical_bytes(report) + b'\n'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with path.open('xb') as stream:
+                stream.write(content)
+            owned = content
+        except FileExistsError:
+            pass  # A concurrently prepared report is never overwritten.
+    yield path
+    if owned is not None and path.exists() and path.read_bytes() == owned:
+        path.unlink()  # Remove only this session's unchanged discovery bytes.
+
+
+@pytest.fixture(scope='session', autouse=True)
+def cpu_scope(request, engineering_environment):
+    # Discovery observes the real machine before the explicit CPU RNG scope.
+    if not request.config._ralup_cpu_only:
+        yield
+        return
+    import functools
+    import torch
+    available = torch.backends.mps.is_available
+    torch.backends.mps.is_available = functools.lru_cache(maxsize=None)(lambda: False)
+    try:
+        yield
+    finally:
+        torch.backends.mps.is_available = available
 
 
 @pytest.fixture

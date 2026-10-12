@@ -177,6 +177,8 @@ def test_real_export_cli_fixture_produces_loadable_packed_file(tmp_path):
 
 
 @pytest.mark.parametrize('rotation,learned', [('full_hadamard',False), ('identity',True)])
+@pytest.mark.native
+@pytest.mark.skipif(not torch.backends.mps.is_available(), reason='Actual MPS unavailable')
 def test_actual_mps_export_composition(tmp_path, rotation, learned):
     from ralup.export import export_model, load_export
     assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') == '0'

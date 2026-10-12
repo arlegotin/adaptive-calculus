@@ -1,0 +1,44 @@
+name: Portable CPU engineering
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12', '3.13', '3.14']
+    env:
+      PYTORCH_ENABLE_MPS_FALLBACK: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Fresh editable CPU installation
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --only-binary=:all: 'torch>=2.6,<3' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[test]'
+          python -m pip check
+      - name: CLI and real local discovery
+        run: |
+          ralup --version
+          ralup config configs/smoke.json --purpose smoke
+          ralup doctor --output artifacts/environment/environment.json
+      - name: Portable CPU suite
+        run: python -m pytest --cpu-only -ra
+      - name: Numerical and harness checks
+        run: |
+          ralup check-numerics --suite numerics --device cpu --output artifacts/public-ci/numerics.json
+          ralup check-numerics --suite quantizer --device cpu --output artifacts/public-ci/quantizer.json
+          ralup test-harness --device cpu --output artifacts/public-ci/harness.json

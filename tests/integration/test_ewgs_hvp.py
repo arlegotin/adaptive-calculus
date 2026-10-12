@@ -123,6 +123,7 @@ def test_failure_preserves_launched_probe_work_and_rolls_back_rng():
     assert torch.equal(rng,state.method.probe_rng_state)
 
 
+@pytest.mark.native
 def test_actual_mps_fixed_and_conditional_neural_higher_order_gate():
     import os,json
     if not torch.backends.mps.is_available():pytest.skip('Actual MPS unavailable')

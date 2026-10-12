@@ -11,6 +11,7 @@ import torch
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.mark.native
 def test_e2m1_mps(tmp_path):
     if not torch.backends.mps.is_available():
         pytest.skip('MPS unavailable in this process; run unsandboxed fallback-disabled check-numerics')
@@ -38,6 +39,7 @@ def test_e2m1_mps(tmp_path):
 
 
 @pytest.mark.parametrize('scale_bits', [1, 3, 5, 0x00400000, 0x007fffff, 0x00800000])
+@pytest.mark.native
 def test_subnormal_e2m1_mps(scale_bits):
     import numpy as np
     from ralup.quantization import e2m1_oracle, quantize_e2m1
@@ -57,6 +59,7 @@ def test_subnormal_e2m1_mps(scale_bits):
     np.testing.assert_array_equal(values.view(torch.int32).cpu().numpy().view(np.uint32), expected_values.view(np.uint32))
 
 
+@pytest.mark.native
 def test_subnormal_underflow_ties_and_directions_mps():
     import numpy as np
     from ralup.quantization import directional_neighbor, quantize_e2m1

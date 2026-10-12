@@ -134,6 +134,7 @@ print(exact_cpu_state_hash(state))
     assert result.stderr=='' and result.stdout.strip()==exact_cpu_state_hash(state)
 
 
+@pytest.mark.native
 def test_actual_mps_feedback_accumulation_resume():
     if not torch.backends.mps.is_available():pytest.skip('Actual MPS unavailable')
     assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK')=='0'

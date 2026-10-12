@@ -11,7 +11,14 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest>=8"]
+numerics = [
+    "torch>=2.6,<3",
+    "numpy>=2.2,<3",
+    "scipy>=1.15,<2",
+    "pyarrow>=19,<27",
+    "safetensors>=0.5.2,<0.9",
+]
+test = ["ralup[numerics]", "pytest>=8,<10"]
 
 [project.scripts]
 ralup = "ralup.__main__:main"
@@ -22,3 +29,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "local_evidence: historical byte-authenticated evidence/data; opt in with --local-evidence",
+    "native: actual MPS execution; disabled by --cpu-only or RALUP_CPU_TESTS=1",
+]

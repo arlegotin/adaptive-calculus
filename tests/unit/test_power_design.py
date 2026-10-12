@@ -171,6 +171,7 @@ def actual_selection():
     return ArtifactRef(Path(finish_ref['path']).parent/'selection.json', row['sha256'])
 
 
+@pytest.mark.local_evidence
 def test_actual_source_authenticated_refusal_is_not_a_scientific_pilot(tmp_path):
     p = api(); selection = actual_selection()
     assert hasattr(p, 'plan_confirmation'), 'E02 planning API missing'
@@ -187,6 +188,7 @@ def test_actual_source_authenticated_refusal_is_not_a_scientific_pilot(tmp_path)
     assert result['global_unaffordability'] is False
 
 
+@pytest.mark.local_evidence
 def test_forged_selected_flag_cannot_upgrade_actual_null_arms(tmp_path):
     p = api(); actual = actual_selection()
     assert hasattr(p, 'plan_confirmation'), 'E02 planning API missing'
@@ -197,6 +199,7 @@ def test_forged_selected_flag_cannot_upgrade_actual_null_arms(tmp_path):
             'selection': {'path': str(fake.path), 'sha256': fake.sha256}})
 
 
+@pytest.mark.local_evidence
 def test_cli_emits_explicit_disposition_and_refuses_overwrite(tmp_path, capsys):
     from ralup.__main__ import main
     p = api(); selection = actual_selection()

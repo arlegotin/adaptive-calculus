@@ -125,6 +125,7 @@ def test_freeze_cli_refuses_forged_usable_scientific_design(tmp_path,capsys):
     assert not (tmp_path/'manifest.json').exists()
 
 
+@pytest.mark.local_evidence
 def test_freeze_cli_names_actual_missing_authentic_evidence(tmp_path,capsys):
     from ralup.__main__ import main
     path='/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json'

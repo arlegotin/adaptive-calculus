@@ -127,6 +127,7 @@ def test_cli_muon_verification_and_explicit_smoke_method(tmp_path,capsys):
     assert json.loads((tmp_path/'run/run.json').read_bytes())['method'] == 'muon_plus_col_row_fp32'
 
 
+@pytest.mark.native
 def test_cli_muon_actual_mps_cross_device_values(tmp_path):
     if not torch.backends.mps.is_available():pytest.skip('Actual MPS unavailable')
     assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') == '0'

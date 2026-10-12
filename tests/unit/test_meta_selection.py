@@ -111,6 +111,7 @@ def test_selection_rejects_broken_authority(tmp_path,monkeypatch,damage):
     with pytest.raises(ValueError):select_controller(meta,official)
 
 
+@pytest.mark.local_evidence
 def test_actual_calibration_pilot_cannot_be_selected():
     store=Path('/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011')
     if not (store/'native-final-calibration-v1/pilot-generation.json').exists():pytest.skip('Local retained genuine pilot absent')
@@ -163,6 +164,7 @@ def test_original_normalizer_corpus_mismatch_remains_denied(tmp_path,monkeypatch
     with pytest.raises(ValueError,match='Normalizer reference/data'):select_controller(meta,official)
 
 
+@pytest.mark.local_evidence
 def test_genuine_preserved_normalizer_passes_only_corpus_boundary(monkeypatch):
     # No real campaign exists: stop deliberately before absent opportunity
     # authority, without fabricating family/endpoint evidence or selecting.

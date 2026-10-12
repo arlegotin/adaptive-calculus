@@ -131,6 +131,7 @@ def test_cli_registration_config_and_complete_state(tmp_path,capsys,name):
     result=json.loads(capsys.readouterr().out);resumed=restore_snapshot(load_snapshot(ArtifactRef(**result['checkpoint'])),'cpu')
     assert resumed.method.config==state.method.config and resumed.method.observations==1
 
+@pytest.mark.native
 def test_actual_mps_routing_rounding_cached_sample_resume_and_accumulation():
     if not torch.backends.mps.is_available():pytest.skip('Actual MPS unavailable')
     assert os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK')=='0'

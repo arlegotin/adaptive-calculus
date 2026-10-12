@@ -3,6 +3,7 @@ import json
 import pytest
 
 
+@pytest.mark.native
 def test_mps_operations():
     from ralup.environment import probe_operations
     result = probe_operations("mps")

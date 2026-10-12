@@ -82,6 +82,7 @@ def test_protected_scores_rejected_before_any_disposition_write(tmp_path):
     assert not (tmp_path/'bad.json').exists()
 
 
+@pytest.mark.local_evidence
 def test_cli_requires_explicit_action_and_returns_gated_disposition(tmp_path,capsys):
     from ralup.__main__ import main
     root=Path(__file__).resolve().parents[2]

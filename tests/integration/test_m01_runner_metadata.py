@@ -1,12 +1,14 @@
 """GPU-free preflight catches actual RunLedger boundaries before a proxy launch."""
 import importlib.util
 import json
+import pytest
 from pathlib import Path
 
 from ralup.config import ResolvedConfig,canonical_bytes
 from ralup.records import _validate_metadata
 
 
+@pytest.mark.local_evidence
 def test_runner_metadata_satisfies_real_runledger_contract():
     spec=importlib.util.spec_from_file_location('m01_proxy',Path('docs/harness/m01-proxy.py'))
     runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(runner)

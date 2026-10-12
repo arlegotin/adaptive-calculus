@@ -67,6 +67,7 @@ def test_cli_adamw_fixture_records_exact_cpu_and_no_scientific_gate(tmp_path):
     assert report['upstream']['scalar_source_sha256']
 
 
+@pytest.mark.native
 def test_actual_mps_adamw_fixture(tmp_path):
     import os
     import torch
