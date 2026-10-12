@@ -56,10 +56,36 @@ def main(argv: list[str] | None = None) -> int:
     planning.add_argument('--freeze', action='store_true', help='freeze authenticated scientific evidence; procedural local guard, not OS security')
     planning.add_argument('--design', type=Path, help='exact E02 design artifact for --freeze')
     planning.add_argument('--output', type=Path, default=Path('artifacts/confirm_manifest.json'))
+    for command in ('confirm','analyze-confirmation'):
+        confirmation=subcommands.add_parser(command,help='locked paired confirmation; actual unresolved science refuses, synthetic fixtures explicit')
+        confirmation.add_argument('--manifest',type=Path,required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command in ('confirm','analyze-confirmation'):
+        from .runner import load_confirmation_manifest,run_confirmation,score_confirmation,terminal_inventory
+        from .analysis.confirm import PairedResults,analyze_confirmation
+        from .records import ArtifactRef,ProtectedAccessError,write_immutable_json
+        from .evaluate import existing_protected_result
+        try:
+            manifest=load_confirmation_manifest(args.manifest)
+            if args.command=='confirm':
+                ref=score_confirmation(manifest,terminal_inventory(run_confirmation(manifest)))
+                print(canonical_bytes({'path':str(ref.path),'sha256':ref.sha256,'scope':'synthetic-engineering',
+                    'scientific_confirmation_established':False}).decode())
+            else:
+                ref=existing_protected_result(ArtifactRef(args.manifest,manifest.sha256))
+                if ref is None:raise ProtectedAccessError('No completed verified result; run locked confirmation first')
+                report=analyze_confirmation(PairedResults.from_artifact(ref),manifest)
+                path=ref.path.with_name('confirmation-analysis.json')
+                if path.exists():
+                    if path.read_bytes()!=canonical_bytes(report):raise ValueError('Immutable analysis conflict')
+                else:write_immutable_json(path,report)
+                print(canonical_bytes(report).decode())
+            return 0
+        except (OSError,KeyError,TypeError,ValueError,RuntimeError) as error:
+            parser.error(str(error))
     if args.command == 'plan-confirmation':
         from .analysis.power import plan_confirmation_from_files
         try:

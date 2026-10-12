@@ -120,3 +120,16 @@ The protected gateway is a procedural local-owner guard, not OS security.
 Training/search cannot open protected targets through it; H01/H02 non-scoring
 data audits remain separate. Protected inspection makes subsequent changed
 claims exploratory and requires fresh independent confirmation.
+
+`python -m ralup confirm --manifest artifacts/confirm_manifest.json` and
+`python -m ralup analyze-confirmation --manifest artifacts/confirm_manifest.json`
+authenticate the original E02 prerequisite disposition and exit 2 while the
+scientific manifest is absent. **WP08 is not attempted; its prerequisites remain
+blocked.** No protected WikiText score or positive scientific claim is produced.
+
+[E04 execution and inference](docs/harness/e04-contract.md) implement locked
+paired execution, full-state interruption/resume, one-way final scoring, retained
+divergence/invalidation costs, and both two-sided 97.5% paired intervals.
+Numerically executed synthetic byte fixtures exercise success, null, inconclusive
+and divergence outcomes. Their endpoint analyses explicitly remain engineering
+evidence and do not select a scientific n, budget, controller or comparator.
