@@ -127,8 +127,15 @@
     },
     "root-ruling-index-v8.md": {
       "bytes": 75143,
-      "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/root-ruling-index-v8.md",
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/operational-plan-assets/assets/root-ruling-index-v8.md",
       "sha256": "d0982e3863c71d5fe0a58f473e574146b9cf64bd0c937bccb8e6a39689e8e313"
+    },
+    "root-ruling-index-v8.md_original_location": {
+      "kind": "historical_location_only",
+      "meaning": "Original producer location and identity; not a current operational ArtifactRef.",
+      "original_bytes": 75143,
+      "original_path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/root-ruling-index-v8.md",
+      "original_sha256": "d0982e3863c71d5fe0a58f473e574146b9cf64bd0c937bccb8e6a39689e8e313"
     },
     "root-whole-branch-review-requirements.md": {
       "bytes": 8739,
@@ -1263,8 +1270,15 @@
     },
     "root-ruling-index-v8.md": {
       "bytes": 75143,
-      "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/root-ruling-index-v8.md",
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/operational-plan-assets/assets/root-ruling-index-v8.md",
       "sha256": "d0982e3863c71d5fe0a58f473e574146b9cf64bd0c937bccb8e6a39689e8e313"
+    },
+    "root-ruling-index-v8.md_original_location": {
+      "kind": "historical_location_only",
+      "meaning": "Original producer location and identity; not a current operational ArtifactRef.",
+      "original_bytes": 75143,
+      "original_path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/root-ruling-index-v8.md",
+      "original_sha256": "d0982e3863c71d5fe0a58f473e574146b9cf64bd0c937bccb8e6a39689e8e313"
     },
     "root-whole-branch-review-requirements.md": {
       "bytes": 8739,

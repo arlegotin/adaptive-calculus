@@ -86,8 +86,16 @@
     "sha256": "778fd73f95be258fae1b7392512f9a1b7319a2a54dbd208a69ab522094070b44"
   },
   "review": {
-    "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/M08-review.md",
+    "bytes": 16035,
+    "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/operational-plan-assets/assets/M08-review.md",
     "sha256": "e33113c035495c858abc37cff783307e234908a3335d34ad5f060f25fe0e46c3"
+  },
+  "review_original_location": {
+    "kind": "historical_location_only",
+    "meaning": "Original producer location and identity; not a current operational ArtifactRef.",
+    "original_bytes": 16035,
+    "original_path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/M08-review.md",
+    "original_sha256": "e33113c035495c858abc37cff783307e234908a3335d34ad5f060f25fe0e46c3"
   },
   "schema": "ralup.m08_fix1_evidence.v1",
   "scope": "CPU fixture-only common EMA capture/strict restore guard, initialization/raw ownership, and affected H07/history tests; no genuine-data/native/broad-suite execution.",
