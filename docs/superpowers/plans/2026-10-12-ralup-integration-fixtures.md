@@ -8,7 +8,7 @@
 
 **Tech Stack:** Existing pinned Python/PyTorch CPU test environment; standard-library evidence administration.
 
-**Spec:** `docs/superpowers/specs/2026-10-03-ralup-design.md`; investigation `.superpowers/sdd/2026-10-03-ralup/root-final-integration-diagnosis.md`.
+**Spec:** `docs/superpowers/specs/2026-10-03-ralup-design.md`; retained diagnosis/review/verification: [final integration evidence](../../harness/final-integration-evidence.json).
 
 ## Global constraints
 
@@ -39,4 +39,4 @@
 - [x] Add a small fixture-contract assertion for coherent chronology and authenticated subject/boundary coverage if the existing positive/negative tests do not pin it directly. Do not mirror the production implementation.
 - [x] Execute the positive, derived-parent and all eight parametrized damage cases in one separately admitted CPU capture. Expected: all intended assertions pass, including all refusals. Retain raw stdout, status, source hashes, resource checks and actual runtime.
 - [x] Self-review and commit the fixture correction and this plan only, with a meaningful `test:` commit. Report exact command/output/evidence paths and limitations.
-- [ ] Root dispatches one independent task-scoped spec/quality reviewer with the complete diff and retained verification. Then root owns separately admitted final-current integration.
+- [x] Root dispatched one independent task-scoped spec/quality reviewer: PASS/PASS, no actionable finding. The separately admitted final CPU integration at `f2394fd` passed 1,287 cases, with 76 skipped and 2 deselected; exact retained scope and limits are linked above.

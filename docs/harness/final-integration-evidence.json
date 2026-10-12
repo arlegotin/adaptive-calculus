@@ -1,0 +1,128 @@
+{
+  "accepted_scope": "CPU software integration only",
+  "assets": {
+    "current_cpu_closure.json": {
+      "bytes": 3546,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/preservation-v1/closure.json",
+      "sha256": "2d19843291111983690272ead8f4c9cfd2350ded87e89b256a95dba4fcef21da"
+    },
+    "current_cpu_manifest.json": {
+      "bytes": 14828,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/preservation-v1/manifest.json",
+      "sha256": "fb5df19273e8554f0f22dac5bbc78cfc3040cec08ddfd6b4fff3e1368e48c898"
+    },
+    "current_cpu_post-copy-audit.json": {
+      "bytes": 24240,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/preservation-v1/post-copy-audit.json",
+      "sha256": "6eb5d931b6d4dea10f488f01ff75fae517e946433359145af69957e4bcbf9afb"
+    },
+    "current_cpu_raw_finish.json": {
+      "bytes": 3376,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/finish.json",
+      "sha256": "c98d75dc64431cc14612fb51cb495bbb198fc12df9c38a9689d0ec198e908170"
+    },
+    "current_cpu_raw_startup.json": {
+      "bytes": 73179,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/startup.json",
+      "sha256": "e9eef8077812f385428772f2b30a33b14fe58b929dd3ab3b0845b19cf9cbc097"
+    },
+    "current_cpu_raw_stderr.txt": {
+      "bytes": 0,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "current_cpu_raw_stdout.txt": {
+      "bytes": 4059,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/stdout.txt",
+      "sha256": "a6642a811219c4db040a27e35d98a930d118eb0b3e86d9a11fd0cb84cbbd10f1"
+    },
+    "current_cpu_root-final-cpu-retry-report.md": {
+      "bytes": 8599,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/preservation-v1/root-final-cpu-retry-report.md",
+      "sha256": "f03618ab58671947ff9c3965922b3f89a1b8aefce417cfa07e10e73fd9acd2ca"
+    },
+    "current_cpu_source-authentication.json": {
+      "bytes": 109666,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-cpu-v2/records/preservation-v1/source-authentication.json",
+      "sha256": "14c3a4200bd0911081e119fc6de14bc8860ab9ce2e1542a8b31db65679895134"
+    },
+    "root-final-cpu-retry-preservation-terminal.json": {
+      "bytes": 3483,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-final-cpu-retry-preservation-terminal.json",
+      "sha256": "a9db7003f7f515f8e7d1e97a98ce11ce8dcb1715bcce37e0486de9bbdfa9bf35"
+    },
+    "root-final-fix-report.md": {
+      "bytes": 24975,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-final-fix-report.md",
+      "sha256": "b8b3fd73f74fa3909f9b415b34129acd09277bea2686bb2ee398bc00bccadda0"
+    },
+    "root-final-fix-review-disposition.md": {
+      "bytes": 16488,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-final-fix-review-disposition.md",
+      "sha256": "32b87d9758ca8cf97220c14ae7856b9c35764a1d6be87dc31246ad2d3ed7f19a"
+    },
+    "root-final-fix-review.md": {
+      "bytes": 24581,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-final-fix-review.md",
+      "sha256": "7e01c61106af9dde4fe0a8431a8771c1624ebc16ea03ad099e1f5204b1edd3bb"
+    },
+    "root-final-integration-diagnosis.md": {
+      "bytes": 13697,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-final-integration-diagnosis.md",
+      "sha256": "b2cbe7743fbc91ce1a94b0c8c2b226ff5c0c7028f162022a4b811604a3d7f934"
+    },
+    "root-integration-fixtures-report.md": {
+      "bytes": 12130,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-integration-fixtures-report.md",
+      "sha256": "25732eabde0670eccdd85490e8e4f1c3efbacb4d2dccfeb0956526db1db0c768"
+    },
+    "root-integration-fixtures-review-disposition.md": {
+      "bytes": 2199,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-integration-fixtures-review-disposition.md",
+      "sha256": "39e2c932471b63b12cf59f9d74e3f0e5d577b9026f36bf89564b7f6da2fd27fd"
+    },
+    "root-integration-fixtures-review.md": {
+      "bytes": 14029,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-integration-fixtures-review.md",
+      "sha256": "8ad50e0b1b52171798491089433d5ad5ca2f1232bc5356e2061d11575f700e0f"
+    },
+    "root-whole-branch-disposition.md": {
+      "bytes": 17594,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-whole-branch-disposition.md",
+      "sha256": "7cf3924a831186a8349c1443e343940d1bc2e2b3fb7916a4e5abf5e6b65d9016"
+    },
+    "root-whole-branch-review.md": {
+      "bytes": 42043,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/root-final-fix-v1/admin/final-handoff-assets-v1/root-whole-branch-review.md",
+      "sha256": "9e44976f4f18182949291e3e25f49a57cee7c2b5c5fa7cbc4a70b6a0d404fd94"
+    }
+  },
+  "complete_project_cost_seconds": null,
+  "late_full_plan_preservation": "pending separately bounded capture",
+  "native_qualification": false,
+  "producing_commit": "f2394fdc8982c40867a93e3a275c36214ad3cf74",
+  "product_and_test_files_verified_unchanged": 151,
+  "pytest": {
+    "deselected": 2,
+    "passed": 1287,
+    "reported_seconds": 144.37,
+    "skipped": 76
+  },
+  "resource_scope": {
+    "all_bounds_pass": false,
+    "raw_Data_floor_pass": false,
+    "zero_Data_write_route_pass": true
+  },
+  "schema": "ralup.final_integration_handoff.v1",
+  "scientific_disposition": {
+    "B0": null,
+    "B_star": null,
+    "C": null,
+    "WP04": "inconclusive",
+    "WP06": "NEEDS_REVISION",
+    "confirmation_n": null,
+    "learned_LR": null,
+    "manifest": null,
+    "protected_scored": false
+  }
+}
