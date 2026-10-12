@@ -1,0 +1,852 @@
+{
+  "assets": {
+    "E06_dual_root_authentication": {
+      "bytes": 204938,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/e06-proof-v3/e06-proof.json",
+      "sha256": "4942af2b7978979b867d444bea878d91e6bcedead188c2b34c9342e1d264764d"
+    },
+    "E07-review-context.md": {
+      "bytes": 4090,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/E07-review-context.md",
+      "sha256": "cd09a3ed539e833eea7e3053e9e55ec860df2d34756f37be1a5d4e529a227cb1"
+    },
+    "M01_required_member_proof": {
+      "bytes": 4237748,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/m01-extraction-proof.json",
+      "sha256": "f485815b86df70fc626e39461cc24931447e8ef30dd5d3bb07e688bd9de6b2f1"
+    },
+    "analysis_lock": {
+      "bytes": 1144,
+      "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/e07-analysis.lock",
+      "sha256": "c8621a329115ff8f3127e329f16854d24afda8f66c33253ce20129cf68ad20c5"
+    },
+    "baseline-sources.md": {
+      "bytes": 25099,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/source-audit/baseline-sources.md",
+      "sha256": "49504c5b6664cda8c1d1af31f9efcc219fe26c1962db358bd6cd316347e20b96"
+    },
+    "cost-quality.pdf": {
+      "bytes": 20929,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/cost-quality.pdf",
+      "sha256": "219c0d774a3290c2c9a116e03c75bcfb145f012edb0a22fa0c888869b839fb41"
+    },
+    "cost-quality.png": {
+      "bytes": 72421,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/cost-quality.png",
+      "sha256": "18a25f426fd6f0b551cdc577eb7cfde84898caa1ced418693c11315862be5a54"
+    },
+    "cost-quality.svg": {
+      "bytes": 81340,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/cost-quality.svg",
+      "sha256": "3ec444507af9a863dd36da0a1c0c23d7c32c8354b4088bce0e77b30ca1f7b785"
+    },
+    "dataset-card.md": {
+      "bytes": 10464,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/data-research/dataset-card.md",
+      "sha256": "d5aabf145d341366745ac703b5844c442c143943b6c77929481395c822b1c28c"
+    },
+    "environment_audit": {
+      "bytes": 3176,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/environment-audit.json",
+      "sha256": "aaeb97cb98b8add5d90598f292649a3c261523f7274e934f62030e9f77a8ff74"
+    },
+    "initial_history_mapping": {
+      "bytes": 154700,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history-mapping.json",
+      "sha256": "e0466db57f965944079e8f90a8ea9a394d872836180c9d907ab662b3a9c9ac31"
+    },
+    "native_storage_supplement": {
+      "bytes": 4386,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/native-storage-supplement.json",
+      "sha256": "2be5939b2ba695b3189e1c28c3e1e16936a0292eb2713d11d153561078ffe172"
+    },
+    "numerics-report.md": {
+      "bytes": 5318,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/numerics-reference/numerics-report.md",
+      "sha256": "a184047166945b8deab01df35c736d6890c4bae4f7565f003b0a5d5edd116725"
+    },
+    "paired_replay": {
+      "bytes": 61460,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v2/paired-replay.json",
+      "sha256": "ea2775d3b0deade854c3c45dae8de07c005e12b1c90c7230fea367c6ec22888f"
+    },
+    "plot-provenance.json": {
+      "bytes": 509,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/plot-provenance.json",
+      "sha256": "ebbb42839f6452666751d15a313fc3f0cb3c47a2b47cdac5dab1494df2512f5a"
+    },
+    "precision.pdf": {
+      "bytes": 17512,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/precision.pdf",
+      "sha256": "ccd875b0a7e3fd26a459ef2f6a17960077333700e6dae8b0e7c94b218d8a7098"
+    },
+    "precision.png": {
+      "bytes": 64215,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/precision.png",
+      "sha256": "dbd5029265ca7be6415d1096195f0186afa488455472e47ff621e48c0910f508"
+    },
+    "precision.svg": {
+      "bytes": 52601,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/precision.svg",
+      "sha256": "e3d9ed07072e4db7677fb02cc6a8a320151398f88090c47f5a5f2ff1abb3ec8a"
+    },
+    "raw_evidence": {
+      "bytes": 53814,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/evidence.json",
+      "sha256": "3115ed5217b4fabda1189312bf34457dc6abf1533bd11f9bb7d924b4f0003346"
+    },
+    "report_CLI_stdout": {
+      "bytes": 213,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/cli-0-stdout.txt",
+      "sha256": "4fa7179fb02c1bbba71daa18fe689bc0f1a111516e33a4de4c3658bf7a3371f5"
+    },
+    "report_markdown": {
+      "bytes": 12756,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/report/report.md",
+      "sha256": "f01e676f3abb09e49c75d63b66ae1779acb1025321b38f8f2fe5c06999135901"
+    },
+    "reproduce_CLI_stdout": {
+      "bytes": 533,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/cli-1-stdout.txt",
+      "sha256": "b68bfe0b79b1688d9f387b1826ac3a73f3a7cbbf88d1f4e2660ed42e5d69a98c"
+    },
+    "research_report": {
+      "bytes": 681829,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/report/report.json",
+      "sha256": "6706a1aa117fb3f2fe9bea94bb04d8206e1c87be2135cff6869aea26381929d1"
+    },
+    "root-ruling-index-v7.md": {
+      "bytes": 72637,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/root-ruling-index-v7.md",
+      "sha256": "387674e215ce4ae8dba794bc47af0920f9e0b29666a82fb9c77bc9eff1d50666"
+    },
+    "root-ruling-index-v8.md": {
+      "bytes": 75143,
+      "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.superpowers/sdd/2026-10-03-ralup/root-ruling-index-v8.md",
+      "sha256": "d0982e3863c71d5fe0a58f473e574146b9cf64bd0c937bccb8e6a39689e8e313"
+    },
+    "root-whole-branch-review-requirements.md": {
+      "bytes": 8739,
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/history/root-whole-branch-review-requirements.md",
+      "sha256": "d2d6fe3913408e9f0942578a20763f3f9dc61943b327f38b1fbd3f9b23e11c78"
+    },
+    "shell_reproduce_stdout": {
+      "bytes": 545,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/shell-stdout.txt",
+      "sha256": "b9a354e80c6a9779012dd70d594b6be592e16f2d5243386483d784fee11f82e1"
+    },
+    "source_union": {
+      "bytes": 2178343,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/source-union.json",
+      "sha256": "7bc30cab61cf206edcffee1647cb28f15c5b2bd0348646d07bbd1c11d5111fb1"
+    },
+    "tables": {
+      "bytes": 634038,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/report/tables.json",
+      "sha256": "02482a4f59e405d93c8ef28c8c5e757fa522bfd2d4ce632a03dcaf6406b0bd76"
+    }
+  },
+  "attempts": [
+    {
+      "actual_allocated_bytes": 78913536,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.401728,
+      "child_user_seconds": 1.422715,
+      "elapsed_seconds": 6.943746333003219,
+      "finish": {
+        "bytes": 1305,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/analysis-environment-v1/finish.json",
+        "sha256": "92025b057ccf0e9d6bb471a9c0cfe10bc33e18b1a5676f36ca509e5751cacafa"
+      },
+      "finished_utc": "2026-10-12T03:06:38.054959+00:00",
+      "forecast_physical_bytes": 285212672,
+      "name": "analysis-environment-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 419430400,
+      "started_utc": "2026-10-12T03:06:31.112685+00:00",
+      "startup": {
+        "bytes": 24727,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/analysis-environment-v1/startup.json",
+        "sha256": "cec4f68dd7158972c1381f59841bb78628e34ed20b9b2f3508b44778cb10e4fe"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/analysis-environment-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5434,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/analysis-environment-v1/stdout.txt",
+        "sha256": "1114f3296cf3fdc00a39c7b97b3bb7a32a33415461adba8db21250a62e846824"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2240512,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.053996999999999996,
+      "child_user_seconds": 0.20729899999999998,
+      "elapsed_seconds": 4.158564625002327,
+      "finish": {
+        "bytes": 1290,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/e06-proof-v3/finish.json",
+        "sha256": "1e6de0ed3791c6777167bf1627979c96420864c793332c11c37793483c6c10f3"
+      },
+      "finished_utc": "2026-10-12T03:08:44.583071+00:00",
+      "forecast_physical_bytes": 18874368,
+      "name": "e06-proof-v3",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 419430400,
+      "started_utc": "2026-10-12T03:08:40.424684+00:00",
+      "startup": {
+        "bytes": 24867,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/e06-proof-v3/startup.json",
+        "sha256": "9adb6de1f2aac70fe2bce7c2cc741de1225a581efe7b9d8b4f672ecaa6ae5c13"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/e06-proof-v3/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 70,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/e06-proof-v3/stdout.txt",
+        "sha256": "6e08cddf65632388be7dab7684da2639e57fcdf516ff13591bfda1f8c25a2787"
+      }
+    },
+    {
+      "actual_allocated_bytes": 846086144,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 1.7675319999999999,
+      "child_user_seconds": 2.168496,
+      "elapsed_seconds": 14.82535212500079,
+      "finish": {
+        "bytes": 1294,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/environment-v1/finish.json",
+        "sha256": "190244a5c2d342a5151baedfea3b05d5fcd8ac819ec99931cfbf6f0cd63932d0"
+      },
+      "finished_utc": "2026-10-12T03:01:36.019657+00:00",
+      "forecast_physical_bytes": 1904214016,
+      "name": "environment-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 734003200,
+      "started_utc": "2026-10-12T03:01:21.194886+00:00",
+      "startup": {
+        "bytes": 24104,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/environment-v1/startup.json",
+        "sha256": "b1cf24b883f9d774702defaece1a84e20f8e90328c402db5f392e0cb477683d5"
+      },
+      "stderr": {
+        "bytes": 1314,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/environment-v1/stderr.txt",
+        "sha256": "a54007f8642dcd72a9ff39293414a7f438a48d57926cdf54ba78044119e10255"
+      },
+      "stdout": {
+        "bytes": 5939,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/environment-v1/stdout.txt",
+        "sha256": "39e65858b6ceb9a527ea522a5473b8010aea85e405ad68d407a597652ef7fd14"
+      }
+    },
+    {
+      "actual_allocated_bytes": 318984192,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 19.818348,
+      "child_user_seconds": 114.582165,
+      "elapsed_seconds": 155.2636429999984,
+      "finish": {
+        "bytes": 1279,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v1/finish.json",
+        "sha256": "08d86df4ff2b9b53f730ccf4b0ed4b797ef0673d0187bbe56a9823ba23ce8f04"
+      },
+      "finished_utc": "2026-10-12T03:13:36.406439+00:00",
+      "forecast_physical_bytes": 419430400,
+      "name": "final-cpu-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 209715200,
+      "started_utc": "2026-10-12T03:11:01.143795+00:00",
+      "startup": {
+        "bytes": 25243,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v1/startup.json",
+        "sha256": "069787563cf60c581994f958927c0a613ddeeb7a5ed582946422703d5d4004f3"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18171,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v1/stdout.txt",
+        "sha256": "aeeac5aa81de6159e8e5f3ed40d57653de4b4e96cefacca00986b90ceb76429b"
+      }
+    },
+    {
+      "actual_allocated_bytes": 338030592,
+      "capture_exit_code": 3,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 20.23961,
+      "child_user_seconds": 116.559915,
+      "elapsed_seconds": 146.12697787499928,
+      "finish": {
+        "bytes": 1279,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v2/finish.json",
+        "sha256": "0a58250b47cce6063fb5cab46ba703dedf70d3a683d7b4cc7e2a1f443af559cf"
+      },
+      "finished_utc": "2026-10-12T03:17:04.526269+00:00",
+      "forecast_physical_bytes": 419430400,
+      "name": "final-cpu-v2",
+      "original_bounds_pass": false,
+      "remaining_reserve_bytes": 188743680,
+      "started_utc": "2026-10-12T03:14:38.400148+00:00",
+      "startup": {
+        "bytes": 25543,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v2/startup.json",
+        "sha256": "4d61e26bb7bf554a45d56d5011fa85a82e6a7602f29e2007d95756b7ed7c9c96"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1692,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/final-cpu-v2/stdout.txt",
+        "sha256": "630cfea59e4b8d705480ed05632196c9d2f102b8c8fdf1baeea65e12ebdbcc45"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2043904,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 0.043636,
+      "child_user_seconds": 0.292938,
+      "elapsed_seconds": 4.170087375001458,
+      "finish": {
+        "bytes": 1279,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v1/finish.json",
+        "sha256": "25570ccc500ab4bb8d145c2187db1b4599a3cc075c1dde13fe737a698e4260b9"
+      },
+      "finished_utc": "2026-10-12T03:04:21.469077+00:00",
+      "forecast_physical_bytes": 20971520,
+      "name": "green-report-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 734003200,
+      "started_utc": "2026-10-12T03:04:17.299170+00:00",
+      "startup": {
+        "bytes": 24578,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v1/startup.json",
+        "sha256": "66bf518e7faa776388fa26ab9ae928ff2f9514f3c0a822ca36a8d9b6b0e7991e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 10508,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v1/stdout.txt",
+        "sha256": "a8bde092d0a01659364b65875a3c30d7316b8fbe6a4dfc27b826d7362d0d090f"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2154496,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.04133,
+      "child_user_seconds": 0.250915,
+      "elapsed_seconds": 4.19103341599839,
+      "finish": {
+        "bytes": 1274,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v2/finish.json",
+        "sha256": "00ef84763cf9fc3297889c45f501d6649245483d98749f550ae4730079c6a03d"
+      },
+      "finished_utc": "2026-10-12T03:09:29.795131+00:00",
+      "forecast_physical_bytes": 20971520,
+      "name": "green-report-v2",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 419430400,
+      "started_utc": "2026-10-12T03:09:25.604286+00:00",
+      "startup": {
+        "bytes": 25040,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v2/startup.json",
+        "sha256": "37a0c024f3f11c8ed2c11af652583ad4fca62cc1f7dda4bd69b11e99284d1eee"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 99,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/green-report-v2/stdout.txt",
+        "sha256": "a4ba6a0b833ef7026d4d291578c1a66aa7b84a732bb259d96dc88bdb89ae3418"
+      }
+    },
+    {
+      "actual_allocated_bytes": 6426624,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 1.2336179999999999,
+      "child_user_seconds": 8.207425,
+      "elapsed_seconds": 19.154389167000772,
+      "finish": {
+        "bytes": 1307,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/finish.json",
+        "sha256": "1d125168e5c9fbb2f7882976a5fd2f744d45028e2fbcb54d61432df5f8826a36"
+      },
+      "finished_utc": "2026-10-12T03:07:53.891825+00:00",
+      "forecast_physical_bytes": 25165824,
+      "name": "preservation-proof-v2",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 524288000,
+      "started_utc": "2026-10-12T03:07:34.738006+00:00",
+      "startup": {
+        "bytes": 24803,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/startup.json",
+        "sha256": "8b37885fd475d01fb77087e6b58a482a807e805b10b93f77433f9f422e09b854"
+      },
+      "stderr": {
+        "bytes": 1785,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/stderr.txt",
+        "sha256": "8c89e0ddcbbe4bb4ba7475be991d3fbc74d5d041e0fd5d57d646548eddc27201"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-proof-v2/stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "actual_allocated_bytes": 125337600,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 1.091567,
+      "child_user_seconds": 4.078018,
+      "elapsed_seconds": 15.282965541999147,
+      "finish": {
+        "bytes": 1284,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/finish.json",
+        "sha256": "6c36c1e4c2a382747067e179bf8533c4296ac4bb8cbfc778503a6ed6dc2e9ef4"
+      },
+      "finished_utc": "2026-10-12T03:06:10.208469+00:00",
+      "forecast_physical_bytes": 184549376,
+      "name": "preservation-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 524288000,
+      "started_utc": "2026-10-12T03:05:54.936359+00:00",
+      "startup": {
+        "bytes": 24645,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/startup.json",
+        "sha256": "5638b8d1e3a87bd8df4e316f34b151aaf4fec111142a2d2f17dcdd42a17ac8ef"
+      },
+      "stderr": {
+        "bytes": 1072,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/stderr.txt",
+        "sha256": "bb7f2c9dad43b335b92cce1d2bff8d49d2861cf07ef7b46bd7c106ff24ac3952"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/preservation-v1/stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2011136,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 0.044085,
+      "child_user_seconds": 0.147312,
+      "elapsed_seconds": 4.1336550830019405,
+      "finish": {
+        "bytes": 1274,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/red-report-v1/finish.json",
+        "sha256": "1a81d0be2890f38a6b911c95aaec5d3a51bc15f864557b278de497efdbc0df95"
+      },
+      "finished_utc": "2026-10-12T03:02:45.270078+00:00",
+      "forecast_physical_bytes": 20971520,
+      "name": "red-report-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 734003200,
+      "started_utc": "2026-10-12T03:02:41.137017+00:00",
+      "startup": {
+        "bytes": 24347,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/red-report-v1/startup.json",
+        "sha256": "fe6682a2ae619474e196b71c70c59dce7de06b65c7fc3fecb0e83a6db0fc665a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/red-report-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 14178,
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/red-report-v1/stdout.txt",
+        "sha256": "7b95f96c6f7ac7f6979b87d2b071a45891746c86c630e835cfb11f1c4d0e1eb6"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2084864,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": true,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.019622999999999998,
+      "child_user_seconds": 0.033486999999999996,
+      "elapsed_seconds": 10.91963787500572,
+      "finish": {
+        "bytes": 1790,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-green-v1/finish.json",
+        "sha256": "a74146e7d8d00333495e75f124a1da282e168e5af581dbba64cd881dfa19e816"
+      },
+      "finished_utc": "2026-10-12T03:32:54.032468+00:00",
+      "forecast_physical_bytes": 25165824,
+      "name": "bound-green-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 67108864,
+      "started_utc": "2026-10-12T03:32:43.113333+00:00",
+      "startup": {
+        "bytes": 26658,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-green-v1/startup.json",
+        "sha256": "a66b59aede4df73da18942a916619994a11bbf44032d51836cba9138dd496fde"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-green-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 104,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-green-v1/stdout.txt",
+        "sha256": "970e1886c57570d9ae23bd8b5c8e274af6694abadbcaf86a2126bef56f5e8ffd"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2080768,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 0.01986,
+      "child_user_seconds": 0.040028,
+      "elapsed_seconds": 10.794762041005015,
+      "finish": {
+        "bytes": 1511,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-red-v1/finish.json",
+        "sha256": "339d0b2cb14771c6e9ffe611ff2433c6245f38effb2787598f34c2905d2bd279"
+      },
+      "finished_utc": "2026-10-12T03:32:15.263733+00:00",
+      "forecast_physical_bytes": 25165824,
+      "name": "bound-red-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 67108864,
+      "started_utc": "2026-10-12T03:32:04.469466+00:00",
+      "startup": {
+        "bytes": 26413,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-red-v1/startup.json",
+        "sha256": "35af1e57297d0956e880a3a068f6d97118c9c35c98c2f2a5feae6dfd2579b1f1"
+      },
+      "stderr": {
+        "bytes": 308,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-red-v1/stderr.txt",
+        "sha256": "6a179f99fa02b77d5e3308589e8466d1ef831b5c10c6ba0c28a2ed3348203b56"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/bound-red-v1/stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2072576,
+      "capture_exit_code": 1,
+      "child_component_bound_pass": null,
+      "child_exit_code": 1,
+      "child_system_seconds": 0.263659,
+      "child_user_seconds": 2.60939,
+      "elapsed_seconds": 12.550491417001467,
+      "finish": {
+        "bytes": 1494,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v1/finish.json",
+        "sha256": "e5ea140dc095758878f6e7f8f5ec36ca32f07a51de8907af128f103ca09079d1"
+      },
+      "finished_utc": "2026-10-12T03:21:37.984738+00:00",
+      "forecast_physical_bytes": 50331648,
+      "name": "native-replay-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 96468992,
+      "started_utc": "2026-10-12T03:21:25.434778+00:00",
+      "startup": {
+        "bytes": 26065,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v1/startup.json",
+        "sha256": "1e234f2572edbb0e1348bce03f75331520fc5c3a3d34d98a391d05b151920d1e"
+      },
+      "stderr": {
+        "bytes": 683,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v1/stderr.txt",
+        "sha256": "689b8e688b3b913cdf2482a73f774ff2e9f8c0fdd103fea03b9d39aae35fa16b"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v1/stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "actual_allocated_bytes": 38608896,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": false,
+      "child_exit_code": 0,
+      "child_system_seconds": 6.501288,
+      "child_user_seconds": 71.397801,
+      "elapsed_seconds": 92.19567733299482,
+      "finish": {
+        "bytes": 1499,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v2/finish.json",
+        "sha256": "e9de6a933cd5bdcc62ffec3b4aca9422f3d92468b94267f29daba5c1d4f5f173"
+      },
+      "finished_utc": "2026-10-12T03:23:56.948152+00:00",
+      "forecast_physical_bytes": 50331648,
+      "name": "native-replay-v2",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 96468992,
+      "started_utc": "2026-10-12T03:22:24.753168+00:00",
+      "startup": {
+        "bytes": 26079,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v2/startup.json",
+        "sha256": "9e246875018b92c0bdd7e760f9d12c280427a238111c45a20721f3e0114c6dcf"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 107,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/native-replay-v2/stdout.txt",
+        "sha256": "873a9fd8e1804d776240c3bc737a00de80f8ffea3a1f4cd946a5dcae61642c72"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2531328,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.604105,
+      "child_user_seconds": 9.569562,
+      "elapsed_seconds": 22.3358317500024,
+      "finish": {
+        "bytes": 1498,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v1/finish.json",
+        "sha256": "a01e76ced8e18c274b5a07c585ddb1a69cf6fe385704df42b6ebb2873fd62779"
+      },
+      "finished_utc": "2026-10-12T03:27:26.078013+00:00",
+      "forecast_physical_bytes": 20971520,
+      "name": "plots-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 25165824,
+      "started_utc": "2026-10-12T03:27:03.742862+00:00",
+      "startup": {
+        "bytes": 26448,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v1/startup.json",
+        "sha256": "4e929a38681232d3b7c74c16fef388e5377b78be882b08148f777054d68d2de3"
+      },
+      "stderr": {
+        "bytes": 63,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v1/stderr.txt",
+        "sha256": "cace1071573ef725e762e8856427937617c8c67e5d0784c45c0e854e56a803a8"
+      },
+      "stdout": {
+        "bytes": 66,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v1/stdout.txt",
+        "sha256": "6844899d50a0d1a80ecb8e757cc3cdc89cd403cd37f4989f57f2036431ca6484"
+      }
+    },
+    {
+      "actual_allocated_bytes": 2543616,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": true,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.503611,
+      "child_user_seconds": 10.46625,
+      "elapsed_seconds": 22.420002457998635,
+      "finish": {
+        "bytes": 1759,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/finish.json",
+        "sha256": "cb641a724152d3011f9a41e8217ee8636013db59ccef2b6c417da238eb13f92f"
+      },
+      "finished_utc": "2026-10-12T03:34:39.740402+00:00",
+      "forecast_physical_bytes": 25165824,
+      "name": "plots-v2",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 25165824,
+      "started_utc": "2026-10-12T03:34:17.321028+00:00",
+      "startup": {
+        "bytes": 27033,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/startup.json",
+        "sha256": "9df1ec14e917bb05eac1407f71d4821a353a6b989d413a62c37c3cfae46a7378"
+      },
+      "stderr": {
+        "bytes": 63,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/stderr.txt",
+        "sha256": "cace1071573ef725e762e8856427937617c8c67e5d0784c45c0e854e56a803a8"
+      },
+      "stdout": {
+        "bytes": 66,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/plots-v2/stdout.txt",
+        "sha256": "6844899d50a0d1a80ecb8e757cc3cdc89cd403cd37f4989f57f2036431ca6484"
+      }
+    },
+    {
+      "actual_allocated_bytes": 11370496,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.278626,
+      "child_user_seconds": 4.540409,
+      "elapsed_seconds": 14.767784584000765,
+      "finish": {
+        "bytes": 1504,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v1/finish.json",
+        "sha256": "3dc9e40f90e8785c389605547956ca0606406fe97428ce4be0191386eef872a6"
+      },
+      "finished_utc": "2026-10-12T03:25:06.094905+00:00",
+      "forecast_physical_bytes": 50331648,
+      "name": "report-v1",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 46137344,
+      "started_utc": "2026-10-12T03:24:51.327681+00:00",
+      "startup": {
+        "bytes": 26237,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v1/startup.json",
+        "sha256": "9f8a14587b0afee2466b070fa8f7e14394437f0debf1febd340e3260849de02d"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v1/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 339,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v1/stdout.txt",
+        "sha256": "41c943383b640f927d851a098866d695b795a24d1ea542d171a530da1e68ac6e"
+      }
+    },
+    {
+      "actual_allocated_bytes": 11390976,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": null,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.277132,
+      "child_user_seconds": 4.546742,
+      "elapsed_seconds": 14.807040874999075,
+      "finish": {
+        "bytes": 1504,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v2/finish.json",
+        "sha256": "c5e374366610eed9df9b397be92a7a3e5b7bb8f01f7cc83ff8ff00e5b73e2195"
+      },
+      "finished_utc": "2026-10-12T03:26:36.886869+00:00",
+      "forecast_physical_bytes": 50331648,
+      "name": "report-v2",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 46137344,
+      "started_utc": "2026-10-12T03:26:22.080662+00:00",
+      "startup": {
+        "bytes": 26237,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v2/startup.json",
+        "sha256": "7cc6cf86ce151a4f8703c9b06cbcccb9555cf53f6a71bdd9386dc1275139abc6"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v2/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 339,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v2/stdout.txt",
+        "sha256": "c5b2150b1282fd3b6936f155ff4ab4b27b7cfdc10996a4e399c10a1d3557e429"
+      }
+    },
+    {
+      "actual_allocated_bytes": 11616256,
+      "capture_exit_code": 0,
+      "child_component_bound_pass": true,
+      "child_exit_code": 0,
+      "child_system_seconds": 0.306664,
+      "child_user_seconds": 4.514874,
+      "elapsed_seconds": 16.623099707998335,
+      "finish": {
+        "bytes": 1768,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/finish.json",
+        "sha256": "0b7bc866a13bc9d7c4156b9374ebadb63218e15adef05e028754e0f9d24bb0fa"
+      },
+      "finished_utc": "2026-10-12T03:33:59.658610+00:00",
+      "forecast_physical_bytes": 33554432,
+      "name": "report-v3",
+      "original_bounds_pass": true,
+      "remaining_reserve_bytes": 50331648,
+      "started_utc": "2026-10-12T03:33:43.036046+00:00",
+      "startup": {
+        "bytes": 26833,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/startup.json",
+        "sha256": "5079b926b8d1285fe0cb2ed3348e5414db0450fb9e49eaaf5a3c21a8d68b0508"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1410,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/report-v3/stdout.txt",
+        "sha256": "b034edd79c7ba65f894dba861b167c3578eed2f9cf1d9597ee1c764a8c68f256"
+      }
+    }
+  ],
+  "durable_roots": [
+    "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012",
+    "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1",
+    "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e06-v1"
+  ],
+  "environments": {
+    "analysis": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/analysis-environment-v1/analysis/bin/python",
+    "core": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e07-20261012/environment-v1/core/bin/python"
+  },
+  "evidence_class": "exploratory engineering; no confirmation or protected scoring",
+  "final_administration_finish_path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/final-admin-v1/finish.json",
+  "final_administration_startup": {
+    "bytes": 27199,
+    "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/final-admin-v1/startup.json",
+    "sha256": "4bab482c88a9418ec2011a2565473c2a537e85d5bedf09eb84669636d686a579"
+  },
+  "late_root_delta_required": "Capture hash-linked changed/new review/ruling/finishing records after this boundary and before only-own-plan scratch cleanup; no cleanup authorization here",
+  "research_status": {
+    "B0": null,
+    "B_star": null,
+    "C": null,
+    "LR": null,
+    "budgets": null,
+    "confirmation": null,
+    "n": null,
+    "wp04": "inconclusive",
+    "wp06": "NEEDS_REVISION"
+  },
+  "schema": "ralup.e07_evidence_index.v1",
+  "scope_notes": {
+    "CPU": "1250 behavior passes; v2 enclosing reserve fails/outer3",
+    "cost": "launcher walls are scoped; nested clocks not added; complete project/engineering cost unknown",
+    "historical_source": "never acquire current restore compatibility through migration or index",
+    "native": "numerical exact replay passes; child binding bound fails; original complete-stage bounds and exit0 preserved"
+  },
+  "status": "implemented_verified_pending_fresh_task_review"
+}

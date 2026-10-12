@@ -1,8 +1,21 @@
 # RALUP
 
-Research specification and implementation plans for a representation-aware learned update policy, based on the supplied research brief with cutoff **3 October 2026**.
+Research specification and implementation for a representation-aware learned update policy, based on the supplied research brief with cutoff **3 October 2026**.
 
-The package implements validated configuration, hashed artifact references, append-only run records, read-only environment discovery, isolated FP32 operator probes, and encoding-aware E2M1 quantization with a CPU float64 reference, deterministic Gaussian fitting, full-row Hadamard transforms, detached logical-step contexts and fresh STE/trust/clipped surrogate graphs. Actual MPS operator smoke and F03/F04 tensor/code, rotation, context and backward checks passed on the recorded laptop with fallback disabled. Training, scientific numerical acceptance, sustained benchmarking, and protected scoring remain planned work; no experimental improvement is claimed.
+Current research disposition: **exploratory and inconclusive**. WP04 has no accepted robust B0; WP06 needs revision after observed noise and horizon-dependent rank reversals. Final C/LR/B*, training budgets, a justified paired pilot, locked n and confirmation manifest are absent. Official test remains protected. Engineering task completion does not establish an improvement or efficiency claim.
+
+The current handoff is documented in [the E07 contract](docs/harness/e07-contract.md) and [the evidence index](docs/harness/e07-evidence.json). The index binds the local immutable evidence root, separately recreated core environment, plotting environment, raw report inputs, standalone figures, exact historical preservation and finite replay receipts. These are local research artifacts; source and dataset rights limitations remain recorded.
+
+To regenerate a report from an immutable evidence file, use an explicit compatible interpreter and a new destination:
+
+```sh
+PYTHONPATH=src /path/to/locked/python -m ralup report --evidence /path/to/evidence.json --sha256 EXPECTED_SHA256 --output /new/report
+sh reproduce.sh /path/to/locked/python /path/to/evidence.json EXPECTED_SHA256 /new/reproduction
+```
+
+`reproduce` authenticates evidence and regenerates the report twice, comparing exact output hashes. The separate source-strict numerical replay and interruption/resume receipts are linked in that evidence. It executes no arbitrary commands supplied by an evidence file and never opens protected scores. `--manifest` currently returns an explicit reopened gate for a confirmed study without a supported report-evidence adapter; this exploratory study has no confirmation manifest.
+
+The package implements validated configuration, hashed artifact references, append-only run records, environment discovery, FP32 numerical checks, the common training harness, comparator and policy implementations, exploratory calibration, guarded confirmation infrastructure, packed export and reporting. Actual measurements retain their original producer, runtime and scope. Scientific finalist selection and confirmation remain unresolved; no experimental improvement is claimed.
 
 - [Research and system specification](docs/superpowers/specs/2026-10-03-ralup-design.md)
 - [Implementation plan, dependencies, and requirement coverage](docs/superpowers/plans/2026-10-03-ralup.md)

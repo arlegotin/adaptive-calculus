@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_gate": "WP06",
+  "current_gate": "WP06_NEEDS_REVISION",
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
     "F01 purpose-specific null evidence gates and synthetic isolation",
@@ -28,27 +28,45 @@
     "F03": "complete",
     "F04": "complete",
     "F05": "complete",
-    "H01": "implemented_pending_review",
-    "H03": "implemented_pending_review",
-    "H08": "implemented_pending_review",
-    "N01": "implemented_pending_review",
-    "M11": "implemented_needs_revision_pending_review"
+    "H01": "complete",
+    "H03": "complete",
+    "H08": "complete",
+    "N01": "complete",
+    "M11": "complete",
+    "E01": "complete",
+    "E02": "complete",
+    "E03": "complete",
+    "E04": "complete",
+    "E05": "complete",
+    "E06": "complete",
+    "E07": "implemented_pending_review",
+    "H02": "complete",
+    "H04": "complete",
+    "H05": "complete",
+    "H06": "complete",
+    "H07": "complete",
+    "M01": "complete",
+    "M02": "complete",
+    "M03": "complete",
+    "M04": "complete",
+    "M05": "complete",
+    "M06": "complete",
+    "M07": "complete",
+    "M08": "complete",
+    "M09": "complete",
+    "M10": "complete"
   },
   "last_valid_checkpoint": null,
   "blocks": [
-    "H01 independent reviewer gate pending",
-    "WP02 requires independent acceptance of implemented data stages and remaining H04-H08; data correctness alone does not pass the harness gate",
-    "All later scientific gates remain pending; protected targets/model scoring stays closed until E03",
-    "Pinned source card license version discrepancy and unspecified GFDL version remain unresolved; local research only; no corpus redistribution authorized",
-    "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate",
-    "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate",
-    "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
-    "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
-    "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
+    "WP04 remains inconclusive with no accepted robust B0; WP06 NEEDS_REVISION.",
+    "Final C/LR/B_star, budgets, justified paired pilot, locked n and confirmation are absent; protected scoring is closed.",
+    "Historical H08 real-shape numerical failures and N01 failed/partial work retain their recorded scopes; task engineering completion does not reopen numerical/scientific gates.",
+    "Complete project cost and historical operand coverage remain unknown; source/licensing/fidelity limitations remain.",
+    "Fresh E07 task review, root whole-branch review and later durable root delta remain required."
   ],
-  "next_command": "Scoped M11 N1 fix rereview from e42d5c45f8e9e16bae766fbf027677986ea44921..HEAD; then mandatoryM10 beforeE01.",
+  "next_command": "Fresh E07 task review, then root-owned whole-branch review and later durable root delta before any only-own-plan cleanup.",
   "M11": {
-    "status": "WP06_NEEDS_REVISION_pending_independent_review",
+    "status": "engineering_complete_scoped_review_clean; WP06_NEEDS_REVISION",
     "evidence_index": "docs/harness/m11-evidence.json",
     "confirmation_eligible": false,
     "B0": null,
@@ -68,7 +86,7 @@
       "META-development and full official-development selection; robustB0/recipe applicability and familyLR tuningE01",
       "Shared-range learnedLR and retuned mechanism contrastsE05; global evidence/cost unionE07"
     ],
-    "next_action": "Scoped M11 N1 fix rereview from e42d5c45f8e9e16bae766fbf027677986ea44921..HEAD; then mandatoryM10 beforeE01.",
+    "next_action": "Future scientifically justified WP06 revision; no packaging-driven extension.",
     "implementation_commit": "5ed817e8a34640bc0227d9d603947a3ab8933007",
     "current_reference_design": {
       "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
@@ -91,11 +109,45 @@
     },
     "fix_round_2": {
       "finding": "N1",
-      "status": "implemented_pending_scoped_rereview",
+      "status": "addressed_scoped_review_clean",
       "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
       "verification": "fix2-verify-selector-v1:31passed1.87s; no model work",
       "scope": "One corpus-reference consumer comparison; original d75faa normalizer and trajectory bytes preserved",
       "future_source_applicability": "New strict runtime identity; original normalizer DATA unchanged, no old complete-state import"
     }
+  },
+  "historical_progress_before_e07": {
+    "tasks": {
+      "F01": "complete",
+      "F02": "complete",
+      "F03": "complete",
+      "F04": "complete",
+      "F05": "complete",
+      "H01": "implemented_pending_review",
+      "H03": "implemented_pending_review",
+      "H08": "implemented_pending_review",
+      "N01": "implemented_pending_review",
+      "M11": "implemented_needs_revision_pending_review"
+    },
+    "next_command": "Scoped M11 N1 fix rereview from e42d5c45f8e9e16bae766fbf027677986ea44921..HEAD; then mandatoryM10 beforeE01.",
+    "M11_status": "WP06_NEEDS_REVISION_pending_independent_review",
+    "original_progress_git_object": "3ee6668f97b60da8f4b7151c96341eeece917f5b:progress.json",
+    "blocks": [
+      "H01 independent reviewer gate pending",
+      "WP02 requires independent acceptance of implemented data stages and remaining H04-H08; data correctness alone does not pass the harness gate",
+      "All later scientific gates remain pending; protected targets/model scoring stays closed until E03",
+      "Pinned source card license version discrepancy and unspecified GFDL version remain unresolved; local research only; no corpus redistribution authorized",
+      "Official OCP PDF raw bytes/checksum remain unresolved (historical HTTP403); retained inspection notes are separate from the accepted numerical gate",
+      "H03 independent reviewer gate pending; fixture/indexed data checks do not pass full WP02 or any scientific neural gate",
+      "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
+      "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
+      "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
+    ]
+  },
+  "engineering_status": {
+    "prior_tasks_complete": 31,
+    "E07": "implemented_verified_pending_fresh_task_review",
+    "whole_branch_review": "root_owned_after_E07",
+    "evidence_index": "docs/harness/e07-evidence.json"
   }
 }

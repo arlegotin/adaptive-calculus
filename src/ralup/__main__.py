@@ -12,6 +12,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ralup", description="RALUP research configuration and records")
     parser.add_argument("--version", action="version", version=f"ralup {__version__}")
     subcommands = parser.add_subparsers(dest="command")
+    for name in ('report','reproduce'):
+        report_command=subcommands.add_parser(name,help='authenticate immutable research evidence and regenerate raw tables')
+        inputs=report_command.add_mutually_exclusive_group(required=True)
+        inputs.add_argument('--evidence',type=Path)
+        inputs.add_argument('--manifest',type=Path)
+        report_command.add_argument('--sha256',help='required immutable root digest for handoff scripts')
+        report_command.add_argument('--output',type=Path,required=True)
     export = subcommands.add_parser('export', help='packed E2M1 bytes with exact decoded reference-forward verification')
     export.add_argument('--checkpoint', type=Path, required=True)
     export.add_argument('--output', type=Path, required=True)
@@ -63,6 +70,22 @@ def main(argv: list[str] | None = None) -> int:
         confirmation=subcommands.add_parser(command,help='locked paired confirmation; actual unresolved science refuses, synthetic fixtures explicit')
         confirmation.add_argument('--manifest',type=Path,required=True)
     args = parser.parse_args(argv)
+    if args.command in ('report','reproduce'):
+        from .records import ArtifactRef,sha256_file
+        from .report import build_report,reproduce
+        try:
+            path=args.evidence or args.manifest
+            ref=ArtifactRef(path,args.sha256 or sha256_file(path))
+            if args.command=='report':
+                result=build_report([ref],args.output)
+                print(canonical_bytes({'path':str(result.path),'sha256':result.sha256}).decode())
+                return 0
+            gate=reproduce(ref,{'destination':str(args.output)})
+            print(canonical_bytes({'status':gate.status,'scope':'report reconstruction only',
+                'blockers':list(gate.blockers),'evidence':[{'path':str(r.path),'sha256':r.sha256} for r in gate.evidence]}).decode())
+            return 0 if gate.status=='pass' else 2
+        except (OSError,KeyError,TypeError,ValueError) as error:
+            parser.error(str(error))
     if args.command == 'export':
         from .export import export_checkpoint, load_export
         try:

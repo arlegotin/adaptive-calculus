@@ -175,3 +175,7 @@
 ## Stage exit and completion definition
 
 A complete research handoff includes runnable source, successful dependency lock, rights/provenance records, numerical/fidelity checks, complete raw development/failure/cost logs, frozen analysis if confirmation was performed, packed-export parity when a final model exists, and a reproducible scope-limited decision. Independent full meta-training runs are necessary before claiming the training recipe is reliable. Lack of novelty, no advantage, conditional utility, inadequate sensitivity and local resource blocks are all valid final decisions when supported by the evidence; missing checks are never relabeled as passing.
+
+## Execution status —12 October2026
+
+The drafting checklist above is retained as history. The subsequently authorized execution completed31 predecessor engineering tasks; E07 implements the report/reproduction handoff and remains subject to its fresh task review, followed by root's one whole-branch review. Current scientific WP04 remains inconclusive/B0 null; WP06 NEEDS_REVISION; final C/LR/B*, budgets, n and confirmation are absent. See [current progress](../../../progress.json), [E07 contract](../../harness/e07-contract.md) and [immutable evidence index](../../harness/e07-evidence.json). No confirmation or scientific advantage is inferred from engineering completion.
