@@ -69,6 +69,16 @@ the manifest and invalidates every bug-affected arm/unit; explicit adjudication
 also retains affected terminal references. Documented versioned reruns need a new
 freeze, rather than continuing the consumed manifest until significance.
 
+Warm execution and all its persistence share one retained-attempt boundary.
+A completed execution receipt binds the exact state/hash and original physical
+pass. An interruption between state/execution/cost publication retains that
+completed state and known work; recovery publishes the retained state without
+another warm update. Partial original files are retained and refused rather than
+overwritten. State files without completed execution authority, or genuinely
+uncertain prior warm work, cannot silently trigger a replacement warm creation.
+Finite extreme logits are saturated before division; nonfinite inputs still
+reject explicitly.
+
 ## One-way delayed scoring
 
 No protected fixture payload is read before all exact final terminal, cost,
@@ -124,9 +134,20 @@ stays in the ledger. Wall intervals use a shared host clock and union nested or
 overlapping intervals rather than summing ancestors.
 
 Shared warm-start cost deduplicates once in the project ledger. Every arm's
-deployment view includes attributable warm-start work, all actual online update
-work and final evaluation/checkpoint costs. The mean complete deployment boundary
-is explicit, with a full-budget availability flag; failed runs retain diagnostic
+deployment view retains attributable warm-start work, online updates and final
+evaluation/checkpoint costs. Linked post-publication receipts capture warm cost,
+terminal/cost and result/audit publication intervals. Common scorer setup and
+publication are attributed to each deployment and unioned once in project views;
+another arm's evaluation is not charged to a deployment. The immutable result
+stays unchanged, and verified readback adds its exactly bound publication footer.
+
+These elapsed views are **known lower bounds**, superseding the original E04
+complete-time claim. The final cost footer's own persistence remains unmeasured,
+so `seconds` is null and complete elapsed availability is false. Missing/partial
+publication evidence stays unavailable rather than being inferred from file
+timestamps. Mean cost completeness is checked per metric and requires all
+planned full-budget completions and non-null metrics, including elapsed time;
+unknown partial target counts cannot pass that flag. Failed runs retain diagnostic
 expenditure without establishing a completed deployment comparison. Actual
 quantized export bytes are measured from the written artifact. Full-state export
 and quantized export are distinct. RSS/MPS counters, synchronized throughput and
@@ -146,3 +167,9 @@ source/runtime, stdout/stderr and immutable finish/cost/storage receipts.
 The index is `e04-evidence.json`; the full task report is E04-report.md in the SDD
 directory and its immutable administrative copy. No accepted native/Cartesian or
 whole suite is repeated solely for packaging.
+
+Fix round 1 has a separate small `e04-fix1-evidence.json` index and immutable
+administrative report. Original 260/23-check, CLI refusal and failed receipts stay
+unchanged under their original source. The fix checks only warm publication
+interruption, deterministic publication-cost attribution/availability and direct
+finite/nonfinite quantizer controls plus the affected runner readback interfaces.

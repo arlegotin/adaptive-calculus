@@ -21,6 +21,8 @@ class PairedResults:
         value=read_artifact(reference)
         if value.get('schema')!='ralup.synthetic_paired_results.v1' or value.get('synthetic') is not True:
             raise ValueError('Authenticated synthetic paired result required')
+        from ..runner import published_confirmation_results
+        value=published_confirmation_results(reference)
         return cls(value['manifest_sha256'],value['outcomes'],value['quality_cost_curves'],value['project_costs'])
 
 
@@ -160,10 +162,14 @@ def analyze_confirmation(results: PairedResults, manifest: ConfirmationManifest)
         means[arm]={'n_planned':len(seeds),'n_observed_costs':len(costs),
             'offline_search_meta_costs':None,
             'boundary':'mean complete deployment per fresh full-budget run; attributable warm start and online/evaluation/checkpoint work; offline search/meta separate'}
-        for name in ('stream_targets','total_targets','known_total_targets','unique_targets','seconds','physical_events'):
+        for name in ('stream_targets','total_targets','known_total_targets','unique_targets','seconds','known_interval_seconds','physical_events'):
             values=[r['deployment_costs'].get(name) for r in costs]
             means[arm][name]=math.fsum(values)/len(seeds) if len(costs)==len(seeds) and all(v is not None for v in values) else None
-        means[arm]['complete_full_budget_mean_available']=len(costs)==len(seeds) and all(r['status']=='completed' for r in costs)
+        means[arm]['metric_complete']={name:len(costs)==len(seeds) and all(
+            r['status']=='completed' and r['deployment_costs'].get(name) is not None for r in costs)
+            for name in ('stream_targets','total_targets','unique_targets','seconds')}
+        means[arm]['complete_full_budget_mean_available']=all(means[arm]['metric_complete'].values())
+        means[arm]['boundary']='mean deployment known lower bounds; complete availability requires every reported cost metric, including persistence elapsed; offline search/meta separate'
     return {'schema':'ralup.synthetic_confirmation_analysis.v1','manifest_sha256':manifest.sha256,
         'scope':'synthetic-engineering','n':len(seeds),'independent_unit':'fresh complete target-training seed',
         'status':status,'H1_H2_supported':bool(supported),'all_run_bpb_claim_established':bool(supported),

@@ -1,0 +1,308 @@
+{
+  "administration_locations": {
+    "E04-report.md": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-administration-v1/E04-report.md",
+    "commit.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-administration-v1/commit.json",
+    "finish.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-administration-v1/finish.json",
+    "startup.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-administration-v1/startup.json"
+  },
+  "administration_locations_are_not_yet_completed_evidence": true,
+  "attempts": [
+    {
+      "attempt": "fix1-red-v1",
+      "child_cpu_system_seconds": 0.539231,
+      "child_cpu_user_seconds": 1.380502,
+      "child_output_bytes": 385207,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/integration/test_confirmation_persistence.py"
+      ],
+      "data_free_after": 74611814400,
+      "elapsed_seconds": 10.265994542001863,
+      "exit_code": 1,
+      "git_free_after": 6956052480,
+      "launcher_cpu_system_seconds": 1.62486,
+      "launcher_cpu_user_seconds": 3.4591279999999998,
+      "local_time": "2026-10-12T02:28:52.115246+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/finish.json",
+          "sha256": "34dc49e45e23e6199253654f9361086a527e04a11e41c5f524f44d8e8614b2fe"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/runtime-observation.json",
+          "sha256": "76dbca5f2a9865fbff4f797e59c68cba6b84249f06d02ba616b545f290e80bab"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/startup.json",
+          "sha256": "7dc0acb9326201e2372203d90fcc01ad8c63802d45011cac3589a867a6d2f2de"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/stdout.txt",
+          "sha256": "650ca545ed3833f321ebd40ab52eb43d0d95edefb97e04d0f7ded516763f95ec"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-v1/producer",
+      "source_inventory_sha256": "5247651ddbc286b89a4a542c0f0472641e151da62dc135481341d464e048fc5d",
+      "store_bytes_before_finish": 24708026512,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_warm_persistence_interruption_never_reexecutes[warm-state.json]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_warm_persistence_interruption_never_reexecutes[warm-cost.json]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_warm_persistence_interruption_never_reexecutes[partial-state]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_slow_required_publication_enters_attributed_union_without_complete_claim",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_status_with_unknown_metric_cannot_claim_complete_cost[total_targets]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_status_with_unknown_metric_cannot_claim_complete_cost[unique_targets]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_completed_status_with_unknown_metric_cannot_claim_complete_cost[seconds]",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_finite_extreme_logits_saturate_before_division",
+        "8 failed in 2.58s"
+      ],
+      "utc": "2026-10-12T00:28:52.115227+00:00",
+      "write_budget": {
+        "archive_bytes": 1801008,
+        "child_output_allowance_bytes": 16777216,
+        "finish_allowance_bytes": 8388608,
+        "minimum_forecast_bytes": 70448809,
+        "other_fixed_bytes": 873,
+        "small_source_git_allowance_bytes": 16777216,
+        "startup_bytes": 43481104
+      }
+    },
+    {
+      "attempt": "fix1-green-v1",
+      "child_cpu_system_seconds": 1.311599,
+      "child_cpu_user_seconds": 2.261131,
+      "child_output_bytes": 4304681,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/integration/test_confirmation_persistence.py",
+        "tests/integration/test_confirmation_runner.py",
+        "-k",
+        "persistence or unknown_metric or finite_extreme or shared_warm or interruption_resume or actual_export or interrupted_scoring or synthetic_cli_complete"
+      ],
+      "data_free_after": 74559193088,
+      "elapsed_seconds": 11.17358641699684,
+      "exit_code": 0,
+      "git_free_after": 6939971584,
+      "launcher_cpu_system_seconds": 1.621893,
+      "launcher_cpu_user_seconds": 3.476216,
+      "local_time": "2026-10-12T02:32:05.379595+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/finish.json",
+          "sha256": "074fed9cf4de06eba6fdfaba7f47d9ed4a0d42a7ef081269ba6a59418125c216"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/runtime-observation.json",
+          "sha256": "b6f786d78408023dc40ee3f1341771510ab49f22a0712a14e223fb3002bda5ac"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/startup.json",
+          "sha256": "76b80b6bfe4aa6197a7f5d362382f082baf799583c7ca53fc6f459b7c0f44bda"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/stdout.txt",
+          "sha256": "b3fc06c9dc4da824f787a7cd78094a8188802e831239e4b6a78387639eb5e169"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-green-v1/producer",
+      "source_inventory_sha256": "5ff206af4a708512ce7e653f40528e75aedc7aa6aa9aac14b00a5018568ab452",
+      "store_bytes_before_finish": 24757753291,
+      "summary": [
+        ".............                                                            [100%]",
+        "13 passed, 13 deselected in 3.61s"
+      ],
+      "utc": "2026-10-12T00:32:05.379580+00:00",
+      "write_budget": {
+        "archive_bytes": 1808982,
+        "child_output_allowance_bytes": 16777216,
+        "finish_allowance_bytes": 8388608,
+        "minimum_forecast_bytes": 70525473,
+        "other_fixed_bytes": 22616,
+        "small_source_git_allowance_bytes": 16777216,
+        "startup_bytes": 43528051
+      }
+    },
+    {
+      "attempt": "fix1-red-finite-gate-v1",
+      "child_cpu_system_seconds": 0.047876999999999996,
+      "child_cpu_user_seconds": 0.150197,
+      "child_output_bytes": 956,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/integration/test_confirmation_persistence.py",
+        "-k",
+        "finite_extreme"
+      ],
+      "data_free_after": 74507984896,
+      "elapsed_seconds": 6.970100749997073,
+      "exit_code": 1,
+      "git_free_after": 6923862016,
+      "launcher_cpu_system_seconds": 1.476842,
+      "launcher_cpu_user_seconds": 3.497742,
+      "local_time": "2026-10-12T02:34:03.472794+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/finish.json",
+          "sha256": "32b8c83fde578e7992ce02ab6d13cc36dca4cb1aa56ca4aad09867d5dc59fdf4"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/runtime-observation.json",
+          "sha256": "5b6dd8024c5be521ac438054696fd852adfbc4131fdaf900582da46ae4ddcc0d"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/startup.json",
+          "sha256": "4872495265548c34c7a57cb27fe67eee0a6735da343ac527b40d8cd34f2074f0"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/stdout.txt",
+          "sha256": "d0c7dbd4213ad60850b4abf2341afa5ec8cd1306d30480bcd2126978ed666e52"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-red-finite-gate-v1/producer",
+      "source_inventory_sha256": "f85d3c2d69850bdb1abf2d830013f2414508adfd5def6c9169dd51328f0fdb2b",
+      "store_bytes_before_finish": 24803502308,
+      "summary": [
+        "        assert _quantize([1e308,-1e308,.2])==pytest.approx([.7,-.8,.2])",
+        "        for invalid in (float('nan'),float('inf'),float('-inf')):",
+        ">           with pytest.raises(ValueError,match='finite'):_quantize([invalid])",
+        "                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "E           Failed: DID NOT RAISE ValueError",
+        "",
+        "tests/integration/test_confirmation_persistence.py:99: Failed",
+        "=========================== short test summary info ============================",
+        "FAILED tests/integration/test_confirmation_persistence.py::test_finite_extreme_logits_saturate_before_division",
+        "1 failed, 7 deselected in 0.03s"
+      ],
+      "utc": "2026-10-12T00:34:03.472779+00:00",
+      "write_budget": {
+        "archive_bytes": 1809119,
+        "child_output_allowance_bytes": 16777216,
+        "finish_allowance_bytes": 8388608,
+        "minimum_forecast_bytes": 70696951,
+        "other_fixed_bytes": 22616,
+        "small_source_git_allowance_bytes": 16777216,
+        "startup_bytes": 43699392
+      }
+    },
+    {
+      "attempt": "fix1-focused-final-v1",
+      "child_cpu_system_seconds": 1.288317,
+      "child_cpu_user_seconds": 2.237525,
+      "child_output_bytes": 4312605,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/integration/test_confirmation_persistence.py",
+        "tests/integration/test_confirmation_runner.py",
+        "-k",
+        "persistence or unknown_metric or finite_extreme or shared_warm or interruption_resume or actual_export or interrupted_scoring or synthetic_cli_complete"
+      ],
+      "data_free_after": 74453188608,
+      "elapsed_seconds": 10.63725808399613,
+      "exit_code": 0,
+      "git_free_after": 6934224896,
+      "launcher_cpu_system_seconds": 1.456446,
+      "launcher_cpu_user_seconds": 3.468919,
+      "local_time": "2026-10-12T02:34:28.974709+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/finish.json",
+          "sha256": "13df1a5fa743e5744f0ad3f968dd8fc564758a49efe131eb0b8a8acae71c75a9"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/runtime-observation.json",
+          "sha256": "04c7ec1262a777c3d7c4a7067a2d073609d56dd983cf2d871b099d4c7815ed15"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/startup.json",
+          "sha256": "865cbd5043d765a139f6f25db4cd554e3042d19befb87e750d2cdd783cd81220"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/stdout.txt",
+          "sha256": "3dea9d5f42539cc4f27dba620501bb964283a75f799e56a6db3359e2e499fc2d"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e04-20261012/fix1-focused-final-v1/producer",
+      "source_inventory_sha256": "aaa236e4cb154dc9404710fc439598654da24ec0a228735f354484f429fc81f7",
+      "store_bytes_before_finish": 24853394627,
+      "summary": [
+        ".............                                                            [100%]",
+        "13 passed, 13 deselected in 3.50s"
+      ],
+      "utc": "2026-10-12T00:34:28.974689+00:00",
+      "write_budget": {
+        "archive_bytes": 1809241,
+        "child_output_allowance_bytes": 16777216,
+        "finish_allowance_bytes": 8388608,
+        "minimum_forecast_bytes": 70718269,
+        "other_fixed_bytes": 22739,
+        "small_source_git_allowance_bytes": 16777216,
+        "startup_bytes": 43720465
+      }
+    }
+  ],
+  "complete_elapsed_available": false,
+  "created_utc": "2026-10-12T00:36:57.873245+00:00",
+  "deterministic_publication_known_seconds": {
+    "per_arm": 59,
+    "project": 154
+  },
+  "final_source_tests_match_snapshot": true,
+  "final_summary": "13 passed, 13 deselected in 3.50s; empty stderr",
+  "findings_addressed": [
+    "I1",
+    "I2",
+    "M1"
+  ],
+  "fix_base": "a781c3179bcc08742b902a3397c32c5b04351070",
+  "original_260_23_cli_receipts": "unchanged original-source evidence; not rerun or relabeled",
+  "protected_official_test_reads": 0,
+  "research_cutoff": "2026-10-03",
+  "review_inputs": [
+    ".superpowers/sdd/2026-10-03-ralup/E04-review.md",
+    ".superpowers/sdd/2026-10-03-ralup/E04-fix1-findings.md"
+  ],
+  "reviewer_two_advance_probe": "original OverflowError/cost footer unavailable; initial nonfinite-update suspicion unsubstantiated; no new probe",
+  "scientific_confirmation": "WP08 not attempted/prerequisite blocked",
+  "task": "E04 fix round 1",
+  "unmeasured_component": "publication-cost footer persistence; interrupted persistence if present"
+}

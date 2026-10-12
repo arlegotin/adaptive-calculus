@@ -114,7 +114,8 @@ def _named_seed(seed,name):
 
 
 def _quantize(weights):
-    return [max(-8,min(7,round(w/.1)))*.1 for w in weights]
+    if not all(math.isfinite(w) for w in weights):raise ValueError('Synthetic logits must be finite before quantization')
+    return [max(-8,min(7,round(max(-.8,min(.7,w))/.1)))*.1 for w in weights]
 
 
 def _advance(state,config,count):
@@ -162,43 +163,92 @@ def _cost_run(identity,status,events,walls,parents=None,unknown=False):
 
 
 def _warm_start(root,manifest,seed,config):
+    started=time.time()
     directory=root/f'seed-{seed}';directory.mkdir(exist_ok=True)
-    receipt_path=directory/'warm-cost.json'
-    if receipt_path.exists():
-        receipt=read_artifact(_artifact(receipt_path));state_ref=ArtifactRef(**receipt['state'])
-        state=read_artifact(state_ref)
-        if state['manifest_sha256']!=manifest.sha256 or state['seed']!=seed:
-            raise IntegrityError('Shared parent must bind current manifest/source/runtime')
-        return state,state_ref,_artifact(receipt_path),receipt
-    started=time.time();rng=random.Random(_named_seed(seed,'initialization'))
-    streams={name:_named_seed(seed,name) for name in ('initialization','data','quantizer','timing')}
-    state={'schema':'ralup.synthetic_full_state.v1','synthetic':True,'manifest_sha256':manifest.sha256,
-        'seed':seed,'weights':[rng.uniform(-.01,.01) for _ in range(256)],'momentum':[0.]*256,
-        'step':0,'cursor':0,'data_offset':random.Random(streams['data']).randrange(len(config['training_text'].encode())),
-        'named_streams':streams,'warm_updates':0,
-        'quantizer_state':{'format':'uniform4-logit-v1','fixed_scale':.1},'histories':{},'schedule_step':0}
-    warm_config={**config,'learning_rate':.1,'momentum':0.}
-    try:state=_advance(state,warm_config,config['warm_start_bytes'])
+    receipt_path=directory/'warm-cost.json';execution_path=directory/'warm-execution.json'
+    completed=None
+    try:
+        retained=[read_artifact(_artifact(p)) for p in sorted(directory.glob('interrupted-*.json'))]
+        if execution_path.exists():completed=read_artifact(_artifact(execution_path))
+        elif retained:
+            candidates=[r.get('completed_warm') for r in retained]
+            if any(c is None for c in candidates):
+                raise IntegrityError('Unknown prior warm execution: refuse recomputation; retain partial evidence')
+            if any(c!=candidates[0] for c in candidates):raise IntegrityError('Conflicting completed warm evidence')
+            completed=candidates[0]
+        elif (directory/'warm-state.json').exists() or receipt_path.exists():
+            raise IntegrityError('Warm persistence has no authenticated completed execution; refuse recomputation')
+        if completed is None:
+            rng=random.Random(_named_seed(seed,'initialization'))
+            streams={name:_named_seed(seed,name) for name in ('initialization','data','quantizer','timing')}
+            state={'schema':'ralup.synthetic_full_state.v1','synthetic':True,'manifest_sha256':manifest.sha256,
+                'seed':seed,'weights':[rng.uniform(-.01,.01) for _ in range(256)],'momentum':[0.]*256,
+                'step':0,'cursor':0,'data_offset':random.Random(streams['data']).randrange(len(config['training_text'].encode())),
+                'named_streams':streams,'warm_updates':0,
+                'quantizer_state':{'format':'uniform4-logit-v1','fixed_scale':.1},'histories':{},'schedule_step':0}
+            state=_advance(state,{**config,'learning_rate':.1,'momentum':0.},config['warm_start_bytes'])
+            state.update(step=0,cursor=0,warm_updates=1,schedule_step=0)
+            completed={'synthetic':True,'manifest_sha256':manifest.sha256,'seed':seed,'state':state,
+                'state_sha256':hashlib.sha256(canonical_bytes(state)).hexdigest(),
+                'run':_cost_run(f'{manifest.sha256}:seed-{seed}:warm','completed',
+                    [_training_event(f'{seed}:warm',config['warm_start_bytes'],['warm_start','backward'],config,state,0)],[_wall(started)])}
+        state=completed['state']
+        if (completed['manifest_sha256']!=manifest.sha256 or completed['seed']!=seed
+                or state['manifest_sha256']!=manifest.sha256 or state['seed']!=seed
+                or state['warm_updates']!=1 or completed['state_sha256']!=hashlib.sha256(canonical_bytes(state)).hexdigest()):
+            raise IntegrityError('Completed warm state/source/physical execution binding mismatch')
+        state_ref=_put(directory/'warm-state.json',state)
+        execution_ref=_put(execution_path,completed)
+        if receipt_path.exists():
+            receipt_ref=_artifact(receipt_path);receipt=read_artifact(receipt_ref)
+            if receipt['state']!=_ref(state_ref) or receipt['execution']!=_ref(execution_ref):
+                raise IntegrityError('Warm cost publication conflicts with completed execution')
+        else:
+            receipt={'synthetic':True,'state':_ref(state_ref),'execution':_ref(execution_ref),'run':completed['run'],
+                'reset':'none; identical full synthetic W/momentum/cursor/named streams per arm'}
+            receipt_ref=_put(receipt_path,receipt)
+        publication=_publication_receipt(directory/'warm-publication.json',manifest,
+            {'cost':_ref(receipt_ref),'state':_ref(state_ref),'execution':_ref(execution_ref)},
+            [receipt['run']]+[r['run'] for r in retained],started)
+        return state,state_ref,receipt_ref,{**receipt,'run':publication['run']}
     except BaseException as error:
-        _retained_attempt(directory,manifest,seed,'warm',started,error)
+        _retained_attempt(directory,manifest,seed,'warm',started,error,completed_warm=completed)
         raise
-    state.update(step=0,cursor=0,warm_updates=1,schedule_step=0)
-    state_ref=_put(directory/'warm-state.json',state)
-    retained=[read_artifact(_artifact(p)) for p in sorted(directory.glob('interrupted-*.json'))]
-    cost=_cost_run(f'{manifest.sha256}:seed-{seed}:warm','completed',
-        [_training_event(f'{seed}:warm',config['warm_start_bytes'],['warm_start','backward'],config,state,0)],
-        [_wall(started)],parents=[r['run'] for r in retained],unknown=bool(retained))
-    receipt={'synthetic':True,'state':_ref(state_ref),'run':cost,'reset':'none; identical full synthetic W/momentum/cursor/named streams per arm'}
-    return state,state_ref,_put(receipt_path,receipt),receipt
 
 
-def _retained_attempt(directory,manifest,seed,arm,started,error):
+def _retained_attempt(directory,manifest,seed,arm,started,error,*,completed_warm=None):
     status='interrupted' if isinstance(error,KeyboardInterrupt) else 'implementation_failure'
     return write_immutable_json(directory/f'{status}-{uuid.uuid4().hex}.json',{
         'synthetic':True,'manifest_sha256':manifest.sha256,'seed':seed,'arm':arm,'status':status,
         'utc':datetime.now(timezone.utc).isoformat(),'local_time':datetime.now().astimezone().isoformat(),
-        'reason':str(error),'unknown_partial_work':True,
-        'run':_cost_run(f'{manifest.sha256}:retained-{uuid.uuid4().hex}','failed',[],[_wall(started)],unknown=True)})
+        'reason':str(error),'unknown_partial_work':completed_warm is None,'completed_warm':completed_warm,
+        'unknown_persistence_elapsed':True,
+        'run':_cost_run(f'{manifest.sha256}:retained-{uuid.uuid4().hex}','failed',
+            [] if completed_warm is None else completed_warm['run']['events'],[_wall(started)],unknown=completed_warm is None)})
+
+
+def _publication_receipt(path,manifest,bindings,parents,started):
+    """Retain measured required-publication intervals, excluding this footer's I/O."""
+    if path.exists():
+        value=read_artifact(_artifact(path))
+        if value['manifest_sha256']!=manifest.sha256 or value['bindings']!=bindings:
+            raise IntegrityError('Publication receipt identity mismatch')
+        return value
+    value={'synthetic':True,'manifest_sha256':manifest.sha256,'bindings':bindings,
+        'run':_cost_run(f'{manifest.sha256}:{path.relative_to(path.parents[2])}:publication','completed',[],
+                        None if started is None else [_wall(started)],parents=parents),
+        'unmeasured_components':['publication-cost footer persistence'],
+        'cost_status':'known lower bound; complete elapsed unavailable'}
+    _put(path,value)
+    return value
+
+
+def _cost_lower_bound(roots):
+    from .analysis.cost import _totals
+    value=_totals(roots)
+    value.update(seconds=None,complete_seconds_available=False,
+        unmeasured_components=['publication-cost footer persistence; interrupted persistence if present'])
+    return value
 
 
 def run_confirmation(manifest: ConfirmationManifest) -> list[ArtifactRef]:
@@ -227,7 +277,12 @@ def run_confirmation(manifest: ConfirmationManifest) -> list[ArtifactRef]:
             for arm in order['arms']:
                 directory=root/f'seed-{seed}'/arm;directory.mkdir(exist_ok=True)
                 terminal_path=directory/'terminal.json'
-                if terminal_path.exists():refs.append(_artifact(terminal_path));continue
+                if terminal_path.exists():
+                    terminal_ref=_artifact(terminal_path);terminal=read_artifact(terminal_ref)
+                    cost=read_artifact(ArtifactRef(**terminal['costs']))
+                    _publication_receipt(directory/'terminal-publication.json',manifest,
+                        {'terminal':_ref(terminal_ref),'cost':terminal['costs']},[cost['run']],None)
+                    refs.append(terminal_ref);continue
                 if any(row['kind']=='opened' for row in events):raise ProtectedAccessError('Training cannot resume after protected inspection')
                 started=time.time();config=configs[arm];state=_plain(warm);state_ref=warm_ref;steps=[]
                 try:
@@ -299,7 +354,10 @@ def run_confirmation(manifest: ConfirmationManifest) -> list[ArtifactRef]:
                     'runtime_identity':payload['runtime_identity'],
                     'lineage':{'unit':f'fresh-{manifest.sha256}-{seed}','shared_parent':warm_ref.sha256},
                     'checkpoint':checkpoint,'failure':failure,'costs':_ref(costs_ref)}
-                refs.append(_put(terminal_path,terminal))
+                terminal_ref=_put(terminal_path,terminal)
+                _publication_receipt(directory/'terminal-publication.json',manifest,
+                    {'terminal':_ref(terminal_ref),'cost':_ref(costs_ref)},[run],started)
+                refs.append(terminal_ref)
         validate_confirmation(reference,terminal_inventory(refs))
     return refs
 
@@ -353,15 +411,55 @@ def _scoring_state(terminal,manifest):
     return costs,state
 
 
+def _terminal_cost_run(terminal,terminal_ref,manifest):
+    cost=read_artifact(ArtifactRef(**terminal['costs']))
+    path=terminal_ref.path.parent/'terminal-publication.json'
+    if not path.exists():raise IntegrityError('Missing retained terminal publication receipt; resume inventory first')
+    value=read_artifact(_artifact(path))
+    if (value['manifest_sha256']!=manifest.sha256
+            or value['bindings']!={'terminal':_ref(terminal_ref),'cost':terminal['costs']}):
+        raise IntegrityError('Exact terminal/cost publication binding required')
+    return value['run']
+
+
+def published_confirmation_results(reference):
+    """Verified result readback with attributable post-publication lower bounds.
+
+    Result bytes remain immutable. The sidecar binds those exact bytes and the
+    successful E03 audit event; its own persistence remains unmeasured explicitly.
+    An absent sidecar leaves the original conservative lower-bound costs intact.
+    """
+    from .evaluate import existing_protected_result,confirmation_access_events
+    value=read_artifact(reference)
+    manifest_ref=ArtifactRef(**value['manifest_reference'])
+    if existing_protected_result(manifest_ref)!=reference:raise ProtectedAccessError('No verified locked result readback')
+    path=reference.path.with_name('scoring-publication.json')
+    if not path.exists():return value
+    publication=read_artifact(_artifact(path))
+    events=confirmation_access_events(manifest_ref)
+    result_event=next(row for row in events if row['kind']=='result')
+    if (publication['manifest_sha256']!=value['manifest_sha256']
+            or publication['bindings']!={'result':_ref(reference),'audit_event_id':result_event['event_id']}):
+        raise IntegrityError('Post-publication result/audit identity mismatch')
+    runs=[]
+    for row,run in zip(value['outcomes'],value['execution_runs']):
+        complete=_cost_run(run['run_id']+':publication-attributed',run['status'],[],[],parents=[run,publication['run']])
+        row['deployment_costs']=_cost_lower_bound([complete]);runs.append(complete)
+    value['project_costs']=_cost_lower_bound(runs)
+    for curve,row in zip(value['quality_cost_curves'],value['outcomes']):curve['deployment_costs']=row['deployment_costs']
+    return value
+
+
 def score_confirmation(manifest: ConfirmationManifest, inventory: list[dict]) -> ArtifactRef:
     """Score once after complete authenticated final inventory, or verified readback.
 
     The public E03 payload_ready protocol authenticates/materializes every byte
     before publication. Reservation/failed/pending opens never authorize reuse.
     """
+    started=time.time()
     from .evaluate import (validate_confirmation,existing_protected_result,open_protected_targets,
                           record_protected_result,score_blocks)
-    from .analysis.cost import _totals,source_intervals
+    from .analysis.cost import source_intervals
     payload,analysis,reference=_contract(manifest);root=Path(analysis['output_directory'])
     with _exclusive(root):
         validate_confirmation(reference,inventory)
@@ -373,16 +471,21 @@ def score_confirmation(manifest: ConfirmationManifest, inventory: list[dict]) ->
             return existing
         rows=[read_artifact(ArtifactRef(**row['terminal'])) for row in inventory]
         prepared={}
+        terminal_runs={}
         for row in rows:
             if row['status']=='completed':prepared[(row['seed'],row['arm'])]=_scoring_state(row,manifest)
             else:read_artifact(ArtifactRef(**row['costs']))
+            terminal_ref=ArtifactRef(**next(r['terminal'] for r in inventory if (r['seed'],r['arm'])==(row['seed'],row['arm'])))
+            terminal_runs[(row['seed'],row['arm'])]=_terminal_cost_run(row,terminal_ref,manifest)
         # There are no payload bytes before all contract/terminal/state checks.
         blocks=open_protected_targets(phase='confirm',manifest_ref=reference,inventory=inventory)
-        outcomes=[];project_runs=[];curves=[];scored_targets=0;started=time.time()
+        common_walls=[_wall(started)]
+        outcomes=[];project_runs=[];curves=[];scored_targets=0
         partial_events=[];partial_targets=0;current_arm=None
         try:
             for row in rows:
-                score=None;costs=read_artifact(ArtifactRef(**row['costs']));run=costs['run']
+                arm_started=time.time();score=None;costs=read_artifact(ArtifactRef(**row['costs']))
+                run=terminal_runs[(row['seed'],row['arm'])]
                 if row['status']=='completed':
                     _,state=prepared[(row['seed'],row['arm'])];score_start=time.time()
                     current_arm={'seed':row['seed'],'arm':row['arm']};partial_events=[];partial_targets=0
@@ -401,7 +504,7 @@ def score_confirmation(manifest: ConfirmationManifest, inventory: list[dict]) ->
                     scored_targets+=score.target_count
                     run=_cost_run(run['run_id']+':scoring','completed',partial_events,[_wall(score_start)],parents=[run])
                     partial_events=[];partial_targets=0
-                project_runs.append(run);deployment=_totals([run])
+                deployment=_cost_lower_bound([run])
                 outcome={'seed':row['seed'],'arm':row['arm'],'unit':row['lineage']['unit'],
                     'status':row['status'],'bpb':None if score is None else score.bpb,
                     'nll_sum':None if score is None else score.nll_sum,'target_count':None if score is None else score.target_count,
@@ -410,15 +513,27 @@ def score_confirmation(manifest: ConfirmationManifest, inventory: list[dict]) ->
                     'per_article':None if score is None else score.per_article}
                 outcomes.append(outcome);curves.append({'seed':row['seed'],'arm':row['arm'],'status':row['status'],
                     'endpoint':payload['endpoint'],'bpb':outcome['bpb'],'deployment_costs':deployment,
-                    'boundary':'complete deployment including attributable warm-start, all adaptation, final evaluation and checkpoint; offline search/meta separate unknown'})
-            project=_totals(project_runs)
+                    'boundary':'deployment known lower bounds including attributable warm-start and required publication; footer persistence elapsed unmeasured; offline search/meta separate'})
+                # Includes each arm's final score and outcome bookkeeping, without
+                # charging other arms' execution to this deployment.
+                run=_cost_run(run['run_id']+':bookkeeping',row['status'],[],[_wall(arm_started)],parents=[run])
+                project_runs.append(run)
+            publication_started=time.time();project=_cost_lower_bound(project_runs)
             value={'schema':'ralup.synthetic_paired_results.v1','synthetic':True,'manifest_sha256':manifest.sha256,
                 'inventory_sha256':hashlib.sha256(canonical_bytes({'inventory':inventory})).hexdigest(),
                 'outcomes':outcomes,'scored_targets':scored_targets,'project_costs':project,'quality_cost_curves':curves,
+                'manifest_reference':_ref(reference),'execution_runs':project_runs,
                 'offline_search_meta_costs':None,'common_engineering_costs':None,
                 'scope':'numerically executed synthetic fixtures only; genuine scientific confirmation unavailable'}
             result=write_immutable_json(root/'paired-results.json',value)
-            record_protected_result(reference,_ref(result))
+            result_event=record_protected_result(reference,_ref(result))
+            common_walls.append(_wall(publication_started))
+            publication={'synthetic':True,'manifest_sha256':manifest.sha256,
+                'bindings':{'result':_ref(result),'audit_event_id':result_event['event_id']},
+                'run':_cost_run(manifest.sha256+':common-scoring-publication','completed',[],common_walls),
+                'unmeasured_components':['publication-cost footer persistence'],
+                'cost_status':'known lower bound; complete elapsed unavailable'}
+            write_immutable_json(root/'scoring-publication.json',publication)
             return result
         except BaseException as error:
             write_immutable_json(root/f'scoring-failed-{uuid.uuid4().hex}.json',{
