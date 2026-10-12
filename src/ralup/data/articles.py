@@ -72,10 +72,12 @@ def write_reconstruction(rows: Iterable[str], destination: Path, *, split: str) 
     if not re.fullmatch(r"[a-z]+", split):
         raise ValueError("Invalid split name")
     destination = Path(destination)
-    destination.mkdir(parents=True, exist_ok=True)
     content_path = destination / f"{split}.content.bin"
     row_path = destination / f"{split}.rows.bin"
     article_path = destination / f"{split}.articles.jsonl"
+    if any(path.exists() or path.is_symlink() for path in (content_path, row_path, article_path)):
+        raise ValueError("Refusing existing reconstruction generation; use a fresh destination")
+    destination.mkdir(parents=True, exist_ok=True)
     source_digest = hashlib.sha256()
     raw_bytes = row_count = article_count = content_bytes = 0
     source_count = 0
@@ -91,7 +93,7 @@ def write_reconstruction(rows: Iterable[str], destination: Path, *, split: str) 
             source_count += 1
             yield text
 
-    with content_path.open("wb") as content_file, row_path.open("wb") as row_file, article_path.open("wb") as article_file:
+    with content_path.open("xb") as content_file, row_path.open("xb") as row_file, article_path.open("xb") as article_file:
         for article in iter_articles(audited_rows()):
             first_row = article.source_rows[0]["row_index"]
             for row in article.source_rows:

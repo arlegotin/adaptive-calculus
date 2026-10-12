@@ -6,14 +6,17 @@ callables or pickle opcodes. All captured mutable payloads own CPU storage.
 from dataclasses import dataclass, field, fields, is_dataclass
 from datetime import datetime, timezone
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
 from pathlib import Path
+import platform
 import random
 import shutil
 import tempfile
 import time
+import sys
 from types import MappingProxyType
 import uuid
 
@@ -297,7 +300,58 @@ def _validate_producer(snapshot,identities):
     return producer
 
 
-def _strict_runtime(payload):
+_RUNTIME_STRINGS = ('schema', 'backend', 'python_implementation', 'python_version', 'python_build',
+    'platform_system', 'platform_release', 'platform_version', 'platform_machine',
+    'torch_version', 'torch_git_version', 'torch_build', 'numpy_version', 'safetensors_version',
+    'cpu_capability', 'default_dtype', 'default_device', 'float32_matmul_precision', 'mps_fallback')
+_RUNTIME_BOOLS = ('mps_built', 'mkldnn_enabled', 'deterministic_algorithms', 'deterministic_warn_only')
+_RUNTIME_INTS = ('num_threads', 'num_interop_threads')
+
+
+def _runtime_fingerprint(backend):
+    """Finite identity of the running numerical stack, never an old file report.
+
+    Paths, PIDs, hostnames and observation times are not compatibility fields.
+    Querying build metadata does not initialize a native device or execute it.
+    """
+    return {'schema': 'ralup.numerical_runtime.v1', 'backend': backend,
+        'python_implementation': platform.python_implementation(),
+        'python_version': platform.python_version(), 'python_build': sys.version,
+        'platform_system': platform.system(), 'platform_release': platform.release(),
+        'platform_version': platform.version(), 'platform_machine': platform.machine(),
+        'torch_version': str(torch.__version__), 'torch_git_version': str(torch.version.git_version),
+        'torch_build': torch.__config__.show(), 'numpy_version': importlib.metadata.version('numpy'),
+        'safetensors_version': importlib.metadata.version('safetensors'),
+        'cpu_capability': torch.backends.cpu.get_cpu_capability(),
+        'default_dtype': str(torch.get_default_dtype()), 'default_device': str(torch.get_default_device()),
+        'float32_matmul_precision': torch.get_float32_matmul_precision(),
+        'mps_fallback': os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK', 'unset') if backend == 'mps' else 'not_applicable',
+        'mps_built': torch.backends.mps.is_built(), 'mkldnn_enabled': torch.backends.mkldnn.enabled,
+        'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
+        'deterministic_warn_only': torch.is_deterministic_algorithms_warn_only_enabled(),
+        'num_threads': torch.get_num_threads(), 'num_interop_threads': torch.get_num_interop_threads()}
+
+
+def _validate_runtime(runtime):
+    if (type(runtime) is not dict or set(runtime) != set(_RUNTIME_STRINGS + _RUNTIME_BOOLS + _RUNTIME_INTS)
+            or any(type(runtime[k]) is not str or not runtime[k] for k in _RUNTIME_STRINGS)
+            or any(type(runtime[k]) is not bool for k in _RUNTIME_BOOLS)
+            or any(type(runtime[k]) is not int or runtime[k] <= 0 for k in _RUNTIME_INTS)
+            or runtime['schema'] != 'ralup.numerical_runtime.v1' or runtime['backend'] not in ('cpu', 'mps')):
+        raise IntegrityError('Invalid numerical runtime fingerprint schema')
+
+
+def _strict_runtime(payload, device):
+    runtime = payload.get('runtime')
+    if runtime is None:
+        raise IntegrityError('Historical snapshot lacks actual numerical runtime proof for complete restore')
+    _validate_runtime(runtime)
+    if runtime['backend'] != device:
+        raise IntegrityError('Complete restore requires the producing backend; cross-backend restoration unsupported')
+    current_runtime = _runtime_fingerprint(device)
+    _validate_runtime(current_runtime)
+    if current_runtime != runtime:
+        raise IntegrityError('Actual numerical runtime incompatible with archived producer runtime')
     try: current = _automatic_identities()
     except OSError as error: raise IntegrityError('Current runtime identity unavailable') from error
     producer = payload['identities']['automatic']
@@ -378,6 +432,9 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
         raise IntegrityError('Unknown ledger fields require registered schema')
     _references(state.identities); _references(state.configuration)
     producer,producer_files = _archive_producer()
+    backends = {parameter.device.type for parameter in parameters.values()}
+    if len(backends) != 1 or not backends <= {'cpu', 'mps'}:
+        raise IntegrityError('Snapshot requires one supported producing backend')
     identities = {'automatic':producer,'declared':state.identities}
     durable = state.ledger.run_ledger
     run = None if durable is None else {'path':str(durable.path.resolve()),'metadata':ArtifactRef(durable.path/'run.json',sha256_file(durable.path/'run.json'))}
@@ -394,7 +451,8 @@ def capture_snapshot(state: TrainingState) -> TrainingSnapshot:
         'ledger':{n:getattr(state.ledger,n) for n in ('stream','coverage','passes','elapsed','events')},
         'run_ledger':run,'microbatch':state.microbatch,'clip_norm':state.clip_norm,
         'configuration':state.configuration,'configuration_sha256':hashlib.sha256(canonical_bytes(state.configuration)).hexdigest(),
-        'identities':identities,'process_audit':state.process_audit}
+        'identities':identities,'process_audit':state.process_audit,
+        'runtime':_runtime_fingerprint(next(iter(backends)))}
     encoder = _Encoder()
     metadata = encoder.encode(payload)
     snapshot = TrainingSnapshot(metadata,encoder.tensors,producer_files=producer_files)
@@ -552,7 +610,10 @@ def _validated(snapshot):
         used = set()
         payload = _decode(snapshot.metadata,snapshot.tensors,used)
         if used != set(snapshot.tensors): raise IntegrityError('Unreferenced tensor payload')
-        _keys(payload,_PAYLOAD)
+        # Legacy bytes remain inspectable by authenticated MODELONLY/DATA
+        # consumers. Absence is never a complete-state compatibility waiver.
+        _keys(payload,_PAYLOAD | ({'runtime'} if 'runtime' in payload else set()))
+        if 'runtime' in payload: _validate_runtime(payload['runtime'])
         if hashlib.sha256(canonical_bytes(payload['configuration'])).hexdigest() != payload['configuration_sha256']:
             raise IntegrityError('Configuration hash mismatch')
         producer = _validate_producer(snapshot,payload['identities'])
@@ -636,10 +697,10 @@ def _device_tree(value,device):
 
 def restore_snapshot(snapshot: TrainingSnapshot, device: str) -> TrainingState:
     if device not in ('cpu','mps'): raise IntegrityError('Unsupported restore device')
+    payload = _validated(snapshot)
+    _strict_runtime(payload, device)
     if device == 'mps' and (os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK') != '0' or not torch.backends.mps.is_available()):
         raise IntegrityError('Actual MPS requires availability and fallback disabled before startup')
-    payload = _validated(snapshot)
-    _strict_runtime(payload)
     if payload['method_schema']=='learned_scale_adapter.v1' and payload['method']['scale_backend'] not in (None,device):
         raise IntegrityError('Learned scales require the declared producing backend; cross-backend restoration unsupported')
     try:

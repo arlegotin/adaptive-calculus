@@ -587,8 +587,9 @@ def run_search_trial(trial: TrialSpec) -> ArtifactRef:
             'development_interval':[max(0.,center-radius),center+radius] if center is not None else None,
             'uncertainty':'observed article spread, not a confidence interval; single seed is unresolved',
             'settled':False,'lr_bracketed':False,'edge':True,'missing_mechanism':False,'eliminates_headroom':False,
-            'cost':{'complete_seconds':time.perf_counter()-started,
+            'cost':{'complete_seconds':None,'known_interval_seconds':time.perf_counter()-started,
                     'wall_interval':{'clock':'UTC','start':wall_start,'end':wall_start+time.perf_counter()-started},
+                    'wall_scope':{'complete':False,'boundary':'before_result_and_warmstart_publication'},
                     'ledger':None if state is None else {'stream':state.ledger.stream,'passes':state.ledger.passes,'elapsed':state.ledger.elapsed,'events':state.ledger.events},
                     'parent':config.get('parent'),'common_unknown_engineering_seconds':None},
             'memory':memory,'checkpoint':None if checkpoint is None else _ref(checkpoint),'configuration':config}
@@ -695,7 +696,8 @@ def _rank_development(rows, fresh_seeds):
             raise ValueError('Unsettled/bracket-edge or missing fresh full-budget core evidence')
         if row['curve'][-1]['budget']!=row['budget']:raise ValueError('Incomplete full-budget endpoint')
         score=row['curve'][-1]['development_bpb'];seconds=row['cost']['complete_seconds']
-        if any(type(x) not in (int,float) or not math.isfinite(x) or x<0 for x in (score,seconds)) or seconds==0:
+        if (type(score) not in (int,float) or not math.isfinite(score) or score<0
+                or (seconds is not None and (type(seconds) not in (int,float) or not math.isfinite(seconds) or seconds<=0))):
             raise ValueError('Finite development score and positive complete cost required')
         key=hashlib.sha256(canonical_bytes(row['recipe'])).hexdigest()
         groups.setdefault(key,[]).append(row);budgets.add(row['budget'])
@@ -704,11 +706,23 @@ def _rank_development(rows, fresh_seeds):
     for key,observations in groups.items():
         if {r['seed'] for r in observations}!=seeds or len(observations)!=len(seeds):
             raise ValueError('Every alternative requires identical fresh seeds without duplicates')
+        costs=[r['cost']['complete_seconds'] for r in observations]
+        total=None if any(value is None for value in costs) else sum(costs)
         alternatives.append({'recipe_sha256':key,'recipe':observations[0]['recipe'],
             'mean_bpb':sum(r['curve'][-1]['development_bpb'] for r in observations)/len(observations),
-            'end_to_end_seconds':sum(r['cost']['complete_seconds'] for r in observations),
+            'mean_complete_deployment_seconds':None if total is None else total/len(observations),
+            'sum_complete_deployment_seconds':total,
+            'end_to_end_seconds':total,  # Retained aggregate alias; selection uses the explicit mean.
+            'deployment_cost_unit':'seconds',
+            'deployment_cost_boundary':'warm_creation_online_training_evaluation_checkpoint_publication',
+            'excluded_costs':['offline_META','offline_tuning','observer_and_receipt_administration'],
             'seeds':sorted(seeds),'results':[r['trial_id'] for r in observations]})
-    alternatives.sort(key=lambda r:(r['mean_bpb'],r['end_to_end_seconds'],r['recipe_sha256']))
+    for row in alternatives:
+        if (row['mean_complete_deployment_seconds'] is None
+                and sum(other['mean_bpb']==row['mean_bpb'] for other in alternatives)>1):
+            raise ValueError('Exact BPB tie requires known complete deployment cost')
+    alternatives.sort(key=lambda r:(r['mean_bpb'],
+        math.inf if r['mean_complete_deployment_seconds'] is None else r['mean_complete_deployment_seconds'],r['recipe_sha256']))
     return {'winner':alternatives[0],'alternatives':alternatives}
 
 
@@ -847,6 +861,7 @@ def _seed_parent_lineage(record, source, manifest):
             raise ValueError('Parent initialization/data/RNG trajectory does not belong to its seed lineage')
         previous=stage['artifact'];last=current;last_checkpoint=checkpoint
     return {'parent':previous,'initial_weights':digest(initial['weights']),
+            'cost_producers':{stage['artifact']['sha256']:stage['producer'] for stage in record['parents']},
             'initialization_rng':digest(initialization),'initial_data_rng':digest(cursor['rng_states']),
             'terminal_state':digest({k:last[k] for k in ('weights','cursor','rng_streams','global_rng')})}
 
@@ -938,11 +953,10 @@ def _replication_authority(results, eligibility):
         if (str(Path(row['evidence']['path']).resolve()),row['evidence']['sha256']) not in produced:
             raise ValueError('Replication result lacks authenticated completed producer receipt')
         if finish['exit_code']!=0 or row['status']!='completed':raise ValueError('Failed full-budget replication must retain substantive failure status')
-        cost_run=trial_cost_record(ArtifactRef(**row['evidence']))
+        cost_run=trial_cost_record(ArtifactRef(**row['evidence']),producer=receipt,
+            parent_producers=lineages[config['seed']]['cost_producers'])
         if cost_run['unknown_ancestor_cost'] or cost_run['unknown_partial_work']:
             raise ValueError('Complete physical execution and parent costs required for full-budget selection')
-        started=datetime.fromisoformat(startup['launcher_started_utc']).timestamp()
-        cost_run['wall_intervals']=[{'clock':'UTC','start':started,'end':started+finish['elapsed_seconds']}]
         totals=cost_quality_frontier([cost_run],'total')['totals']
         if totals['total_targets'] is None or totals['seconds'] is None:
             raise ValueError('Unresolved complete replication cost')
@@ -1065,8 +1079,10 @@ def run_finalist_tournament(path) -> ArtifactRef:
                     cost_run={'run_id':trial.config_hash,'family':trial.family,'status':'failed','parents':[],
                         'events':[],'development_bpb':None,'unknown_partial_work':True,'common_engineering_seconds':None}
                 cost_run['wall_intervals']=[{'clock':'UTC','start':wall_start,'end':wall_start+elapsed}]
+                cost_run['wall_scope']={'complete':False,'boundary':'search_call_before_enclosing_report_publication'}
                 if cost_run.get('checkpoints'):
                     cost_run['checkpoints'][-1]['wall_intervals']=cost_run['wall_intervals']
+                    cost_run['checkpoints'][-1]['wall_scope']=cost_run['wall_scope']
                 cost_runs.append(cost_run)
         from .analysis.cost import cost_quality_frontier
         result['cost_quality_curves']={ledger:cost_quality_frontier(cost_runs,ledger) for ledger in ('stream','total','seconds','unique')}

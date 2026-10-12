@@ -88,6 +88,34 @@ def fetch_source(repository: str, configuration: str, revision: str, destination
         raise ValueError("Source identity must match the pinned repository/configuration/revision")
     pins = _pins()
     destination = Path(destination)
+    output = destination / "source-manifest.json"
+    if output.exists() or output.is_symlink():
+        # Reuse the authenticated observation itself, not a newly timestamped
+        # report about the same assets. An incomplete cache cannot repair it.
+        try:
+            report = json.loads(output.read_bytes())
+            if ((report['repository'], report['configuration'], report['revision']) != IDENTITY
+                    or report['provenance_manifest_sha256'] != PIN_MANIFEST_SHA256
+                    or len(report['assets']) != len(pins['assets'])):
+                raise ValueError('Source observation manifest identity mismatch')
+            for observed, asset in zip(report['assets'], pins['assets']):
+                path = destination / asset['name']
+                _verify(path, asset)
+                if (any(observed.get(key) != value for key, value in asset.items())
+                        or Path(observed['local_path']).resolve() != path.resolve()
+                        or observed['observed_bytes'] != asset['bytes']
+                        or observed['observed_sha256'] != asset['sha256']
+                        or observed['status'] not in ('authenticated_cache_reuse', 'verified_download')):
+                    raise ValueError('Source observation manifest asset mismatch')
+            if (report['observed_total_bytes'] != sum(a['bytes'] for a in pins['assets'])
+                    or report['new_download_bytes'] != sum(a['observed_bytes'] for a in report['assets']
+                                                           if a['status'] == 'verified_download')
+                    or any(report[key] != pins[key] for key in
+                           ('intended_use', 'protected_test_policy', 'license_discrepancy'))):
+                raise ValueError('Source observation manifest accounting mismatch')
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise ValueError(f'Existing source observation manifest cannot be authenticated: {error}') from error
+        return ArtifactRef(output, sha256_file(output))
     for asset in pins["assets"]:
         path = destination / asset["name"]
         if path.exists():
@@ -110,8 +138,8 @@ def fetch_source(repository: str, configuration: str, revision: str, destination
               "new_download_bytes": sum(a["observed_bytes"] for a in observed if a["status"] == "verified_download"),
               "intended_use": pins["intended_use"], "protected_test_policy": pins["protected_test_policy"],
               "license_discrepancy": pins["license_discrepancy"]}
-    output = destination / "source-manifest.json"
-    output.write_bytes(canonical_bytes(report) + b"\n")
+    with output.open('xb') as stream:
+        stream.write(canonical_bytes(report) + b"\n")
     return ArtifactRef(output, sha256_file(output))
 
 
@@ -151,6 +179,11 @@ def prepare_data(config: Path) -> ArtifactRef:
         if not isinstance(settings[key], str) or not settings[key].strip():
             raise ValueError(f"Source config {key} must be a nonempty string")
     output = Path(settings["output"])
+    split_names = ('synthetic',) if kind == 'synthetic' else ('train', 'validation', 'test')
+    generation = [output/'preparation.json', *(output/f'{split}.{suffix}'
+        for split in split_names for suffix in ('content.bin', 'rows.bin', 'articles.jsonl'))]
+    if any(path.exists() or path.is_symlink() for path in generation):
+        raise ValueError('Refusing existing preparation generation; use authenticated reuse or a fresh destination')
     source = None
     splits = {}
     if kind == "synthetic":
@@ -177,5 +210,6 @@ def prepare_data(config: Path) -> ArtifactRef:
               "derived_total_bytes": sum(s["derived_total_bytes"] for s in splits.values())}
     output.mkdir(parents=True, exist_ok=True)
     path = output / "preparation.json"
-    path.write_bytes(canonical_bytes(report) + b"\n")
+    with path.open('xb') as stream:
+        stream.write(canonical_bytes(report) + b"\n")
     return ArtifactRef(path, sha256_file(path))

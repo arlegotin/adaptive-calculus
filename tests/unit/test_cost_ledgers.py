@@ -11,6 +11,7 @@ def event(name, targets, *, stream=0, kind='loss', start=0, roles=()):
 def run(name, events, *, parents=(), start=0, end=10, score=None, status='completed'):
     return {'run_id':name, 'family':name, 'status':status, 'parents':list(parents),
             'events':events, 'wall_intervals':[{'clock':'UTC','start':start,'end':end}],
+            'wall_scope':{'complete':True,'boundary':'declared_synthetic_component'},
             'development_bpb':score, 'common_engineering_seconds':None}
 
 
@@ -172,8 +173,10 @@ def test_slow_crossing_curves_keep_actual_matched_stream_total_and_wall_cost():
     from ralup.analysis.cost import cost_quality_frontier
     fast=run('fast',[event('f',10,stream=10)],end=5,score=3.)
     slow=run('slow',[event('s1',10,stream=10),event('q1',2),event('s2',10,stream=10,start=10),event('q2',2)],start=5,end=20,score=2.)
-    slow['checkpoints']=[{'event_ids':['s1','q1'],'development_bpb':4.,'wall_intervals':[{'clock':'UTC','start':5,'end':12}]},
-                         {'event_ids':['s1','q1','s2','q2'],'development_bpb':2.,'wall_intervals':slow['wall_intervals']}]
+    slow['checkpoints']=[{'event_ids':['s1','q1'],'development_bpb':4.,'wall_intervals':[{'clock':'UTC','start':5,'end':12}],
+                         'wall_scope':{'complete':True,'boundary':'declared_synthetic_checkpoint_component'}},
+                         {'event_ids':['s1','q1','s2','q2'],'development_bpb':2.,'wall_intervals':slow['wall_intervals'],
+                          'wall_scope':slow['wall_scope']}]
     result=cost_quality_frontier([fast,slow],'total')
     assert [p['cost'] for p in result['frontier']]==[10,22,34]
     assert [p['development_bpb'] for p in result['frontier']]==[3.,3.,2.]

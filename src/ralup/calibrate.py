@@ -588,8 +588,16 @@ def train_warmstart(config: ResolvedConfig, partition: str, seed: int) -> Artifa
                 current = capture_snapshot(state)
                 check_cap('before_checkpoint_write')
                 return save_snapshot(current, output/'checkpoint')
-            checkpoint, seconds = _timed(state.model, publish_checkpoint)
-            _event(state, 'checkpoint_write', seconds)
+            _synchronize(state.model)
+            publication_start = time.perf_counter()
+            publication_outcome = 'failed'
+            try:
+                checkpoint = publish_checkpoint()
+                publication_outcome = 'completed'
+            finally:
+                _synchronize(state.model)
+                _event(state, 'checkpoint_write', time.perf_counter()-publication_start,
+                       outcome=publication_outcome, cost_role='component_within_project_elapsed')
         check_cap('before_warmstart_report')
         report = {'schema_version': 1, 'scope': 'immutable H08 engineering warmstart; duration selection pending M07',
                   'source_partition': partition, 'synthetic': payload['synthetic'],

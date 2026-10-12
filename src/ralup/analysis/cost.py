@@ -54,7 +54,8 @@ def _totals(roots):
     for run in runs:
         unknown |= bool(run.get('unknown_partial_work',False) or run.get('unknown_ancestor_cost',False))
         unknown_ancestor |= bool(run.get('unknown_ancestor_cost',False))
-        if run['wall_intervals'] is None:unknown_wall=True
+        if run['wall_intervals'] is None or run.get('wall_scope',{}).get('complete') is not True:
+            unknown_wall=True
         for span in run['wall_intervals'] or []:
             clock=span['clock'];a=_number(span['start'],'wall start');b=_number(span['end'],'wall end')
             if not isinstance(clock,str) or not clock or b<a:raise ValueError('Invalid wall interval')
@@ -92,6 +93,9 @@ def _totals(roots):
             'known_unique_targets':_union(coverage),'seconds':None if unknown_wall else known_seconds,
             'known_interval_seconds':known_seconds,'physical_events':len(events),
             'common_engineering_seconds':None,
+            'wall_scope':{'complete':not unknown_wall,
+                          'boundary':'union_of_declared_component_boundaries',
+                          'excluded_costs':['observer_and_receipt_administration']},
             'raw_classifications':{key:event['classifications'] for key,event in events.items()},
             'unknown_partial_work':unknown,'run_ids':[r['run_id'] for r in runs]}
 
@@ -114,7 +118,8 @@ def cost_quality_frontier(runs: list[dict], ledger: str) -> dict:
         if run['run_id'] in seen:raise ValueError('Duplicate root run identity')
         seen.add(run['run_id'])
         points=run.get('checkpoints') or [{'event_ids':list(dict.fromkeys(e['event_id'] for e in run['events'])),
-            'development_bpb':run.get('development_bpb'),'wall_intervals':run['wall_intervals']}]
+            'development_bpb':run.get('development_bpb'),'wall_intervals':run['wall_intervals'],
+            'wall_scope':run.get('wall_scope',{'complete':False})}]
         previous=set();ordered_ids=list(dict.fromkeys(e['event_id'] for e in run['events']));event_ids=set(ordered_ids)
         for point in points:
             ids=set(point['event_ids'])
@@ -122,7 +127,8 @@ def cost_quality_frontier(runs: list[dict], ledger: str) -> dict:
                 raise ValueError('Curve endpoint must bind an ordered prefix of distinct executed events')
             previous=ids
             partial={**run,'events':[e for e in run['events'] if e['event_id'] in ids],
-                     'wall_intervals':point['wall_intervals']}
+                     'wall_intervals':point['wall_intervals'],
+                     'wall_scope':point.get('wall_scope',{'complete':False})}
             totals=_totals([partial]);cumulative=_totals([*prefix,partial]);score=point['development_bpb']
             if score is not None:_number(score,'development BPB')
             matched.append({'run_id':run['run_id'],'status':run['status'],'development_bpb':score,**totals})
@@ -165,7 +171,64 @@ def extra_execution_events(prefix, raw):
     return list(events.values())
 
 
-def trial_cost_record(reference):
+def _trial_wall(reference, cost, producer):
+    """Authenticate one enclosing component boundary, with observer cost unknown.
+
+    A finish receipt authenticates outputs but is written after its own elapsed
+    observation. Only a separate observation binding that completed receipt can
+    close the declared deployment component. Its own administration is outside
+    this boundary, never a claim of complete project/engineering time.
+    """
+    from datetime import datetime
+    from pathlib import Path
+    from ..search import _read,_ref
+    from ..records import ArtifactRef,sha256_file
+    wall=cost.get('wall_interval')
+    intervals=[] if wall is None else [wall]
+    scope={'complete':False,'boundary':cost.get('wall_scope',{}).get('boundary',
+           'pre_publication_or_historical_unqualified_interval'),
+           'excluded_costs':['observer_and_receipt_administration'],'evidence':None}
+    if producer is None:return intervals or None,scope
+    startup=_read(ArtifactRef(**producer['startup']));finish=_read(ArtifactRef(**producer['finish']))
+    start=datetime.fromisoformat(startup['launcher_started_utc'])
+    ended=datetime.fromisoformat(finish['completed_utc'])
+    if start.tzinfo is None or ended.tzinfo is None or ended<start:
+        raise ValueError('Invalid enclosing producer chronology')
+    elapsed=_number(finish['elapsed_seconds'],'producer elapsed')
+    produced=set()
+    for item in finish['completed_objects']:
+        path=(Path(producer['finish']['path']).parent/item['path']).resolve()
+        artifact=ArtifactRef(path,item['sha256'])
+        if sha256_file(path)!=artifact.sha256:raise ValueError('Enclosing producer output hash mismatch')
+        produced.add((str(path),artifact.sha256))
+    if (str(reference.path.resolve()),reference.sha256) not in produced:
+        raise ValueError('Enclosing producer does not authenticate measured subject')
+    lower={'clock':'UTC','start':start.timestamp(),'end':start.timestamp()+elapsed}
+    intervals.append(lower)
+    scope.update(boundary='producer_interval_with_unknown_finish_publication',
+                 evidence={'startup':producer['startup'],'finish':producer['finish']})
+    enclosing=producer.get('enclosing_measurement')
+    if enclosing is None:return intervals,scope
+    observation=_read(ArtifactRef(**enclosing))
+    required={'schema','subject','producer','boundary','wall_interval','excluded_costs'}
+    if (set(observation)!=required or observation['schema']!='ralup.complete_component_interval.v1'
+            or observation['subject']!=_ref(reference)
+            or observation['producer']!={'startup':producer['startup'],'finish':producer['finish']}
+            or observation['boundary']!='launcher_start_through_all_outputs_and_finish_publication'
+            or observation['excluded_costs']!=['observer_and_receipt_administration']):
+        raise ValueError('Enclosing observation subject/producer/boundary mismatch')
+    full=observation['wall_interval']
+    if (set(full)!={'clock','start','end'} or full['clock']!='UTC'
+            or _number(full['start'],'enclosing start')!=start.timestamp()
+            or _number(full['end'],'enclosing end')<max(ended.timestamp(),lower['end'])
+            or any(span['clock']!='UTC' or span['start']<full['start'] or span['end']>full['end']
+                   for span in intervals)):
+        raise ValueError('Enclosing boundary does not cover the actual declared component')
+    return [full],{'complete':True,'boundary':observation['boundary'],
+                   'excluded_costs':observation['excluded_costs'],'evidence':enclosing}
+
+
+def trial_cost_record(reference, *, producer=None, parent_producers=None):
     """Authenticate new physical receipts; retain legacy counters as unknown.
 
     Historical aggregate counts cannot reveal physical pass IDs, relative wall
@@ -176,20 +239,23 @@ def trial_cost_record(reference):
     from ..search import _read,_ref
     from ..records import ArtifactRef
     row=_read(reference);cost=row['cost'];parents=[];unknown_parent=False
+    parent_producers={} if parent_producers is None else parent_producers
     if cost.get('parent'):
         original=_read(ArtifactRef(**cost['parent']))
         parent_ref=original.get('cost',{}).get('execution_record')
-        if parent_ref:parents.append(trial_cost_record(ArtifactRef(**parent_ref)))
+        if parent_ref:parents.append(trial_cost_record(ArtifactRef(**parent_ref),
+            producer=parent_producers.get(cost['parent']['sha256']),parent_producers=parent_producers))
         else:unknown_parent=True
-    wall=cost.get('wall_interval')
+    walls,scope=_trial_wall(reference,cost,producer)
     checkpoints=[]
     for i,point in enumerate(row['curve']):
         if 'execution_ids' not in point or 'wall_interval' not in point:continue
         final=i==len(row['curve'])-1
         checkpoints.append({'event_ids':[e['event_id'] for e in row['executions']] if final else point['execution_ids'],
-            'development_bpb':point['development_bpb'],'wall_intervals':[wall if final else point['wall_interval']]})
+            'development_bpb':point['development_bpb'],'wall_intervals':walls if final else [point['wall_interval']],
+            'wall_scope':scope if final else {'complete':False,'boundary':'intermediate_pre_publication'}})
     return {'run_id':row['trial_id'],'family':row['family'],'status':row['status'],
-        'parents':parents,'events':row.get('executions',[]),'wall_intervals':None if wall is None else [wall],
+        'parents':parents,'events':row.get('executions',[]),'wall_intervals':walls,'wall_scope':scope,
         'checkpoints':checkpoints,
         'development_bpb':row['curve'][-1]['development_bpb'] if row['curve'] else None,
         'common_engineering_seconds':None,'evidence':_ref(reference),'historical_raw_cost':cost,
