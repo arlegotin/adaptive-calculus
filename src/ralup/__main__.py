@@ -12,6 +12,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ralup", description="RALUP research configuration and records")
     parser.add_argument("--version", action="version", version=f"ralup {__version__}")
     subcommands = parser.add_subparsers(dest="command")
+    export = subcommands.add_parser('export', help='packed E2M1 bytes with exact decoded reference-forward verification')
+    export.add_argument('--checkpoint', type=Path, required=True)
+    export.add_argument('--output', type=Path, required=True)
     preparation = subcommands.add_parser("prepare-data", help="authenticate sources, audit duplicates and freeze non-scoring partitions")
     preparation.add_argument("--config", type=Path, required=True)
     config = subcommands.add_parser("config", help="validate and resolve a configuration to stdout")
@@ -60,6 +63,18 @@ def main(argv: list[str] | None = None) -> int:
         confirmation=subcommands.add_parser(command,help='locked paired confirmation; actual unresolved science refuses, synthetic fixtures explicit')
         confirmation.add_argument('--manifest',type=Path,required=True)
     args = parser.parse_args(argv)
+    if args.command == 'export':
+        from .export import export_checkpoint, load_export
+        try:
+            ref = export_checkpoint(args.checkpoint, args.output)
+            metadata = load_export(ref).metadata
+            print(canonical_bytes({'path':str(ref.path),'sha256':ref.sha256,
+                'actual_container_bytes':metadata['actual_container_bytes'],
+                'analytical_payload':metadata['analytical_payload'],'parity':metadata['parity'],
+                'scientific_final_model':False,'limits':metadata['limits']}).decode())
+            return 0
+        except (OSError, KeyError, TypeError, ValueError, RuntimeError, AssertionError) as error:
+            parser.error(str(error))
     if args.command is None:
         parser.print_help()
         return 0
