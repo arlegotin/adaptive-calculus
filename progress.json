@@ -55,7 +55,7 @@
     "Final C/LR/B_star, budgets, justified paired pilot, locked n and confirmation are absent; protected scoring is closed.",
     "Historical H08 real-shape numerical failures and N01 failed/partial work retain their recorded scopes; task engineering completion does not reopen numerical/scientific gates.",
     "Complete project cost and historical operand coverage remain unknown; source/licensing/fidelity limitations remain.",
-    "All 32 original engineering tasks, I01, scoped review, current CPU integration and exact late evidence preservation are accepted within their recorded scopes. Branch/worktree retained pending human integration choice. Scientific prerequisites remain open."
+    "All original engineering tasks and local main integration are accepted within their recorded scopes. The detached execution worktree backs retained local assets. Scientific prerequisites remain open."
   ],
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
@@ -116,8 +116,9 @@
     "final_integration": "accepted_CPU_scope_1287_passed_76_skipped_2_deselected",
     "final_integration_evidence": "docs/harness/final-integration-evidence.json",
     "historical_proof_scope": "Earlier broad CPU and native receipts apply only to their exact producing source/runtime; no current-source or universal native inference.",
-    "integration_choice": "pending human",
+    "integration_choice": "completed_local_merge_into_main",
     "late_preservation": "complete_exact_514_members_92_rulings",
+    "local_merge_evidence": "docs/harness/local-merge-evidence.json",
     "prior_tasks_complete": 32,
     "whole_branch_review": "complete_six_findings_addressed_scoped_rereview_clean"
   },

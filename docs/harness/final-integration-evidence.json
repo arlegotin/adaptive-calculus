@@ -128,8 +128,13 @@
     }
   },
   "complete_project_cost_seconds": null,
-  "integration_choice": "pending human; branch/worktree retained",
+  "integration_choice": "completed_local_merge_into_main; detached execution worktree retained as local asset backing",
   "late_full_plan_preservation": "accepted_exact_514_members_92_rulings_and_scoped_cleanup",
+  "local_merge_evidence": {
+    "bytes": 5896,
+    "path": "/Volumes/git/legotin/adaptive-calculus/docs/harness/local-merge-evidence.json",
+    "sha256": "7b86fe82e6703f4a0b596b94dedf4961be828c3be51ddfadfbb5a1f7dfce679e"
+  },
   "native_qualification": false,
   "producing_commit": "f2394fdc8982c40867a93e3a275c36214ad3cf74",
   "product_and_test_files_verified_unchanged": 151,

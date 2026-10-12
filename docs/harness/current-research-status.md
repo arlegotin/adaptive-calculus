@@ -18,4 +18,6 @@ The implementation completed all 32 original engineering task gates. The single 
 
 Current verification and late evidence preservation are administrative work. They do not train or select a policy, justify a confirmation sample, score the protected test, or change the research outcome. Complete project cost remains unknown.
 
-The exact late handoff preserves 514 plan artifacts and all 92 chronological rulings. Only recoverable task scratch was removed after authentication; the branch, worktree, raw experimental records and failed attempts remain intact. Integration is awaiting the user’s choice.
+The exact late handoff preserves 514 plan artifacts and all 92 chronological rulings. Only recoverable task scratch was removed after authentication; the implementation history, worktree, raw experimental records and failed attempts remain intact. The user selected local integration; `main` now contains the implementation. The detached execution worktree remains as backing storage for local assets.
+
+Merged-main verification completed **1,287 passed, 76 skipped and 2 deselected**. Git omitted ignored environment/data inputs, which were restored from exact retained originals. The recorder’s source-keyset check flagged one generated blocked-probe output; all 452 captured inputs were unchanged. The raw recorder failure and separate authentication supplement are retained in [local merge evidence](local-merge-evidence.json).

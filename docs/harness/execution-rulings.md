@@ -1,4 +1,4 @@
-# Rulings I made — all92 chronological entries
+# Rulings I made — all96 chronological entries
 
 These summaries follow execution chronology. The final evidence index retains every exact literal ledger entry. Each cost states the rework or limitation if the decision is wrong.
 
@@ -102,3 +102,8 @@ These summaries follow execution chronology. The final evidence index retains ev
 91. Accept the current CPU result only for software integration and finish a documentation-only inconclusive handoff. Cost: withdraw acceptance and correct evidence/status if authentication fails; scientific prerequisites remain open.
 
 92. Preserve every own-plan byte and all rulings within unchanged caps, then clean only that recoverable scratch after authentication. Cost: hold cleanup or restore its exact archive if assumptions fail; branch, worktree and durable evidence stay intact.
+
+93. Verify merged main with bounded CPU execution and unchanged resource guards. Cost: retain failures and withhold cleanup if source or guards fail.
+94. Keep the original worktree detached as asset backing and delete only the fully merged branch reference. Cost: local storage remains allocated until deliberate relocation.
+95. Restore omitted ignored environment inputs and data references from authenticated originals. Cost: remove the new references and withhold acceptance if provisioning is wrong; originals stay intact.
+96. Accept passing CPU behavior with immutable-input authentication while retaining the recorder’s generated-output scope failure. Cost: withdraw acceptance and perform specifically justified recording if the diagnosis is wrong.
