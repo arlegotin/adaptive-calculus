@@ -73,12 +73,23 @@ def main():
     parser.add_argument('--reserve-mib', type=int, required=True)
     parser.add_argument('--git-completion', action='store_true', help='requires specific root E07 completion-location authorization')
     parser.add_argument('--zero-data-admin', action='store_true')
+    parser.add_argument('--zero-data-fix1', action='store_true')
+    parser.add_argument('--administration-mib',type=int,default=16)
     parser.add_argument('command', nargs=argparse.REMAINDER)
     a = parser.parse_args(); command = a.command
     if command[:1] == ['--']: command = command[1:]
     if not command or '/' in a.name: raise ValueError('Explicit command and simple unique name required')
     if a.zero_data_admin and (not a.git_completion or a.name!='final-admin-v1' or command != [str(BASE/'environment-v1/core/bin/python'),'-B','docs/harness/e07-final-admin.py'] or a.allowance_mib!=4 or a.reserve_mib!=1):
         raise ValueError('Zero-Data exception is restricted to exact admitted finite final admin')
+    if a.zero_data_fix1:
+        expected={'red':(2,41),'green':(2,35),'report':(16,15),'plots':(2,9),'admin':(4,1)}
+        mode=a.name.removeprefix('fix1-').removesuffix('-v1')
+        if (not a.git_completion or a.name!=f'fix1-{mode}-v1' or mode not in expected or
+            (a.allowance_mib,a.reserve_mib)!=expected[mode] or a.administration_mib!=4 or
+            command != [str(BASE/'environment-v1/core/bin/python'),'-B','docs/harness/e07-fix1.py',mode]):
+            raise ValueError('Fix1 route restricted to exact finite administrative stages')
+    if not a.zero_data_fix1 and a.administration_mib!=16: raise ValueError('Other stages retain original admin bound')
+    zero_data_route=a.zero_data_admin or a.zero_data_fix1
     base=GIT_COMPLETION if a.git_completion else BASE
     dest = base/a.name
     if dest.exists(): raise ValueError('Immutable operation directory already exists')
@@ -89,7 +100,7 @@ def main():
     git_free = shutil.disk_usage(ROOT).free
     # 16 MiB covers capture source archive, receipts, logs and physical metadata;
     # child allowances include all child staging/cache/environment allocations.
-    forecast = (a.allowance_mib+16)*MIB
+    forecast = (a.allowance_mib+a.administration_mib)*MIB
     reserve = a.reserve_mib*MIB
     if max(before['logical_bytes']+git_before['logical_bytes']+prior_git['logical_bytes'], before['allocated_bytes']+git_before['allocated_bytes']+prior_git['allocated_bytes'])+forecast+reserve > 32*GIB:
         raise ValueError('Complete store forecast exceeds 32 GiB')
@@ -97,7 +108,7 @@ def main():
         subprocess.run(['git','check-ignore',str(GIT_COMPLETION.relative_to(Path('/Volumes/git/legotin/adaptive-calculus')))],
             cwd='/Volumes/git/legotin/adaptive-calculus',check=True,capture_output=True)
         if (git_before['allocated_bytes']+forecast+reserve>160*MIB or git_free-forecast-reserve-16*MIB< GIB
-                or (free<64*GIB and not a.zero_data_admin)):
+                or (free<64*GIB and not zero_data_route)):
             raise ValueError('E07 completion aggregate160MiB/Git1GiB bounds cannot admit stage')
         if base.exists() and not (base/'ownership.json').exists():
             raise ValueError('Existing completion root lacks E07 ownership marker')
@@ -114,11 +125,11 @@ def main():
         completion_root=str(base),git_completion_before=git_before,
         prior_E06_git_evidence=prior_git,
         owned_Data_writes_permitted=not a.git_completion,
-        zero_data_admin_exception=a.zero_data_admin, data_floor_pass_before=free>=64*GIB,
+        zero_data_admin_exception=a.zero_data_admin, zero_data_fix1_exception=a.zero_data_fix1, data_floor_pass_before=free>=64*GIB,
         forecast_physical_bytes=forecast, remaining_reserve_bytes=reserve,
         source={k:dict(sha256=hashlib.sha256(v).hexdigest(), bytes=len(v)) for k,v in raws.items()},
         source_archive='producer', child_allocation_bound_bytes=a.allowance_mib*MIB,
-        administration_allocation_bound_bytes=16*MIB, finish_receipt_reserved_bytes=16384,
+        administration_allocation_bound_bytes=a.administration_mib*MIB, finish_receipt_reserved_bytes=16384,
         allocation_scope='file st_blocks; child excludes producer/startup/ruling/redirected logs/finish; administration includes reserved finish bytes',
         runtime=dict(python=sys.version, executable=sys.executable,
             sw_vers=subprocess.check_output(['sw_vers'], text=True)),
@@ -138,6 +149,8 @@ def main():
         ruling=[line for line in context.splitlines() if line.startswith('Ruling: Complete E07')][-1]
         if a.zero_data_admin:
             ruling += '\n' + [line for line in context.splitlines() if line.startswith("Ruling: Authorize only E07's finite final administrative publication")][-1]
+        if a.zero_data_fix1:
+            ruling += '\n' + [line for line in context.splitlines() if line.startswith('Ruling: If the fresh FULL E07 task review confirms')][-1]
         (dest/'root-location-ruling.txt').write_text(ruling+'\n')
     env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(ROOT/'src'),
         PYTORCH_ENABLE_MPS_FALLBACK='0', E07_OPERATION=str(dest), E07_BASE=str(BASE),
@@ -158,9 +171,9 @@ def main():
     data_floor=bool(after_free>=64*GIB if a.git_completion else after_free-reserve>=64*GIB)
     complete_bounds=bounds and data_floor
     child=child_inventory(dest)
-    allocation=allocation_bounds(child['allocated_bytes'],owned['allocated_bytes']-child['allocated_bytes']+16384,a.allowance_mib*MIB,16*MIB)
+    allocation=allocation_bounds(child['allocated_bytes'],owned['allocated_bytes']-child['allocated_bytes']+16384,a.allowance_mib*MIB,a.administration_mib*MIB)
     bounds=bool(bounds and allocation['all_declared_allocation_bounds_pass'])
-    disposition=route_disposition(bounds,data_floor,a.zero_data_admin,result.returncode)
+    disposition=route_disposition(bounds,data_floor,zero_data_route,result.returncode)
     finish=dict(schema='ralup.e07_operation_finish.v3',
         git_floor_pass=shutil.disk_usage(ROOT).free-reserve-16*MIB>=GIB,
         git_aggregate_pass=git_after['allocated_bytes']+reserve<=160*MIB,

@@ -146,8 +146,17 @@
   },
   "engineering_status": {
     "prior_tasks_complete": 31,
-    "E07": "implemented_verified_pending_fresh_task_review",
+    "E07": "fix1_implemented_pending_fresh_scoped_review",
     "whole_branch_review": "root_owned_after_E07",
-    "evidence_index": "docs/harness/e07-evidence.json"
+    "evidence_index": "docs/harness/e07-evidence.json",
+    "E07_fix1": {
+      "base": "532370fa2d9936cef0d336f12d580fbc46fc815b",
+      "findings": [
+        "I1",
+        "I2"
+      ],
+      "verification": "16 focused report-contract tests; versioned actual raw report/CLI/shell/figures",
+      "source_applicability": "new report.py identity; CPU1250/native prior-source only; root owns final integration admission"
+    }
   }
 }

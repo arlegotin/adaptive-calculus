@@ -82,3 +82,35 @@ def test_reproduce_checks_immutable_evidence_before_output(tmp_path):
     assert result.status=='pass' # report reconstruction only, never a scientific pass
     e.path.write_bytes(b'{}')
     assert a.reproduce(e,{'destination':str(tmp_path/'bad')}).status=='blocked'
+
+
+@pytest.mark.parametrize('candidate,decision',[(12,'positive_quality_but_slower'),(None,'positive_quality_efficiency_unresolved'),(8,'positive_quality_and_lower_deployment_cost')])
+def test_positive_quality_report_preserves_unknown_project_cost(tmp_path,candidate,decision):
+    a=api();e=fixture(tmp_path)
+    e['claim']={'outcome':'positive','quality_comparable':True,'baseline_cost':10,
+        'candidate_cost':candidate,'meta_cost':None,'method_tuning_cost':None}
+    result=a.build_report([put(tmp_path/'evidence.json',e)],tmp_path/'report')
+    report=json.loads(result.path.read_bytes())
+    assert report['disposition']['decision']==decision
+    assert report['disposition']['efficiency_improvement'] is (candidate==8)
+    assert report['disposition']['break_even_reuses'] is None
+    assert report['disposition']['full_project_break_even_reuses'] is None
+    assert report['tables']['per_seed'][0]['cost']['project_seconds'] is None
+
+
+@pytest.mark.parametrize('corruption',['altered','missing'])
+def test_primary_ledgers_authenticated_without_reinterpreting_mapping(tmp_path,corruption):
+    a=api();e=fixture(tmp_path)
+    ledger=tmp_path/'baseline-sources.md';ledger.write_text('retained primary source ledger\n')
+    ledger_ref={'path':str(ledger),'sha256':sha256_file(ledger)}
+    mapping=put(tmp_path/'mapping.json',{'historical_original_path':'/absent/historical/identity.md','operational':ledger_ref})
+    e['sources'].append({'path':str(mapping.path),'sha256':mapping.sha256})
+    e['sections']['sources_and_deviations']={'primary_ledgers':[ledger_ref]}
+    root=put(tmp_path/'evidence.json',e)
+    assert a.reproduce(root,{'destination':str(tmp_path/'good')}).status=='pass'
+    if corruption=='altered':ledger.write_text('changed bytes\n')
+    else:ledger.unlink()
+    assert sha256_file(root.path)==root.sha256 and sha256_file(mapping.path)==mapping.sha256
+    with pytest.raises(ValueError,match='incomplete evidence'):
+        a.build_report([root],tmp_path/'bad-report')
+    assert a.reproduce(root,{'destination':str(tmp_path/'bad-reproduce')}).status=='blocked'

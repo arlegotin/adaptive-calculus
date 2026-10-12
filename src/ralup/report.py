@@ -54,6 +54,17 @@ def _validate(e):
     sources=e['sources']; known={(r['path'],r['sha256']) for r in sources}
     for r in sources:
         if sha256_file(Path(r['path']))!=r['sha256']: raise ValueError('incomplete evidence: source hash mismatch')
+    # Only operational primary ledgers are dereferenced here. Historical
+    # locations inside preserved mapping documents remain historical identities.
+    section=e['sections']['sources_and_deviations']
+    primary=section.get('primary_ledgers',[]) if isinstance(section,dict) else []
+    for r in primary:
+        try:
+            matches=sha256_file(Path(r['path']))==r['sha256']
+        except OSError as error:
+            raise ValueError('incomplete evidence: primary ledger unavailable') from error
+        if not matches:
+            raise ValueError('incomplete evidence: primary ledger source hash mismatch')
     rows=_read(e['trials'])
     ids=[r['run_id'] for r in rows]
     if len(set(ids))!=len(ids) or sorted(ids)!=sorted(e['registry']):
@@ -71,8 +82,9 @@ def _validate(e):
             raise ValueError('incomplete evidence: nonfinite development score')
         if row.get('provenance') not in ('supplied_historical','measured_cpu','measured_m3','inferred','simulated','exploratory','confirmatory'):
             raise ValueError('incomplete evidence: provenance label required')
-    if e.get('claim',{}).get('outcome')=='positive' and any(any(v is None for v in r['cost'].values()) for r in rows):
-        raise ValueError('incomplete evidence: unknown costs cannot support efficiency')
+    # Quality-only outcomes preserve unknown project/accounting costs.
+    # research_disposition gates deployment efficiency on comparable measured
+    # baseline/candidate costs, and each break-even numerator independently.
     return rows
 
 

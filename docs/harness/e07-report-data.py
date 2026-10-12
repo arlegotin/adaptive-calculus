@@ -126,7 +126,7 @@ history=auth(ref(BASE/'preservation-v1/history-mapping.json'))
 preserved={Path(r['original_path']).name:r for r in history['files']}
 def historical(name):
     item=preserved[name];assert sha256_file(Path(item['durable_path']))==item['sha256']
-    return {'path':item['durable_path'],'sha256':item['sha256']}
+    return ref(item['durable_path'])
 
 sections={k:[] for k in SECTIONS}
 sections['frozen_scope']={'research_cutoff':'2026-10-03','observation_period':'2026-10-03 through2026-10-12',
@@ -142,6 +142,9 @@ sections['provenance']={'evidence_classes':['supplied_historical','measured_cpu'
     'core_lock':ref(ROOT/'requirements.lock'),'environment_audit':ref(BASE/'preservation-proof-v2/environment-audit.json'),
     'history':ref(BASE/'preservation-v1/history-mapping.json'),
     'rulings':historical('root-ruling-index-v7.md'),'late_root_delta':'mandatory after E07/final review and before only-own-plan scratch cleanup'}
+if os.environ.get('E07_REPORT_SOURCE_APPLICABILITY'):
+    sections['provenance']['post_review_source_applicability']=ref(Path(os.environ['E07_REPORT_SOURCE_APPLICABILITY']))
+    sections['provenance']['historical_numerical_scope']='Original ALL78 equality holds only at its captured pre-fix boundary; report.py now has a new source identity. Historical CPU1250/native proof is not final-current-tree or cross-source restore evidence.'
 sections['per_seed']={'raw_rows':'tables.per_seed','independent_confirmation_seeds':0,
     'within_seed_meta_rollouts':'shared-parent panel reuse is not independent training-recipe replication',
     'effects_and_uncertainty':'No justified confirmatory paired intervals; M11 raw endpoint objectives remain available by horizon/input hash'}

@@ -30,3 +30,5 @@ All scientific runtime gates remain open. No source revision, numerical release 
 ## 12 October2026 — E07 exploratory terminal handoff
 
 Preserve the supported WP04 inconclusive/B0-null and WP06 NEEDS_REVISION outcome. Missing final artifacts, pilot variance, locked n and confirmation remain absent. Report reconstruction, current-source finite replay, historical byte recovery and engineering test passes have distinct authority. Keep all failures, unknown project costs and source/runtime provenance. The [E07 contract](docs/harness/e07-contract.md) and [evidence index](docs/harness/e07-evidence.json) bind the durable history and root-owned late-delta preservation obligation; root still owns final review/finishing.
+
+E07 fix1 (I1/I2): retain quality-only reports with unknown accounting and authenticate operational primary ledgers. Versioned report/CLI/shell/figures and focused16-test checks only; no numerical replay or scientific gate reopening.

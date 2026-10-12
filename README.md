@@ -146,3 +146,5 @@ divergence/invalidation costs, and both two-sided 97.5% paired intervals.
 Numerically executed synthetic byte fixtures exercise success, null, inconclusive
 and divergence outcomes. Their endpoint analyses explicitly remain engineering
 evidence and do not select a scientific n, budget, controller or comparator.
+
+The E07 I1/I2 report fix preserves positive quality with unknown costs and authenticates declared operational primary ledgers. Recorded CPU/native replay predates that report-source change; focused report-contract checks cover the fix. Historical full-state checkpoints do not gain compatibility with the new source identity.
