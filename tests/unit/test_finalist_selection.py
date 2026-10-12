@@ -226,6 +226,7 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
     import random
     import torch
     from dataclasses import asdict
+    from datetime import datetime, timedelta
     from test_batch_cursor import frozen_fixture
     from test_meta_selection import Evidence
     from ralup.config import canonical_bytes
@@ -252,12 +253,24 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
     monkeypatch.setattr(selection,'DATA_INDEX',index)
     block=asdict(make_block(doc['content_sha256'],0,len(raw),b'',raw,document_id=prefix+':development'))
     query=e.write({'blocks':[{k:list(v) if isinstance(v,tuple) else v for k,v in block.items()}]})
-    def receipt(inputs,outputs,start='2026-10-11T01:00:00+00:00'):
+    # Synthetic fixture contract times; these are not measured research costs.
+    warm_start='2026-10-11T01:00:00+00:00'
+    replication_start='2026-10-11T03:00:00+00:00'
+    def receipt(inputs,outputs,start=warm_start,*,subject=None):
+        started=datetime.fromisoformat(start);ended=started+timedelta(seconds=10)
         startup=e.write({'utc':start,'launcher_started_utc':start,'inputs':inputs,
                          'source':{k:{'sha256':v} for k,v in source.items()}})
-        finish=e.write({'exit_code':0,'elapsed_seconds':10.,'completed_utc':'2026-10-11T01:00:10+00:00',
+        finish=e.write({'exit_code':0,'elapsed_seconds':10.,'completed_utc':ended.isoformat(),
                         'completed_objects':[{'path':r['path'],'sha256':r['sha256']} for r in outputs]})
-        return {'startup':startup,'finish':finish}
+        producer={'startup':startup,'finish':finish}
+        if subject is not None:
+            producer['enclosing_measurement']=e.write({
+                'schema':'ralup.complete_component_interval.v1','subject':subject,
+                'producer':{'startup':startup,'finish':finish},
+                'boundary':'launcher_start_through_all_outputs_and_finish_publication',
+                'wall_interval':{'clock':'UTC','start':started.timestamp(),'end':ended.timestamp()},
+                'excluded_costs':['observer_and_receipt_administration']})
+        return producer
     lineages={};parents={}
     for seed in (10,71,72):
         initialization=torch.Generator().manual_seed(seed)
@@ -282,11 +295,12 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
         work=e.write({'trial_id':f'warm-{seed}','family':'warm','status':'completed','curve':[],
             'executions':[{'event_id':f'warm-{seed}:loss','kind':'loss','targets':4,'stream_targets':4,
                            'classifications':['training'],'source_intervals':[[prefix,f'doc-{seed}',0,4]]}],
-            'cost':{'wall_interval':{'clock':'UTC','start':10+seed,'end':11+seed}}})
+            'cost':{'wall_interval':{'clock':'UTC','start':datetime.fromisoformat(warm_start).timestamp(),
+                                    'end':datetime.fromisoformat(warm_start).timestamp()+1}}})
         parents[seed]=_ref(_write(tmp_path/f'parent-{seed}'/'warmstart.json',warmstart_report(
             ArtifactRef(**checkpoint),'target_train',{'complete_seconds':1.,'execution_record':work,
                 'ledger':{k:getattr(state.ledger,k) for k in ('stream','passes','elapsed','events')}})))
-        producer=receipt([origin_config],[initial,checkpoint,parents[seed],work])
+        producer=receipt([origin_config],[initial,checkpoint,parents[seed],work],subject=work)
         lineages[seed]={'seed':seed,'origin_config':origin_config,'initial_checkpoint':initial,
                         'parents':[{'artifact':parents[seed],'kind':'warmstart','producer':producer}]}
         if derived_parent:
@@ -320,7 +334,7 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
         lineages[72]={**lineages[71],'seed':72,'origin_config':e.change(lineages[71]['origin_config'],seed=72)}
         parents[72]=parents[71]
     rows=[];configs=[]
-    def result(seed,method,parent):
+    def result(seed,method,parent,*,start=replication_start):
         config={'seed':seed,'budget':8,'source_identity':source,'parent':parent,
                 'resolved':{'data':{'manifest':data}},'recipe':{'method':method}}
         config_ref=e.write(config);key=hashlib.sha256(canonical_bytes(config)).hexdigest()
@@ -329,12 +343,13 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
              'curve':[{'budget':8,'development_bpb':2.}],
              'executions':[{'event_id':key+':loss','kind':'loss','targets':8,'stream_targets':8,
                             'classifications':['training'],'source_intervals':[[prefix,'doc',0,8]]}],
-             'cost':{'parent':parent,'complete_seconds':10.,'wall_interval':{'clock':'UTC','start':100,'end':110}}}
+             'cost':{'parent':parent,'complete_seconds':10.,'wall_interval':{'clock':'UTC',
+                 'start':datetime.fromisoformat(start).timestamp(),'end':datetime.fromisoformat(start).timestamp()+10}}}
         reference=e.write(row)
         return {**row,'evidence':reference},config_ref
     tuning_seed=71 if damage=='retained_tuning_seed' else 10
-    tuning,tuning_config=result(tuning_seed,'AdamW',parents[tuning_seed])
-    tuning_producer=receipt([tuning_config],[tuning['evidence']])
+    tuning,tuning_config=result(tuning_seed,'AdamW',parents[tuning_seed],start=warm_start)
+    tuning_producer=receipt([tuning_config],[tuning['evidence']],subject=tuning['evidence'])
     for method in ('AdamW','Muon'):
         for seed in (71,72):
             parent=parents[seed]
@@ -353,11 +368,11 @@ def replication_fixture(tmp_path, monkeypatch, damage=None, *, derived_parent=Fa
     design_ref=e.write(design)
     tuning_refs=[tuning['evidence']]
     if damage=='omitted_tuning_result':
-        hidden,_=result(71,'AdamW',parents[71]);tuning_refs.append(hidden['evidence'])
+        hidden,_=result(71,'AdamW',parents[71],start=warm_start);tuning_refs.append(hidden['evidence'])
     assessment=e.write({'replication_design':design_ref,'status':'completed','result_refs':tuning_refs})
     completion=e.write({'schema':'ralup.finalist_replication_completion.v1','status':'completed','design':design_ref,
         'result_refs':[row['evidence'] for row in rows],
-        'producers':[receipt([design_ref],[row['evidence']],start='2026-10-11T03:00:00+00:00') for row in rows],
+        'producers':[receipt([design_ref],[row['evidence']],start=replication_start,subject=row['evidence']) for row in rows],
         'assessments':{hashlib.sha256(canonical_bytes(row['recipe'])).hexdigest():{'settled':True,'lr_bracketed':True,
             'edge':False,'missing_mechanism':False,'tuning_evidence':assessment} for row in rows}})
     analysis=e.write({'replication_design':design_ref,'replication_completion':completion})
@@ -369,6 +384,8 @@ def test_complete_replication_inventory_accepts_distinct_matched_training_units(
     rows,eligibility=replication_fixture(tmp_path,monkeypatch)
     assessed,_=_replication_authority(rows,eligibility)
     assert len(assessed)==4 and all(row['fresh_seed'] for row in assessed)
+    # Each child includes its disjoint ten-second warm and replication regions.
+    assert [row['cost']['complete_seconds'] for row in assessed]==[20.]*4
 
 
 def test_typed_derived_seed_lineage_preserves_separate_unknown_parent_cost_gate(tmp_path,monkeypatch):
