@@ -190,6 +190,13 @@ def _execution(run,trial,design,parent):
     if canonical_bytes({'parents':run['cost']['parents']}) != canonical_bytes({'parents':[warm]}):
         raise ValueError('Every deployment must retain authenticated common warm-start ancestry and cost')
     _totals([run['cost']])
+    # The shared cost union permits duplicate inherited references, but a root
+    # execution receipt must name each new physical pass once and never borrow
+    # a pass already charged anywhere in its authenticated warm ancestry.
+    physical_ids=[event['event_id'] for event in run['cost']['events']]
+    inherited_ids=set(_totals([warm])['raw_classifications'])
+    if len(set(physical_ids))!=len(physical_ids) or set(physical_ids)&inherited_ids:
+        raise ValueError('Root execution requires distinct new physical event IDs disjoint from warm ancestry')
     if status=='completed':
         target_stream=sum(e['stream_targets'] for e in run['cost']['events'])
         expected_stream=trial['budget']+(trial['extra_targets'] if trial['extra_targets_kind']=='extra_data_targets' else 0)
@@ -219,15 +226,25 @@ def _regressions(pairs,covariates):
     for contrast in sorted(set(r['contrast'] for r in rows)):
         slopes={};contrast_rows=[r for r in rows if r['contrast']==contrast]
         for covariate in covariates:
-            # Each mechanism keeps its independent seed-cluster summaries.
-            seeds=sorted(set(r['seed'] for r in contrast_rows));x=[];y=[]
+            # Retain within-panel article variation. Each complete training seed
+            # supplies one descriptive OLS slope (with intercept); seeds have
+            # equal weight in the aggregate, regardless of article count.
+            seeds=sorted(set(r['seed'] for r in contrast_rows));per_seed=[]
             for seed in seeds:
                 group=[r for r in contrast_rows if r['seed']==seed]
-                x.append(float(np.mean([r[covariate] for r in group])));y.append(float(np.mean([r['delta_bpb'] for r in group])))
-            denom=float(np.sum((np.asarray(x)-np.mean(x))**2)) if x else 0
-            slopes[covariate]={'n_seeds':len(seeds),'slope':float(np.sum((np.asarray(x)-np.mean(x))*(np.asarray(y)-np.mean(y)))/denom) if denom>0 else None}
+                x=np.asarray([r[covariate] for r in group],dtype=float)
+                y=np.asarray([r['delta_bpb'] for r in group],dtype=float)
+                centered_x=x-x.mean();denom=float(np.sum(centered_x**2))
+                slope=float(np.sum(centered_x*(y-y.mean()))/denom) if denom>0 else None
+                per_seed.append({'seed':seed,'n_articles':len(group),'slope':slope})
+            estimable=[row['slope'] for row in per_seed if row['slope'] is not None]
+            slopes[covariate]={'n_seeds':len(seeds),'n_estimable_seeds':len(estimable),
+                'per_seed':per_seed,'slope':float(np.mean(estimable)) if estimable else None,
+                'aggregation':'equal_weight_mean_over_estimable_complete_training_seeds'}
         by_contrast[contrast]=slopes
-    return {'role':'descriptive exploratory; seed remains independent unit','per_article':rows,
+    return {'schema':'ralup.attribution_article_regressions.v2',
+            'method':'within_seed_article_ols_intercept_then_equal_seed_mean',
+            'role':'descriptive exploratory; seed remains independent unit','per_article':rows,
             'by_contrast':by_contrast,'causal_inference':False}
 
 

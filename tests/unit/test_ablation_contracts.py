@@ -20,13 +20,18 @@ def ref(value):
     return {'path': str(value.path), 'sha256': value.sha256}
 
 
-def parent(root):
+def parent(root, *, nested_warm=False):
     inputs={key:ref(put(root,key+'.json',{'identity':key,'scope':'synthetic-engineering'}))
             for key in ('stream','model','budget','scorer','warm_start','continuation','normalizer','learning')}
     warm={'run_id':'warm','status':'completed','parents':[],
           'events':[{'event_id':'warm-pass','kind':'loss','targets':4,'stream_targets':4,
                      'classifications':['ordinary','backward'],'source_intervals':[['corpus','warm-doc',0,4]]}],
           'wall_intervals':None,'unknown_ancestor_cost':True}
+    if nested_warm:
+        warm['parents']=[{'run_id':'warm-ancestor','status':'completed','parents':[],
+            'events':[{'event_id':'warm-ancestor-pass','kind':'loss','targets':4,'stream_targets':4,
+                'classifications':['ordinary','backward'],'source_intervals':[['corpus','ancestor-doc',0,4]]}],
+            'wall_intervals':None,'unknown_ancestor_cost':True}]
     inputs['warm_start']=ref(put(root,'warm-authority.json',{'scope':'synthetic-engineering','cost':warm}))
     value={'schema':'ralup.attribution_parent.v1','scope':'synthetic-engineering',
         'source_identity':source_identity(),'source_revision':'engineering-current',
@@ -114,8 +119,8 @@ def test_post_test_parent_remains_exploratory_and_science_is_not_fixture(tmp_pat
     with pytest.raises(ValueError,match='producer'):module.make_ablation_trials(science,'static','explore',True)
 
 
-def runs(root, contrast='static', deltas=None, *, failed=None, retune=True, phase='explore', fresh=True, predeclared=True, post_test=False):
-    module=api();p=parent(root);trials=module.make_ablation_trials(p,contrast,phase,retune)
+def runs(root, contrast='static', deltas=None, *, failed=None, retune=True, phase='explore', fresh=True, predeclared=True, post_test=False, nested_warm=False):
+    module=api();p=parent(root,nested_warm=nested_warm);trials=module.make_ablation_trials(p,contrast,phase,retune)
     design={'schema':'ralup.attribution_family.v1','scope':'synthetic-engineering','phase':phase,
         'contrasts':[contrast],'seeds':[11,12,13,14],'alpha':.05,'multiplicity':'bonferroni',
         'predeclared':predeclared,'fresh_design':fresh,'selection_before_outcomes':not post_test,
@@ -144,7 +149,8 @@ def runs(root, contrast='static', deltas=None, *, failed=None, retune=True, phas
         value={'schema':'ralup.attribution_run.v1','scope':'synthetic-engineering',
                'trial':contract,'execution':ref(execution),'design_sha256':d.sha256,
                'status':cost['status'],'development_bpb':score,'cost':cost,
-               'articles':[{'document':'doc','development_bpb':score, 'entropy':float(i//2), 'length':64.+i//2} ]}
+               'articles':[{'document':'doc-a','development_bpb':score,'entropy':1.,'length':64.},
+                           {'document':'doc-b','development_bpb':score,'entropy':2.,'length':128.}]}
         results.append(put(root,f'run-{i}.json',value))
     return results,{'declaration':ref(d)}
 
@@ -380,3 +386,80 @@ def test_augmented_ordinary_control_must_charge_actual_additional_exposure(tmp_p
     execution=read_artifact(ArtifactRef(**v['execution']));execution['cost_sha256']=hashlib.sha256(canonical_bytes(v['cost'])).hexdigest()
     v['execution']=ref(put(tmp_path,'missing-extra-execution.json',execution));r[1]=put(tmp_path,'missing-extra.json',v)
     with pytest.raises(ValueError,match='augmentation'):api().analyze_attribution(r,d)
+
+
+@pytest.mark.parametrize('case',['duplicate_stream','duplicate_extra_compute','warm_event_reused','nested_warm_event_reused'])
+def test_completed_budget_rejects_repeated_or_ancestral_physical_passes(tmp_path,case):
+    contrast='extra_compute' if case=='duplicate_extra_compute' else 'static'
+    r,d=runs(tmp_path,contrast=contrast,nested_warm=case=='nested_warm_event_reused')
+    value=read_artifact(r[1]);cost=value['cost'];ordinary=cost['events'][0]
+    ordinary.update(targets=64,stream_targets=64,source_intervals=[['corpus','doc',0,64]])
+    if case=='duplicate_stream':
+        ordinary.update(targets=32,stream_targets=32,source_intervals=[['corpus','doc',0,32]])
+        cost['events']=[ordinary,copy.deepcopy(ordinary)]
+    elif case=='duplicate_extra_compute':
+        query={'event_id':'extra-query','kind':'loss','targets':32,'stream_targets':0,
+               'classifications':['query','backward','additional_loss'],'source_intervals':[['corpus','query-doc',0,32]]}
+        cost['events']=[ordinary,query,copy.deepcopy(query)]
+    else:
+        warm=cost['parents'][0]
+        ancestor=warm['parents'][0] if case=='nested_warm_event_reused' else warm
+        reused=copy.deepcopy(ancestor['events'][0])
+        ordinary.update(targets=60,stream_targets=60,source_intervals=[['corpus','doc',0,60]])
+        cost['events']=[ordinary,reused]
+    receipt=read_artifact(ArtifactRef(**value['execution']))
+    receipt['cost_sha256']=hashlib.sha256(canonical_bytes(cost)).hexdigest()
+    value['execution']=ref(put(tmp_path,'physical-cost-execution.json',receipt))
+    r[1]=put(tmp_path,'physical-cost-run.json',value)
+    with pytest.raises(ValueError,match='physical'):api().analyze_attribution(r,d)
+
+
+@pytest.mark.parametrize('contrast',['static','extra_compute'])
+def test_completed_budget_accepts_distinct_authenticated_physical_passes(tmp_path,contrast):
+    r,d=runs(tmp_path,contrast=contrast);value=read_artifact(r[1]);cost=value['cost']
+    cost['events']=[{'event_id':f'distinct-{i}','kind':'loss','targets':32,'stream_targets':32,
+                    'classifications':['ordinary','backward'],'source_intervals':[['corpus','doc',32*i,32*i+32]]}
+                   for i in range(2)]
+    if contrast=='extra_compute':
+        cost['events'].append({'event_id':'distinct-query','kind':'loss','targets':64,'stream_targets':0,
+                              'classifications':['query','additional_loss','backward'],
+                              'source_intervals':[['corpus','query-doc',0,64]]})
+    receipt=read_artifact(ArtifactRef(**value['execution']));receipt['cost_sha256']=hashlib.sha256(canonical_bytes(cost)).hexdigest()
+    value['execution']=ref(put(tmp_path,'distinct-execution.json',receipt));r[1]=put(tmp_path,'distinct-run.json',value)
+    result=api().analyze_attribution(r,d)
+    assert result['contrasts'][contrast]['complete_n']==4
+    assert result['project_cost']['raw_classifications']['distinct-0']==['ordinary','backward']
+
+
+def test_common_panel_regressions_preserve_article_variation_and_seed_slopes(tmp_path):
+    r,d=runs(tmp_path)
+    for i,reference in enumerate(r):
+        value=read_artifact(reference);seed_index=i//2
+        deltas=[-.1*(seed_index+1),-.2*(seed_index+1)]
+        for j,article in enumerate(value['articles']):
+            article['development_bpb']=1.+(deltas[j] if i%2==0 else 0.)
+        r[i]=put(tmp_path,f'common-panel-{i}.json',value)
+    result=api().analyze_attribution(r,d)
+    entropy=result['regressions']['by_contrast']['static']['entropy']
+    length=result['regressions']['by_contrast']['static']['length']
+    assert entropy['slope']==pytest.approx(-.25)
+    assert entropy['n_seeds']==entropy['n_estimable_seeds']==4
+    assert [row['slope'] for row in entropy['per_seed']]==pytest.approx([-.1,-.2,-.3,-.4])
+    assert length['slope']==pytest.approx(-.25/64)
+    assert result['regressions']['method']=='within_seed_article_ols_intercept_then_equal_seed_mean'
+    assert result['regressions']['causal_inference'] is False
+
+
+@pytest.mark.parametrize('case',['one_article','constant_covariate'])
+def test_insufficient_within_seed_variation_is_explicitly_null(tmp_path,case):
+    r,d=runs(tmp_path)
+    for i,reference in enumerate(r):
+        value=read_artifact(reference)
+        if case=='one_article':value['articles']=value['articles'][:1]
+        else:
+            for article in value['articles']:article.update(entropy=1.,length=64.)
+        r[i]=put(tmp_path,f'insufficient-article-{i}.json',value)
+    entropy=api().analyze_attribution(r,d)['regressions']['by_contrast']['static']['entropy']
+    assert entropy['slope'] is None
+    assert entropy['n_seeds']==4 and entropy['n_estimable_seeds']==0
+    assert all(row['slope'] is None for row in entropy['per_seed'])

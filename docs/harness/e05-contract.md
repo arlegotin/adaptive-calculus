@@ -50,7 +50,9 @@ selection timing/freshness and entropy/length regression covariates. Every
 explicit retraining and tuning status, independent backbone LR evidence,
 retained target and META feature/history/EMA counts and mandatory operational
 telemetry. Every cost graph includes the exact authenticated common warm
-ancestry. Raw ordinary augmented B* uses actual cost and may omit unused policy
+ancestry. Root execution receipts reject repeated physical pass IDs and any ID
+already present in that ancestry, including nested ancestors; inherited project
+unions still deduplicate shared work. Raw ordinary augmented B* uses actual cost and may omit unused policy
 features; it still supplies operational telemetry. Additional exposure is an
 explicit treatment above the shared base logical budget. These engineering
 receipts have no scientific producer authority.
@@ -64,8 +66,13 @@ cannot be relabeled retrained, and norm matching remains oracle diagnostic.
 Fresh predeclared confirmation families are supported as engineering fixtures;
 post-test selection stays exploratory and requires a fresh design. Scientific
 mechanism establishment is always false for engineering inputs. Article BPB is
-paired internally; entropy/length slopes keep mechanisms separate, aggregate at training-seed level and
-remain descriptive, without treating articles as independent training units.
+paired internally. Nested `ralup.attribution_article_regressions.v2` reports fit
+entropy/length OLS slopes with an intercept within each complete training seed,
+then take an equal-weight mean over estimable seed slopes for each mechanism.
+Every seed retains its article count and slope (null for insufficient within-seed
+variation); total and estimable seed counts and aggregation scope are explicit.
+These regressions remain descriptive, without treating articles as independent
+training units or making new causal/inferential claims.
 
 Cost analysis reuses physical-pass identities, overlapping classifications,
 nested same-clock wall unions and global source-offset unions. Project cost

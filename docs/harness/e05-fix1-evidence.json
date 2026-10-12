@@ -1,0 +1,168 @@
+{
+  "administration_locations": {
+    "E05-report.md": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-administration-v1/E05-report.md",
+    "commit.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-administration-v1/commit.json",
+    "finish.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-administration-v1/finish.json",
+    "startup.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-administration-v1/startup.json"
+  },
+  "administration_locations_are_not_yet_completed_evidence": true,
+  "attempts": [
+    {
+      "attempt": "fix1-red-v1",
+      "child_cpu_system_seconds": 0.377098,
+      "child_cpu_user_seconds": 1.387972,
+      "child_output_bytes": 1294956,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "-k",
+        "repeated_or_ancestral or distinct_authenticated or common_panel or insufficient_within_seed"
+      ],
+      "data_free_after": 72444854272,
+      "elapsed_seconds": 14.071550540997123,
+      "exit_code": 1,
+      "git_free_after": 6900858880,
+      "launcher_cpu_system_seconds": 2.36674,
+      "launcher_cpu_user_seconds": 4.370337,
+      "local_time": "2026-10-12T03:18:52.755642+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/finish.json",
+          "sha256": "3e00ff0d1bc15937559dbbf2fe875b6ae798d40a7a0bc29c4bfeac0be36c5fd4"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/runtime-observation.json",
+          "sha256": "db8b5128504d8056d59683e39014053047f1189a3df4898827f272b386a906d0"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/startup.json",
+          "sha256": "e93b14c1590c51ba2bba3534829f893d9171fd55b26586b2865e7c12111d826d"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/stdout.txt",
+          "sha256": "79d6b0bc80584c87cd5f65d80f4eb8adeb6570ac05c40fc36e1d0ce345318574"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-red-v1/producer",
+      "source_inventory_sha256": "226a0961127512dc7310a544a0169973418615b17a5e79707dd940d34b124523",
+      "storage_before": {
+        "allocated_bytes": 26099221253,
+        "complete_remaining_fix_forecast_bytes": 80564542,
+        "data_free_before": 69441384448,
+        "forecast_scope": "exact source archive, encoded startup/inventory, runtime/diff and bounded child/finish outputs",
+        "git_free_before": 6901288960,
+        "write_budget": {
+          "archive_bytes": 1731618,
+          "child_output_allowance_bytes": 16777216,
+          "finish_allowance_bytes": 8388608,
+          "minimum_forecast_bytes": 80564542,
+          "other_fixed_bytes": 9532,
+          "small_source_git_allowance_bytes": 16777216,
+          "startup_bytes": 53657568
+        }
+      },
+      "store_bytes_before_finish": 26155914927,
+      "summary": [
+        "E         comparison failed",
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_completed_budget_rejects_repeated_or_ancestral_physical_passes[duplicate_stream]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_completed_budget_rejects_repeated_or_ancestral_physical_passes[duplicate_extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_completed_budget_rejects_repeated_or_ancestral_physical_passes[warm_event_reused]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_completed_budget_rejects_repeated_or_ancestral_physical_passes[nested_warm_event_reused]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_common_panel_regressions_preserve_article_variation_and_seed_slopes",
+        "FAILED tests/unit/test_ablation_contracts.py::test_insufficient_within_seed_variation_is_explicitly_null[one_article]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_insufficient_within_seed_variation_is_explicitly_null[constant_covariate]",
+        "7 failed, 2 passed, 98 deselected in 2.28s"
+      ],
+      "utc": "2026-10-12T01:18:52.755622+00:00"
+    },
+    {
+      "attempt": "fix1-green-v1",
+      "child_cpu_system_seconds": 0.9383279999999999,
+      "child_cpu_user_seconds": 2.352074,
+      "child_output_bytes": 6786374,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 72389177344,
+      "elapsed_seconds": 12.94543383299606,
+      "exit_code": 0,
+      "git_free_after": 6884093952,
+      "launcher_cpu_system_seconds": 2.046921,
+      "launcher_cpu_user_seconds": 4.339196,
+      "local_time": "2026-10-12T03:41:39.965009+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/finish.json",
+          "sha256": "5c400661f98844e6969d155b31a65b52005e85aee5ca940a55aec389174445a7"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/runtime-observation.json",
+          "sha256": "b007635af81b03dffeec087e0219a4ba134d988bd31f2c1564715905f8bf243a"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/startup.json",
+          "sha256": "cf0e5bbd9334701bf61ce3ea82112c8c97b7181e037bdfc6374b61a32eda3bf0"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/stdout.txt",
+          "sha256": "5516aedf0912e60571c5917ea09e138a48fbdde25257955b96c0f517bbd28f88"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/fix1-green-v1/producer",
+      "source_inventory_sha256": "b545ea6cebdc0ae9c1e66ced9e7a5ac0f9a3930d0b4e2ce81eee796aa20b1b80",
+      "storage_before": {
+        "allocated_bytes": 26156020203,
+        "complete_remaining_fix_forecast_bytes": 80648134,
+        "data_free_before": 69389631488,
+        "forecast_scope": "exact source archive, encoded startup/inventory, runtime/diff and bounded child/finish outputs",
+        "git_free_before": 6884143104,
+        "write_budget": {
+          "archive_bytes": 1732872,
+          "child_output_allowance_bytes": 16777216,
+          "finish_allowance_bytes": 8388608,
+          "minimum_forecast_bytes": 80648134,
+          "other_fixed_bytes": 13199,
+          "small_source_git_allowance_bytes": 16777216,
+          "startup_bytes": 53736239
+        }
+      },
+      "store_bytes_before_finish": 26218288887,
+      "summary": [
+        "107 passed in 3.20s"
+      ],
+      "utc": "2026-10-12T01:41:39.964992+00:00"
+    }
+  ],
+  "final_verification": "fix1-green-v1",
+  "fix_base": "8b1add1e3e9d772b4a9a44cdb5417bf5c599fe50",
+  "old_full_suite_and_cli_outcomes": "unchanged original identities; not rerun or final-fix-source evidence",
+  "original_task_base": "b6aba9fa1d7eb239c7c2a1c08fe3a0f52caafc44",
+  "regression_schema": "ralup.attribution_article_regressions.v2",
+  "research_cutoff": "2026-10-03",
+  "schema": "ralup.e05_fix1_evidence_index.v1",
+  "scientific_mechanism_established": false,
+  "scope": "I1/I2 deterministic synthetic contract verification; no training/native/scientific/protected result",
+  "unknown_enclosing_editing_tool_engineering_cost": null
+}
