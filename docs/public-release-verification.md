@@ -40,3 +40,9 @@ Raw verification logs and installer provenance remain in the local ignored `arti
 - `clean-numerics.json`: `862a9f155f5bf304a38491c0e79face2854b0d3f0bf4fc871615d9110b27222f`
 - `clean-quantizer.json`: `a2edcdb0c6a49a766f262d71ee3200b274aa938b1d616df99a7cf0c9e887caf3`
 - `clean-harness.json`: `350107acb48b9610d8281b903b53a3786650db59f7845b8676f0d6af7caf631c`
+
+## Local integration
+
+Final whole-branch review approved the public preparation without outstanding findings. The reviewed commits were fast-forwarded into local `main`. A separate check of that checkout at `e6b6eea` passed **1,286 tests with86 explicit skips in116.16seconds**, exit0, using the same fresh numerical environment and the explicit CPU-only mode. This check covers the main source path and its pre-existing ignored environment records, which differ from the clean clone's newly prepared report. Every pre-existing environment JSON hash remained unchanged. The Git volume retained more than1GiB free. Native execution, protected-test scoring and GitHub publication were not performed.
+
+Merged-main log SHA-256: `2c64d11773ffc7adeadde486c3d37a5acda8561f36b14d6c1e14ed435d8420f7`. Raw log and preservation check: local `artifacts/public-release-v1/main-pytest.log` and `main-verification.json`.
