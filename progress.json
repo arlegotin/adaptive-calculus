@@ -55,7 +55,7 @@
     "Final C/LR/B_star, budgets, justified paired pilot, locked n and confirmation are absent; protected scoring is closed.",
     "Historical H08 real-shape numerical failures and N01 failed/partial work retain their recorded scopes; task engineering completion does not reopen numerical/scientific gates.",
     "Complete project cost and historical operand coverage remain unknown; source/licensing/fidelity limitations remain.",
-    "Fresh E07 task review, root whole-branch review and later durable root delta remain required."
+    "All 32 engineering task gates are closed. Final integration acceptance requires the consolidated six-finding fix, one scoped rereview, root current-source CPU verification and later durable root delta. Historical broad/native proofs retain producing-source scope."
   ],
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
@@ -80,7 +80,7 @@
   ],
   "current_gate": "WP06_NEEDS_REVISION",
   "engineering_status": {
-    "E07": "fix2_implemented_pending_fresh_scoped_review",
+    "E07": "complete_fix2_scoped_review_clean",
     "E07_fix1": {
       "base": "532370fa2d9936cef0d336f12d580fbc46fc815b",
       "findings": [
@@ -97,8 +97,18 @@
       "verification": "current index ref authentication and actual-path regression only"
     },
     "evidence_index": "docs/harness/e07-evidence.json",
-    "prior_tasks_complete": 31,
-    "whole_branch_review": "root_owned_after_E07"
+    "prior_tasks_complete": 32,
+    "whole_branch_review": "completed_0_critical_2_important_4_minor_consolidated_fix_verified_pending_scoped_rereview",
+    "final_integration": "pending_one_scoped_rereview_and_root_current_source_CPU",
+    "consolidated_fix": {
+      "base": "955389a2406a3aebfdb0d136ea8e42ac649e2a2c",
+      "implementation_commit": "ddab901",
+      "findings": ["I1", "I2", "M1", "M2", "M3", "M4"],
+      "verification": "32 focused regressions passed together; 18 adjacent cases passed; all failed attempts retained",
+      "scope": "Synthetic CPU only; exact product source captured. No broad/native/scientific/protected rerun.",
+      "resource_status": "Admitted zero-Data-write route/component/source guards passed; raw Data free floor failed and all_bounds_pass remains false."
+    },
+    "historical_proof_scope": "Earlier broad CPU and native receipts apply only to their exact producing source/runtime; no current-source or universal native inference."
   },
   "historical_progress_before_e07": {
     "M11_status": "WP06_NEEDS_REVISION_pending_independent_review",
@@ -129,7 +139,7 @@
     }
   },
   "last_valid_checkpoint": null,
-  "next_command": "Fresh E07 task review, then root-owned whole-branch review and later durable root delta before any only-own-plan cleanup.",
+  "next_command": "Root owns one scoped rereview of the verified consolidated six-finding fix, separately admitted final-current CPU integration and durable late preservation.",
   "schema_version": 1,
   "tasks": {
     "E01": "complete",
@@ -138,7 +148,7 @@
     "E04": "complete",
     "E05": "complete",
     "E06": "complete",
-    "E07": "implemented_pending_review",
+    "E07": "complete",
     "F01": "complete",
     "F02": "complete",
     "F03": "complete",

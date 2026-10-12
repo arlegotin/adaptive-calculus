@@ -4,6 +4,10 @@ Research specification and implementation for a representation-aware learned upd
 
 Current research disposition: **exploratory and inconclusive**. WP04 has no accepted robust B0; WP06 needs revision after observed noise and horizon-dependent rank reversals. Final C/LR/B*, training budgets, a justified paired pilot, locked n and confirmation manifest are absent. Official test remains protected. Engineering task completion does not establish an improvement or efficiency claim.
 
+All 32 engineering task gates are closed. The final integration review's six bounded fixes have passed 32 new focused CPU regressions and 18 adjacent cases. One scoped rereview and root's current-source integration gate remain before branch acceptance. Earlier broad CPU and native receipts retain their exact producing-source/runtime scope and do not verify this changed tree. Historical research reports and scientific nulls remain unchanged.
+
+Complete-state restoration now requires both archived source identity and a matching live Python/numerical-runtime/platform/backend fingerprint. Historical archives remain readable for the separate authenticated model-only reset and DATA-only contracts. Measured pre-publication intervals remain cost lower bounds; complete deployment seconds require an authenticated enclosing boundary for every warm ancestor and child. Ranking exposes the warm-inclusive mean separately from its aggregate sum; offline META/tuning and unknown observer/project administration stay separate.
+
 The current handoff is documented in [the E07 contract](docs/harness/e07-contract.md) and [the evidence index](docs/harness/e07-evidence.json). The index binds the local immutable evidence root, separately recreated core environment, plotting environment, raw report inputs, standalone figures, exact historical preservation and finite replay receipts. These are local research artifacts; source and dataset rights limitations remain recorded.
 
 To regenerate a report from an immutable evidence file, use an explicit compatible interpreter and a new destination:
