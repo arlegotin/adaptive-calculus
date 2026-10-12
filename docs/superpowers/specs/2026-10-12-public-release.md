@@ -4,7 +4,7 @@ User authorization: prepare the repository for public reuse, match recent Artem 
 
 ## Required outcome
 
-A fresh checkout has documented portable installation, a passing CPU engineering suite without private evidence/data, runnable numerical checks, and CI using those same commands. Optional historical-evidence tests are clearly separated and opt-in, retaining real authentication. Production protected-test, source/runtime identity, and scientific gates remain strict. Synthetic fixtures may supply explicitly synthetic environment evidence rather than borrow an ignored historical environment file.
+A fresh checkout has documented portable installation, a passing CPU engineering suite without private evidence/data, runnable numerical checks, and CI using those same commands. Optional historical-evidence tests are clearly separated and opt-in, retaining real authentication. Production protected-test, source/runtime identity, and scientific gates remain strict. Portable tests may prepare a fresh real environment discovery report, explicitly scoped as engineering-test setup, when the ignored expected report is absent; preserve existing reports and clean up only newly owned files. They must not borrow historical evidence or claim native/scientific qualification.
 
 Original code/scripts/tests/configuration use AGPL-3.0-only; original prose/reports use CC-BY-4.0, following ExactKV at 9696abc9b37d4f8429e17612ea9024b7924cc0d4. Preserve verbatim license texts and third-party notices, especially copied MIT SOAP source. CITATION.cff requests author/repository/exact-commit credit without imposing extra license terms. No corpus redistribution or copied restrictive code is introduced.
 
