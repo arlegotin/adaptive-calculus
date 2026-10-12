@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you build on this software, findings, or ideas, please cite this repository and the exact commit used."
+type: software
+title: "RALUP: Representation-aware learned update policy"
+authors:
+  - family-names: Legotin
+    given-names: Artem
+version: 0.1.0
+license:
+  - AGPL-3.0-only
+  - CC-BY-4.0
+repository-code: "https://github.com/arlegotin/adaptive-calculus"
+url: "https://github.com/arlegotin/adaptive-calculus"
+abstract: >-
+  Exploratory research on learned update selection for a byte Transformer with
+  simulated E2M1 FP4 forward weights and FP32 shadows, arithmetic and optimizer
+  state. Backpropagation supplies gradients. Two provisional one-step ES policies
+  from the same proxy META task improved short endpoints but worsened the
+  remaining 496-step endpoint by +0.006914 and +0.013553 bits per byte relative
+  to the initialized policy. These diagnostics establish no scientific advantage;
+  matched finalist comparisons and protected-test confirmation remain unresolved.
+keywords:
+  - learned optimizers
+  - quantization
+  - E2M1
+  - byte language models
+  - research infrastructure
+  - inconclusive results

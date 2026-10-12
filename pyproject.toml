@@ -8,6 +8,16 @@ version = "0.1.0"
 description = "Validated configuration and records for RALUP research"
 readme = "README.md"
 requires-python = ">=3.11"
+license = "AGPL-3.0-only AND CC-BY-4.0 AND MIT"
+license-files = [
+    "LICENSE",
+    "licenses/CC-BY-4.0.txt",
+    "NOTICE",
+    "LICENSING.md",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses/methods/soap/LICENSE",
+]
+authors = [{name = "Artem Legotin"}]
 dependencies = []
 
 [project.optional-dependencies]
