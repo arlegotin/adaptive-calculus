@@ -43,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     run = subcommands.add_parser("run", help="bounded explore engine with explicit smoke or pilot-bootstrap purpose")
     run.add_argument("--phase", choices=("explore",), required=True)
     run.add_argument("--config", type=Path, required=True)
-    run.add_argument('--suite', choices=('warmstart','headroom'), help='separate bounded partition warmstarts')
+    run.add_argument('--suite', choices=('warmstart','headroom','attribution'), help='separate bounded partition warmstarts')
     calibration = subcommands.add_parser('calibrate', help='bounded measured engineering capacity; no scientific duration selection')
     calibration.add_argument('--config', type=Path, required=True)
     meta = subcommands.add_parser('meta-train',help='frozen full-state exploratory ES campaign')
@@ -127,13 +127,16 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(str(error))
     if args.command == "run":
         try:
-            if args.suite == 'headroom':
+            if args.suite == 'attribution':
+                from .analysis.attribution import run_attribution_suite
+                result = run_attribution_suite(args.config)
+            elif args.suite == 'headroom':
                 from .search import run_headroom
                 result = run_headroom(args.config)
             else:
                 result = _run_warmstarts(args.config) if args.suite == 'warmstart' else _run_explore(args.config)
             print(canonical_bytes(result).decode())
-            return 0
+            return 2 if args.suite == 'attribution' and result.get('status') == 'blocked' else 0
         except (OSError, TypeError, ValueError, RuntimeError) as error:
             parser.error(str(error))
     if args.command == 'calibrate':

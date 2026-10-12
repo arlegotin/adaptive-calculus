@@ -1,0 +1,168 @@
+{
+  "contrasts": [
+    "learned_lr_wider",
+    "learned_lr_shared",
+    "static",
+    "initialized",
+    "additive_only",
+    "multiplicative_only",
+    "assistance_only",
+    "alpha_zero",
+    "norm_matched",
+    "magnitude_preconditioned_additive",
+    "madam"
+  ],
+  "execution": "make_ablation_trials(authenticated_parent, contrast, phase, retune)",
+  "full_cartesian_required": false,
+  "group": "actions",
+  "phase": "explore",
+  "registry": {
+    "additive_only": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {},
+      "variant": "additive_only"
+    },
+    "alpha_zero": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "alpha": 0
+      },
+      "variant": "alpha_zero_retrained"
+    },
+    "assistance_only": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {},
+      "variant": "assistance_only"
+    },
+    "initialized": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": false,
+      "settings": {
+        "actions": [
+          0,
+          1,
+          1
+        ]
+      },
+      "variant": "initialized"
+    },
+    "learned_lr_shared": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "h_range": [
+          0.25,
+          4
+        ],
+        "parameters": 49
+      },
+      "variant": "learned_lr49_shared_range"
+    },
+    "learned_lr_wider": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "h_range": [
+          0.25,
+          32
+        ],
+        "parameters": 49
+      },
+      "variant": "learned_lr49"
+    },
+    "madam": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": false,
+      "settings": {
+        "moment_coordinates": "original_W"
+      },
+      "variant": "madam_clean_fp32"
+    },
+    "magnitude_preconditioned_additive": {
+      "backbone_lr_tuning": "independent",
+      "geometry": "first_order_c_times_z",
+      "group": "actions",
+      "is_madam": false,
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": false,
+      "settings": {
+        "geometry": "first_order_c_times_z",
+        "is_madam": false,
+        "post_exponential_normalization": false
+      },
+      "variant": "first_order_magnitude_preconditioned_additive"
+    },
+    "multiplicative_only": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {},
+      "variant": "multiplicative_only"
+    },
+    "norm_matched": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": true,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": false,
+      "settings": {
+        "oracle": "RMS_of_complete_candidate_displacement"
+      },
+      "variant": "candidate_rms_oracle_additive"
+    },
+    "static": {
+      "backbone_lr_tuning": "independent",
+      "group": "actions",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "objective": "same_future_query_loss",
+        "parameters": 3
+      },
+      "variant": "static3"
+    }
+  },
+  "retune": true,
+  "schema": "ralup.ablation_catalog.v1",
+  "scientific_prerequisites": "finalized trained parent and independently tuned learning authority",
+  "scope": "prioritized_contracts_not_scientific_results"
+}

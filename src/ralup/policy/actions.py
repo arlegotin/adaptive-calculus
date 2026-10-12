@@ -50,6 +50,17 @@ def multiplicative_proposal(u0: Tensor, da: Tensor) -> Tensor:
 
 
 @torch.no_grad()
+def magnitude_preconditioned_additive(u0: Tensor, da: Tensor) -> Tensor:
+    """S17 first-order c*z control, before exponential and separately LR tuned."""
+    _validate(u0, da)
+    a = torch.sign(u0)*da/_rms(u0).clamp_min(1e-30)
+    z = u0*a
+    rz = _rms(z)
+    c = _rms(da)/rz if int(bits(rz)) != 0 else torch.zeros_like(rz)
+    return c*z
+
+
+@torch.no_grad()
 def assist_boundaries(u0: Tensor, d: Tensor, tau: float, context: QuantizationContext) -> tuple[Tensor, dict]:
     """Return shadow U, accepted/rejected masks and measured displacement excess.
 

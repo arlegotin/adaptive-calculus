@@ -24,12 +24,54 @@ class TrialSpec:
     seed: int
     budget: int
     source_revision: str
+    attribution_contract: str | None = None
 
     def __post_init__(self):
         ArtifactRef('config', self.config_hash)
         if (not self.family or not self.source_revision or type(self.seed) is not int
                 or self.seed < 0 or type(self.budget) is not int or self.budget <= 0):
             raise ValueError('Trial requires family, source, seed and finite positive budget')
+        if self.attribution_contract is not None:
+            value = json.loads(self.attribution_contract)
+            content = canonical_bytes(value)
+            if content.decode() != self.attribution_contract or hashlib.sha256(content).hexdigest() != self.config_hash:
+                raise ValueError('Attribution trial must bind its exact canonical contract')
+            if (value['seed'], value['budget'], value['variant'], value['source_revision']) != (self.seed, self.budget, self.family, self.source_revision):
+                raise ValueError('Attribution trial identity mismatch')
+
+
+    @property
+    def pairing_contract(self):
+        if self.attribution_contract is None: return None
+        return json.loads(self.attribution_contract)['pairing']
+
+    @property
+    def stream_hash(self):
+        return None if self.pairing_contract is None else self.pairing_contract['stream']
+
+    @property
+    def feature_cost_retained(self):
+        return self.attribution_contract is not None and json.loads(self.attribution_contract)['feature_cost_retained']
+
+    @property
+    def is_privileged_diagnostic(self):
+        return self.attribution_contract is not None and json.loads(self.attribution_contract)['is_privileged_diagnostic']
+
+    @property
+    def claim_status(self):
+        return None if self.attribution_contract is None else json.loads(self.attribution_contract)['claim_status']
+
+    @property
+    def comparison_kind(self):
+        return None if self.attribution_contract is None else json.loads(self.attribution_contract)['comparison_kind']
+
+    @property
+    def retraining_status(self):
+        return None if self.attribution_contract is None else json.loads(self.attribution_contract)['retraining_status']
+
+    @property
+    def retuning_status(self):
+        return None if self.attribution_contract is None else json.loads(self.attribution_contract)['retuning_status']
 
 
 def _write(path, value):

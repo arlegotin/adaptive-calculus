@@ -337,3 +337,47 @@ def register_scale_noise_methods(registry,groups):
     for name in SCALE_NOISE_NAMES:
         config={**VIEW_CONTRACT,'format':'uniform','minimum':-8,'maximum':7} if name=='lsq_uniform_fixture' else SCALE_CONFIG if name=='learned_fp4_scale' else {**NOISE_CONFIG,'mode':{'damping_fp4':'damping','simple_matrix_mask':'simple','magma_matrix_mask':'magma'}[name]}
         registry.register(scale_noise_record(name,groups,config))
+
+
+def attribution_registry() -> dict:
+    """S37 prioritized mechanisms, not an eligible trained-family inventory.
+
+    Records declare execution/learning obligations. No fixture or registry entry
+    establishes competitive tuning, native operation admission or scientific win.
+    """
+    entries={}
+    def add(name,group,variant,*,retrain=True,privileged=False,raw=False,**settings):
+        entries[name]={'group':group,'variant':variant,'retrain':retrain,
+            'privileged':privileged,'raw_ordinary':raw,'settings':settings}
+    add('learned_lr_wider','actions','learned_lr49',h_range=[.25,32],parameters=49)
+    add('learned_lr_shared','actions','learned_lr49_shared_range',h_range=[.25,4],parameters=49)
+    add('static','actions','static3',parameters=3,objective='same_future_query_loss')
+    add('initialized','actions','initialized',retrain=False,actions=[0,1,1])
+    for name in ('additive_only','multiplicative_only','assistance_only'):
+        add(name,'actions',name)
+    add('alpha_zero','actions','alpha_zero_retrained',alpha=0)
+    add('history_removed','information','no_history',masked_features=[8,9,10,11])
+    add('cell_removed','information','no_cells',masked_features=[4,5,6,7])
+    add('history_permuted','information','matched_shape_history_permutation_retrained')
+    add('history_scramble_inference','information','inference_only_history_scramble',retrain=False)
+    add('norm_matched','actions','candidate_rms_oracle_additive',retrain=False,privileged=True,
+        oracle='RMS_of_complete_candidate_displacement')
+    add('magnitude_preconditioned_additive','actions','first_order_magnitude_preconditioned_additive',retrain=False,
+        geometry='first_order_c_times_z',is_madam=False,post_exponential_normalization=False)
+    # Keep the comparison explicitly separate from the S17 first-order control.
+    add('madam','actions','madam_clean_fp32',retrain=False,moment_coordinates='original_W')
+    for name,recipe in [('fixed_scale','row_fixed_max'),('dynamic_scale','row_dynamic_max'),('learned_scale','learned_fp4_scale')]:
+        add(name,'scales',recipe,scale_recipe=recipe)
+    add('identity_rotation','scales','identity_rotation',rotation='identity')
+    add('hadamard_rotation','scales','hadamard_rotation',rotation='full_hadamard')
+    add('random_assistance','noise','random_matched_fraction_assistance',retrain=False,rate='parent_assisted_fraction')
+    for name,variant in [('rounding','stochastic_shadow_forward'),('masking','simple_matrix_mask'),('damping','damping_fp4')]:
+        add(name,'noise',variant,retrain=False)
+    add('extra_data','budgets','ordinary_Bstar_extra_data',retrain=False,raw=True,augmentation='extra_data_targets')
+    add('extra_compute','budgets','ordinary_Bstar_extra_compute',retrain=False,raw=True,augmentation='extra_compute_targets')
+    for row in entries.values():
+        row['backbone_lr_tuning']='independent'
+        row['representation']='E2M1-full-plus-minus-6'
+    # Top-level explicit geometry is convenient for registry consumers.
+    entries['magnitude_preconditioned_additive'].update(geometry='first_order_c_times_z',is_madam=False)
+    return entries

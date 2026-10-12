@@ -1,0 +1,72 @@
+{
+  "contrasts": [
+    "history_removed",
+    "cell_removed",
+    "history_permuted",
+    "history_scramble_inference"
+  ],
+  "execution": "make_ablation_trials(authenticated_parent, contrast, phase, retune)",
+  "full_cartesian_required": false,
+  "group": "information",
+  "phase": "explore",
+  "registry": {
+    "cell_removed": {
+      "backbone_lr_tuning": "independent",
+      "group": "information",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "masked_features": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "variant": "no_cells"
+    },
+    "history_permuted": {
+      "backbone_lr_tuning": "independent",
+      "group": "information",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {},
+      "variant": "matched_shape_history_permutation_retrained"
+    },
+    "history_removed": {
+      "backbone_lr_tuning": "independent",
+      "group": "information",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": true,
+      "settings": {
+        "masked_features": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "variant": "no_history"
+    },
+    "history_scramble_inference": {
+      "backbone_lr_tuning": "independent",
+      "group": "information",
+      "privileged": false,
+      "raw_ordinary": false,
+      "representation": "E2M1-full-plus-minus-6",
+      "retrain": false,
+      "settings": {},
+      "variant": "inference_only_history_scramble"
+    }
+  },
+  "retune": true,
+  "schema": "ralup.ablation_catalog.v1",
+  "scientific_prerequisites": "finalized trained parent and independently tuned learning authority",
+  "scope": "prioritized_contracts_not_scientific_results"
+}

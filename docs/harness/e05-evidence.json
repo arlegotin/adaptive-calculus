@@ -1,0 +1,1187 @@
+{
+  "actual_attempt_scope": "2026-10-12 UTC; pure synthetic engineering verification or authentic scientific prerequisite disposition",
+  "actual_protected_corpus_read": false,
+  "actual_trained_attribution_runs": [],
+  "administration_locations": {
+    "E05-report.md": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/administration-v1/E05-report.md",
+    "commit.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/administration-v1/commit.json",
+    "finish.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/administration-v1/finish.json",
+    "startup.json": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/administration-v1/startup.json"
+  },
+  "administration_locations_are_not_yet_completed_evidence": true,
+  "attempts": [
+    {
+      "attempt": "red-contracts-v1",
+      "child_cpu_system_seconds": 0.227982,
+      "child_cpu_user_seconds": 1.228271,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 280972,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 74345349120,
+      "elapsed_seconds": 8.625583958993957,
+      "exit_code": 1,
+      "git_free_after": 6921547776,
+      "launcher_cpu_system_seconds": 1.476602,
+      "launcher_cpu_user_seconds": 3.488714,
+      "local_time": "2026-10-12T02:47:56.816651+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/finish.json",
+          "sha256": "c7dd56611b57b367d4fc16ec145a8caeaf25ddf8a20a4bf7bf8b2dec95385ed7"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/runtime-observation.json",
+          "sha256": "2643fdb3cb33e238658f8c6038e7aa9319a052af3ed0bd61f696a6d25455eaf5"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/startup.json",
+          "sha256": "8b764931bbb74da89f908200102d35e61a2892597190f37d51f63ff49e20a236"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/stdout.txt",
+          "sha256": "6c22829b2d57bdef48feffa801892936400e956c787f6f8b4dfa9778bbdad2dd"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-contracts-v1/producer",
+      "source_inventory_sha256": "0a56e2917c9cade0bfa359b444a1e0d6e9c125d87dcdc6a528fdb8952ec01aec",
+      "storage_forecast_bytes": 70627679,
+      "store_bytes_before_finish": 24945200537,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_attribution_interface_is_present",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[learned_lr_wider]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[learned_lr_shared]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[static]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[initialized]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[additive_only]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[multiplicative_only]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[assistance_only]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[alpha_zero]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[history_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[cell_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[history_permuted]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[history_scramble_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[norm_matched]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[magnitude_preconditioned_additive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[madam]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[fixed_scale]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[dynamic_scale]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[learned_scale]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[identity_rotation]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[hadamard_rotation]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[random_assistance]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[rounding]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[masking]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[damping]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[extra_data]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_prioritized_trials_match_and_declare_real_obligations[extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_intervention_does_not_claim_retuned_or_retrained_inference_scramble",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[unknown_parent]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[stale_source]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[feature_skipped]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[mismatched_shape]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[invalid_permutation]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_parent_and_history_are_authenticated_before_trial_build[target_normalizer]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_post_test_parent_remains_exploratory_and_science_is_not_fixture",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas0-favorable]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas1-unfavorable]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas2-inconclusive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas3-inconclusive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[stream]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[scorer]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[parent]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[missing_retune]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[missing_retrain]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[skipped_feature]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[fake_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[design]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[duplicate_seed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[status_score]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_divergence_and_missing_seed_deny_favorable_inference",
+        "FAILED tests/unit/test_ablation_contracts.py::test_confirmatory_family_requires_predeclaration_multiplicity_and_freshness",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[larger_shape]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[independent_meta_clusters]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[from_scratch]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[carry_state]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[fp8]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[mxfp4]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[w4a4]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extensions_require_own_exact_contracts[new_corpus]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[negative]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[null]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[budget]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[learning]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[source]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[post_test]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[shape]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[corpus]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[representation]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_extension_negative_and_unknown_paths[diagnosis]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_magnitude_control_is_first_order_normalized_z_and_distinct_from_exponential",
+        "FAILED tests/unit/test_ablation_contracts.py::test_registry_and_config_catalog_are_complete",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cli_engineering_artifacts_are_analyzed_and_real_prerequisite_is_explicit",
+        "72 failed in 1.40s"
+      ],
+      "utc": "2026-10-12T00:47:56.816635+00:00"
+    },
+    {
+      "attempt": "green-contracts-v1",
+      "child_cpu_system_seconds": 0.601688,
+      "child_cpu_user_seconds": 1.710212,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 2531552,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 74291216384,
+      "elapsed_seconds": 9.792335500002082,
+      "exit_code": 0,
+      "git_free_after": 6921207808,
+      "launcher_cpu_system_seconds": 1.475838,
+      "launcher_cpu_user_seconds": 3.496881,
+      "local_time": "2026-10-12T02:51:29.194989+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/finish.json",
+          "sha256": "927bedf86b4ace95c4522228d8419308f65796e2d73d224c63515eaf193156f3"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/runtime-observation.json",
+          "sha256": "81f4d445f42a80a436146f2b9f1398706f60e5383debf4ab6c856887f7d104dd"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/startup.json",
+          "sha256": "5f1ca536ae39a837b6351611c7752a56e251d2b645246773e3576e701287f33c"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/stdout.txt",
+          "sha256": "a1ca807edb9636dee9f20efa343f8bfd4fceceba1060febea397e5023b6c294c"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-contracts-v1/producer",
+      "source_inventory_sha256": "801e060fef7ccb58f20fd729cee8773c35fdf9b3e6234aeee65c6e417187526d",
+      "storage_forecast_bytes": 70708195,
+      "store_bytes_before_finish": 24993311051,
+      "summary": [
+        "72 passed in 2.57s"
+      ],
+      "utc": "2026-10-12T00:51:29.194972+00:00"
+    },
+    {
+      "attempt": "red-cost-family-v1",
+      "child_cpu_system_seconds": 0.7908459999999999,
+      "child_cpu_user_seconds": 2.165189,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 4871467,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 74237460480,
+      "elapsed_seconds": 10.179918415997236,
+      "exit_code": 1,
+      "git_free_after": 6921056256,
+      "launcher_cpu_system_seconds": 1.496079,
+      "launcher_cpu_user_seconds": 3.558433,
+      "local_time": "2026-10-12T02:52:55.523616+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/finish.json",
+          "sha256": "9c87c65145f1fe974f7363afe0e941c65f4f0f07f79fa5068be672cd3b7df78e"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/runtime-observation.json",
+          "sha256": "6db346da573dbc32a50fbe4b616aa2613afdbc901c932fc16ff10515e2c67fae"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/startup.json",
+          "sha256": "412c952eb9bdc062cb0ec0d95c69d48ea4aebbdebe46bf7f39c672c3c8185334"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/stdout.txt",
+          "sha256": "91d68253fe09e3c6b5d198c4ad08e5349449edbc53f7ac3174ac3c143c3b1e4c"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-cost-family-v1/producer",
+      "source_inventory_sha256": "71dc44de3ef5f565cd79bc6862d325613eaac919b9b3cacc6d7eee092f199afd",
+      "storage_forecast_bytes": 70878692,
+      "store_bytes_before_finish": 25044106758,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-history_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-alpha_zero]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-history_scramble_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-magnitude_preconditioned_additive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-norm_matched]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-history_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-alpha_zero]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-history_scramble_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-magnitude_preconditioned_additive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-norm_matched]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_fresh_engineering_confirmation_and_posttest_choice",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[missing_warm]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[different_warm]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[skipped_telemetry]",
+        "16 failed, 74 passed in 2.78s"
+      ],
+      "utc": "2026-10-12T00:52:55.523598+00:00"
+    },
+    {
+      "attempt": "green-cost-family-v1",
+      "child_cpu_system_seconds": 0.78121,
+      "child_cpu_user_seconds": 2.078325,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 4853700,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 74173370368,
+      "elapsed_seconds": 9.942581041999802,
+      "exit_code": 0,
+      "git_free_after": 6920986624,
+      "launcher_cpu_system_seconds": 1.497306,
+      "launcher_cpu_user_seconds": 3.579648,
+      "local_time": "2026-10-12T02:53:48.276697+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/finish.json",
+          "sha256": "f55b47baed2d229f116f2d003f9a8185b2ebbefc5e03a93284a26255a2047438"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/runtime-observation.json",
+          "sha256": "278a1b6ba6879ff331a3ffbfcf4b227c5eb789eeef3115f0a2b3563c1a1c0a5b"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/startup.json",
+          "sha256": "ef5881f351e361b9166e955724f21f662031c3cbf1dacf05c2e4adc386fc7774"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/stdout.txt",
+          "sha256": "7e98e517c1fee0f052ac61249854e58e5c42350b31802aacaa6f2a6f778b9432"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-cost-family-v1/producer",
+      "source_inventory_sha256": "37c14884a15b10ad71ca3c9e499461f0c35af123cb4f733148ccf6262ff55792",
+      "storage_forecast_bytes": 71201245,
+      "store_bytes_before_finish": 25095399194,
+      "summary": [
+        "90 passed in 2.52s"
+      ],
+      "utc": "2026-10-12T00:53:48.276680+00:00"
+    },
+    {
+      "attempt": "red-boundaries-v1",
+      "child_cpu_system_seconds": 0.193969,
+      "child_cpu_user_seconds": 0.773544,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 176566,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "-k",
+        "strict_identity"
+      ],
+      "data_free_after": 74122899456,
+      "elapsed_seconds": 8.280762499998673,
+      "exit_code": 1,
+      "git_free_after": 6920900608,
+      "launcher_cpu_system_seconds": 1.517831,
+      "launcher_cpu_user_seconds": 3.602331,
+      "local_time": "2026-10-12T02:54:42.869989+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/finish.json",
+          "sha256": "1553427bf2eccf1d031bb6805bf06043750079c40838b9a7aa54b052525095f2"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/runtime-observation.json",
+          "sha256": "4cb57726fa713b20dc4ce1e9f7f2eda4559a71c19b108a8980359c1aafd8a07a"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/startup.json",
+          "sha256": "9d3a2d4df089cda135329f5cd05c9406dcf492d89571b42e3ee7b2dfc597ddac"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/stdout.txt",
+          "sha256": "93516e7eefc2de8a4985af6e6e25e4eecd083e4af6c6c1f30d76b61e6628876e"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-boundaries-v1/producer",
+      "source_inventory_sha256": "f48341af0745de82268fe63c9db3a6678f0744697b2271ddcd060f5541d8c9f6",
+      "storage_forecast_bytes": 71526405,
+      "store_bytes_before_finish": 25142339642,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_strict_identity_and_new_branch_budget_boundary[same_normalizer_target]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_strict_identity_and_new_branch_budget_boundary[extension_unbound_observation]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_strict_identity_and_new_branch_budget_boundary[inherited_footprint]",
+        "3 failed, 1 passed, 90 deselected in 0.91s"
+      ],
+      "utc": "2026-10-12T00:54:42.869974+00:00"
+    },
+    {
+      "attempt": "green-boundaries-v1",
+      "child_cpu_system_seconds": 0.8469589999999999,
+      "child_cpu_user_seconds": 2.083988,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 5028360,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 74062360576,
+      "elapsed_seconds": 10.284316333003517,
+      "exit_code": 0,
+      "git_free_after": 6920781824,
+      "launcher_cpu_system_seconds": 1.524121,
+      "launcher_cpu_user_seconds": 3.632129,
+      "local_time": "2026-10-12T02:55:25.225878+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/finish.json",
+          "sha256": "c8eaa0ccee2f9dfa8d139aab927b3e5b58fef74458a4441ec337bb01fd763496"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/runtime-observation.json",
+          "sha256": "e53b3894c9215bdac188bcbed5bbbd417fd5b03ed53f418ae75a80e9ca137525"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/startup.json",
+          "sha256": "363dce3699a869b4aa96b81b7b21a5c2b0266e9f0b2b2a0073a81b2148bd09de"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/stdout.txt",
+          "sha256": "0a0e1e7765290e3833a50d7ba09a51387380ab11421a7759de6bc7458d47ffbe"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-boundaries-v1/producer",
+      "source_inventory_sha256": "f0e2c4d19e94da0badc24c9f5840b14f316b419c27d4360446191fdd88ad8a92",
+      "storage_forecast_bytes": 71558655,
+      "store_bytes_before_finish": 25193800536,
+      "summary": [
+        "94 passed in 2.75s"
+      ],
+      "utc": "2026-10-12T00:55:25.225860+00:00"
+    },
+    {
+      "attempt": "attribution-cli-v1",
+      "child_cpu_system_seconds": 0.190629,
+      "child_cpu_user_seconds": 1.355024,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 31237,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "ralup",
+        "run",
+        "--phase",
+        "explore",
+        "--suite",
+        "attribution",
+        "--config",
+        "configs/e05-attribution-prerequisites.json"
+      ],
+      "data_free_after": 74017484800,
+      "elapsed_seconds": 8.687248000002,
+      "exit_code": 2,
+      "git_free_after": 6920761344,
+      "launcher_cpu_system_seconds": 1.508821,
+      "launcher_cpu_user_seconds": 3.663618,
+      "local_time": "2026-10-12T02:56:22.014761+02:00",
+      "prerequisites": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/attribution-prerequisites.json",
+        "sha256": "8ab52814435bee7cb2786ea91fdd3d745cdb81aa762a8e8911bc5df990af7700"
+      },
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/finish.json",
+          "sha256": "5141be09fcc543f8fc997f405be610838eb466ec4cd389e1d4048c7d93d5984e"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/runtime-observation.json",
+          "sha256": "a8c6f00e5648096c82d92562530790c680e07c0a762299478e981c50598193e6"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/startup.json",
+          "sha256": "2b686884426ad0de96c97dec74b98ade8c2081c749b6a11e713a90a1397096d7"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/stdout.txt",
+          "sha256": "de56fb8888f727decc9d112f96b34940d1c942d663be61e1657c8be19f5181bf"
+        }
+      },
+      "scientific_outcome": {
+        "authentic_producer": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+          "sha256": "d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4"
+        },
+        "contrasts_measured": [],
+        "known_cost": {
+          "complete_project_cost": null,
+          "current_attempt_cost": "separate immutable launcher finish receipt",
+          "producer_elapsed_seconds_lower_bound": 5.685045416998037,
+          "producer_finish": {
+            "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json",
+            "sha256": "e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30"
+          },
+          "scientific_deployment_cost": null,
+          "scope": "original E02 administrative producer only; no numerical attribution attempt"
+        },
+        "protected_scoring_attempted": false,
+        "scientific_mechanism_established": false,
+        "scope": "scientific-development",
+        "status": "blocked",
+        "wp08": "not_attempted"
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v1/producer",
+      "source_inventory_sha256": "f0e2c4d19e94da0badc24c9f5840b14f316b419c27d4360446191fdd88ad8a92",
+      "storage_forecast_bytes": 71890088,
+      "store_bytes_before_finish": 25240971265,
+      "summary": [
+        "{\"authentic_producer\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json\",\"sha256\":\"d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4\"},\"blockers\":[\"Cannot freeze scientific confirmation: WP04 inconclusive: accepted robust B0/recipe applicability missing; WP06 NEEDS_REVISION: finalized genuinely trained/development-selected C and learned-LR artifacts missing; B* final comparator selection and immutable final arm/config/budget identities missing; four independent fresh paired final-arm development seeds, complete final scores/failure/cost receipts missing; adequate pilot variance/tail review/precision/resource evidence and scientific locked n missing; confirmation seed/arm list, randomized timing order and final checkpoint/status inventory missing. Owning integration: E01/reopened WP06, then E02. No confirm_manifest published.\",\"Finalized trained C/LR/Bstar, final learning budget and independently retuned attribution authority absent; integrate E01/reopened WP06.\"],\"claim_status\":\"exploratory\",\"config\":{\"path\":\"configs/e05-attribution-prerequisites.json\",\"sha256\":\"c6dc20dfb6e5217b593f3dcf115733e3eedb575eb21affd62395972b99baf6c2\"},\"contrasts_measured\":[],\"current_prerequisites\":{\"B0\":null,\"B_star\":null,\"WP04\":\"inconclusive\",\"WP06\":\"NEEDS_REVISION\",\"blocked_methods\":{\"MetaQuant Muon/Muon+ composition\":{\"reason\":\"Constructor-admitted only; actual composition/native model scope remains unverified.\"},\"MetaQuant SOAP/Madam composition\":{\"reason\":\"Unsupported trusted backbone envelope; neither baseline is defeated or excluded from B0/Bstar.\"},\"MetaQuant frozen\":{\"reason\":\"No genuine META-trained/META-development-selected theta artifact; M10 initialized mechanics are not eligible.\"}},\"candidate\":null,\"completed_tournament\":false,\"global_unaffordability\":false,\"learned_lr\":null,\"measured_non_advantage\":false,\"prerequisite_evidence\":{\"B0\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m07-20261011/closing-disposition-v2/b0-disposition.json\",\"sha256\":\"28ed3fa513dfc4b5d56b8f4755caceb0d3f25093f69d279580ae16dab236da45\"},\"controller\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/disposition.json\",\"sha256\":\"81c6764d049c23d71d019c45c628327e15ab7295f2b54514051ef941c83d9445\"}},\"producer\":{\"finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/finish.json\",\"sha256\":\"dd8b47d2b24b0e18865300968b6ef3d7a42e6f126c2a079378de7e8f44d32cb5\"},\"startup\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/startup.json\",\"sha256\":\"39d9f9e98bd9652d1a51206620b6b11ceed97cc30966c1dcbcc370af4b48d28f\"}},\"reason\":\"Both provisional one-step policies rank better atK32/64 but worse atfull496 on both disjoint query panels; residual independent direction sampling variability. Exact brief short-horizon/noisy diagnostic branch. No trained-family defeat, general rejection, failed core transfer, or resource impossibility claim.\",\"required_advancement\":[{\"action\":\"Prospectively justify longer-horizon/objective calibration and resolve evidence-based budgets; restart matched candidate45/LR49/static3 learning with each own-current-policy refresh; complete META-development then full official-development selection and B0/recipe applicability or retraining.\",\"owner\":\"E01/reopened WP06\"},{\"action\":\"Robust backbone recipe and independent family backboneLR tuning; exploratory commonMuon.02 is not a competitiveness claim.\",\"owner\":\"E01\"},{\"action\":\"Shared-range learnedLR sensitivity and retuned mechanism/removal contrasts.\",\"owner\":\"E05\"},{\"action\":\"Merge retained source-offset unions and globally deduplicate ancestors/costs; preserve unknown engineering work and all failure scopes.\",\"owner\":\"E07\"},{\"action\":\"Independent strongest B* tournament: all locally competitive families, LR/betas/decay/schedule brackets, genuine META-trained frozen MetaQuant, full-budget fresh development replication and data/compute-augmented ordinary training.\",\"owner\":\"E01\"}],\"selection\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/selection.json\",\"sha256\":\"00f6bb750d3c6602ee1eb00afcaabdeda3ec7f2b6f08b740bd04ac45e87be1f3\"},\"static\":null,\"status\":\"inconclusive\",\"unresolved_methods\":{\"AdamW\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"EWGS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Madam\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"MetaQuant\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon+\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QAR\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QuEST\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"SOAP\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"TRS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"affine45\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"damping_masking\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_lr49\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_scale\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"static3\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"stochastic_rounding\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"}}},\"inherited_scientific_cost_unknowns\":{\"paired_bytes\":null,\"paired_seconds\":null,\"scope\":\"Complete common warmstart and every target/query/gradient/HVP/reset/snapshot/failure cost required; actual paired run costs unknown. Shared-parent project dedup remains separate.\"},\"known_cost\":{\"complete_project_cost\":null,\"current_attempt_cost\":\"separate immutable launcher finish receipt\",\"producer_elapsed_seconds_lower_bound\":5.685045416998037,\"producer_finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json\",\"sha256\":\"e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30\"},\"scientific_deployment_cost\":null,\"scope\":\"original E02 administrative producer only; no numerical attribution attempt\"},\"protected_scoring_attempted\":false,\"requested_contrasts\":[\"learned_lr_wider\",\"learned_lr_shared\",\"static\",\"alpha_zero\",\"history_removed\",\"cell_removed\",\"history_permuted\",\"magnitude_preconditioned_additive\"],\"retune\":true,\"schema\":\"ralup.attribution_prerequisites.v1\",\"scientific_mechanism_established\":false,\"scope\":\"scientific-development\",\"source_identity\":{\"src/ralup/__init__.py\":\"ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd\",\"src/ralup/__main__.py\":\"bd4c146a116a6e431baad6513eea54a08554d99d09c8a81c7a429b32cd7d6cf1\",\"src/ralup/analysis/__init__.py\":\"1a9981c5428c32bad5203aefdc7875dbe15cd5c1c0030f8c17f1108f6639f9d8\",\"src/ralup/analysis/attribution.py\":\"2494f84f4ed7b3bd8bc75e46799244f3c47446f711bb159b3c33cad06a3c868c\",\"src/ralup/analysis/confirm.py\":\"22361c350af49782a59fd18dce391e69c691ddadb515b4fee8d364dc10389009\",\"src/ralup/analysis/cost.py\":\"ffb3ebc6b110ad2cb8a191d00d8e97105895e3dfbb28acf61a6af7ab1dbfb06d\",\"src/ralup/analysis/power.py\":\"1fafb25aaacfbf1bfdfd1b560e8c045ef5286c50210b5b20f60f9e304a40647c\",\"src/ralup/baselines/__init__.py\":\"19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f\",\"src/ralup/baselines/checks.py\":\"9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b\",\"src/ralup/baselines/ewgs.py\":\"00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff\",\"src/ralup/baselines/learned_scale.py\":\"d3b3e092245149c4ad36926f33d041a12f7c64d5ecedf1cbbcc17da5569a7b22\",\"src/ralup/baselines/metaquant.py\":\"e3db83d0c2906affcd6c4ad0e38811dea9b311c3b8bca2582170f0d5e25af6c7\",\"src/ralup/baselines/muon_checks.py\":\"ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11\",\"src/ralup/baselines/noise.py\":\"4fb6514e055274805531ae4926500a8db952caa3486535c46dd028eb8a1c861f\",\"src/ralup/baselines/qar.py\":\"a309831c37e9b55e68e109dd5dd4d672bcf3e7aee98371c34bd549d5336437ea\",\"src/ralup/baselines/references/__init__.py\":\"6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f\",\"src/ralup/baselines/references/soap_reference.py\":\"9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b\",\"src/ralup/baselines/registry.py\":\"8e8f956b0cc47c8b5f50be76bce3b215f8891c7d068f22b32b4d76b8e68dd5d4\",\"src/ralup/baselines/rounding.py\":\"21f9e162ad8c4a6b10df51049ff9f80389c67fafe24583fb3d8a131024a1d7fa\",\"src/ralup/baselines/soap_madam_checks.py\":\"d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b\",\"src/ralup/baselines/trs.py\":\"6c759a7ee85b0b92c7027e43c59dcadd435773f651d7c5a650c8a95a2a0edf8d\",\"src/ralup/calibrate.py\":\"1e26bd718902ad4639978eac7ec0f8e30bbeaae6eb7b68a34b29204573b2518b\",\"src/ralup/config.py\":\"dabdbda877fc43272ff58a1157398ee849227bc93e661d63b0914cef77fa6980\",\"src/ralup/data/__init__.py\":\"6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0\",\"src/ralup/data/articles.py\":\"1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c\",\"src/ralup/data/batches.py\":\"5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750\",\"src/ralup/data/blocks.py\":\"c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe\",\"src/ralup/data/checks.py\":\"cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f\",\"src/ralup/data/cursor.py\":\"2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af\",\"src/ralup/data/dedup.py\":\"c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f\",\"src/ralup/data/partitions.py\":\"551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9\",\"src/ralup/data/source.py\":\"fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f\",\"src/ralup/diagnostics/__init__.py\":\"ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00\",\"src/ralup/diagnostics/quadratics.py\":\"3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840\",\"src/ralup/environment.py\":\"0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160\",\"src/ralup/evaluate.py\":\"b930cc8f0b5788148e32c958060e50d5958668ac7e29e55f675be020a68641b1\",\"src/ralup/meta/__init__.py\":\"9f080d8764e62251844c6da57cd873c552e977ecdb0fd3f0141590cc67a782cb\",\"src/ralup/meta/es.py\":\"e5a510f34760198d0d6008172d159406772f9506d8bf33fa0add2c3dc7c60c87\",\"src/ralup/meta/selection.py\":\"2140082f2f831134d8229218618c571ad76c608c161be72a1af0c8cad5339112\",\"src/ralup/meta/tasks.py\":\"f04fb1451d4cb64c354d251fe949b3dfa099e3275528527c3962f574aa26948d\",\"src/ralup/models/__init__.py\":\"7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752\",\"src/ralup/models/checks.py\":\"f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a\",\"src/ralup/models/embedding.py\":\"11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1\",\"src/ralup/models/linear.py\":\"f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546\",\"src/ralup/models/transformer.py\":\"4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05\",\"src/ralup/optim/__init__.py\":\"ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae\",\"src/ralup/optim/adamw.py\":\"c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c\",\"src/ralup/optim/base.py\":\"61bacd5807767a7b92b261651cb4b0b0eecfa48f21db00929c98d33cf6ccb4bb\",\"src/ralup/optim/madam.py\":\"afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6\",\"src/ralup/optim/matrix_adapter.py\":\"45f6d5600e0470c8e3ad63be349b8fc06c8ad0bb17ee5d6352bb4bac94b575bc\",\"src/ralup/optim/muon.py\":\"c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35\",\"src/ralup/optim/muon_plus.py\":\"0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d\",\"src/ralup/optim/soap.py\":\"f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b\",\"src/ralup/policy/__init__.py\":\"2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4\",\"src/ralup/policy/actions.py\":\"44b90d839c2617e528b390ec26fe2844e32f1a3d9e3c6df3bb7fa1087262698f\",\"src/ralup/policy/adapter.py\":\"5842cc94bbeaff51063b1010b0e906fb4a1b31fe9549c311b578ab8f93392dcd\",\"src/ralup/policy/checks.py\":\"669127f4b9ee5af65a23c05662239eff643762b219026acb643d4853160d0b5f\",\"src/ralup/policy/controllers.py\":\"1bdd7b3077b0e1eb20b3e7430f455039939dd78a04f484cd2e29dcfe2b9ae9d5\",\"src/ralup/policy/features.py\":\"31e647ce2b15f6735887c36f592f3d3c5978f9c6450fd815b571f46e8b0af657\",\"src/ralup/policy/history.py\":\"b750ccd592eeaa6c2a71ad21f149418dada2e8abb6694fb49816a6a41611c1c8\",\"src/ralup/policy/normalizer.py\":\"0358135d4bf09a4b9a2104394f24f0adb8cc425bf201fea5c45425ee5d560c28\",\"src/ralup/quantization/__init__.py\":\"733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16\",\"src/ralup/quantization/checks.py\":\"fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2\",\"src/ralup/quantization/context.py\":\"3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c\",\"src/ralup/quantization/formats.py\":\"a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896\",\"src/ralup/quantization/fp32.py\":\"ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5\",\"src/ralup/quantization/oracle.py\":\"78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c\",\"src/ralup/quantization/rotation.py\":\"a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d\",\"src/ralup/quantization/scales.py\":\"17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64\",\"src/ralup/quantization/surrogates.py\":\"a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614\",\"src/ralup/records.py\":\"7401be3fd29100a603a43e6a80ab188765a4433733c7fb4970c624656537c2a2\",\"src/ralup/runner.py\":\"1dd60dbb766090d2a648994ebe167bd0a6cbc4566b4880eafffbbaa1dc0d2698\",\"src/ralup/search.py\":\"d6b492317e3264b2f572d17f6e2ab75b820a4d0567c67c12ea610bc4dbcdf67f\",\"src/ralup/state.py\":\"24993da7dfe631902955045cd0d9bb887330772fefaea9b2cd63e9e8f2feabc7\",\"src/ralup/train.py\":\"34e9d41cf4efff90d8fefdcae5449566707bd25e066687a06bb06b115df4908a\",\"src/ralup/warmstart.py\":\"ade8c8301389b92f1d0eb1c00dc3ee5404e133ef2617cb41fc76b562cad13406\"},\"status\":\"blocked\",\"unmeasured_common_engineering_cost\":null,\"wp08\":\"not_attempted\"}"
+      ],
+      "utc": "2026-10-12T00:56:22.014745+00:00"
+    },
+    {
+      "attempt": "focused-final-v1",
+      "child_cpu_system_seconds": 3.598855,
+      "child_cpu_user_seconds": 11.768031,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 80982173,
+      "child_output_within_allowance": false,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "tests/unit/test_actions.py",
+        "tests/unit/test_controllers.py",
+        "tests/unit/test_method_registry.py",
+        "tests/unit/test_finalist_selection.py",
+        "tests/unit/test_config_records.py",
+        "tests/unit/test_cost_ledgers.py",
+        "tests/unit/test_e04_attempt_storage.py",
+        "tests/integration/test_policy_identity.py"
+      ],
+      "data_free_after": 73861369856,
+      "elapsed_seconds": 23.11069354200299,
+      "exit_code": 1,
+      "git_free_after": 6920704000,
+      "launcher_cpu_system_seconds": 1.51438,
+      "launcher_cpu_user_seconds": 3.625698,
+      "local_time": "2026-10-12T02:57:18.851915+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/finish.json",
+          "sha256": "ce8afa2ba03d4abfd3e4d0312213cf7269dbb2520fd2aa266c14d4c4b2d9969a"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/runtime-observation.json",
+          "sha256": "167137b12f206e47211623ff089706cc27cd522bcd12d09185bbb149601bd258"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/startup.json",
+          "sha256": "7946364b5522f1e855729a0f49c7f394b8b701fbf173f30c2a7fe26451886636"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/stdout.txt",
+          "sha256": "721ffe6edc44b94a4e4055570312ffea0c50a38b5baf4b3524909be86875e791"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-v1/producer",
+      "source_inventory_sha256": "b0afcf0a9d0151b74d103b917632483a50d4448e7004602dd61ad4d8cf8950da",
+      "storage_forecast_bytes": 71918010,
+      "store_bytes_before_finish": 25368733947,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_method_registry.py::test_actual_mps_adamw_fixture - As...",
+        "ERROR tests/unit/test_actions.py::test_sign_zero_exponent_cap_and_no_post_normalization[mps]",
+        "ERROR tests/unit/test_actions.py::test_identity_decay_separation_and_original_commit_permission[mps]",
+        "ERROR tests/unit/test_actions.py::test_scale_one_neighbor_and_harmful_unconditional_control[mps]",
+        "ERROR tests/unit/test_actions.py::test_100000_seeded_coordinates_neighbors_and_bound[mps-0.125]",
+        "ERROR tests/unit/test_actions.py::test_100000_seeded_coordinates_neighbors_and_bound[mps-0.25]",
+        "ERROR tests/unit/test_actions.py::test_100000_seeded_coordinates_neighbors_and_bound[mps-0.5]",
+        "ERROR tests/unit/test_actions.py::test_100000_seeded_coordinates_neighbors_and_bound[mps-0.75]",
+        "ERROR tests/unit/test_actions.py::test_100000_seeded_coordinates_neighbors_and_bound[mps-1.0]",
+        "ERROR tests/unit/test_actions.py::test_all_boundary_ties_saturation_and_existing_crossings[mps-0.125]",
+        "ERROR tests/unit/test_actions.py::test_all_boundary_ties_saturation_and_existing_crossings[mps-0.25]",
+        "ERROR tests/unit/test_actions.py::test_all_boundary_ties_saturation_and_existing_crossings[mps-0.5]",
+        "ERROR tests/unit/test_actions.py::test_all_boundary_ties_saturation_and_existing_crossings[mps-0.75]",
+        "ERROR tests/unit/test_actions.py::test_all_boundary_ties_saturation_and_existing_crossings[mps-1.0]",
+        "ERROR tests/unit/test_actions.py::test_unrepresentable_nudge_is_rejected_without_margin_growth[mps]",
+        "ERROR tests/unit/test_actions.py::test_assistance_uses_cached_dynamic_scales_and_homogeneity[mps]",
+        "1 failed, 321 passed, 15 errors in 14.80s"
+      ],
+      "utc": "2026-10-12T00:57:18.851899+00:00"
+    },
+    {
+      "attempt": "focused-final-cpu-v1",
+      "child_cpu_system_seconds": 3.512735,
+      "child_cpu_user_seconds": 11.80802,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 80975140,
+      "child_output_within_allowance": false,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "tests/unit/test_actions.py",
+        "tests/unit/test_controllers.py",
+        "tests/unit/test_method_registry.py",
+        "tests/unit/test_finalist_selection.py",
+        "tests/unit/test_config_records.py",
+        "tests/unit/test_cost_ledgers.py",
+        "tests/unit/test_e04_attempt_storage.py",
+        "tests/integration/test_policy_identity.py",
+        "-k",
+        "not mps"
+      ],
+      "data_free_after": 73632804864,
+      "elapsed_seconds": 24.45260554199922,
+      "exit_code": 1,
+      "git_free_after": 6920642560,
+      "launcher_cpu_system_seconds": 1.602365,
+      "launcher_cpu_user_seconds": 3.775991,
+      "local_time": "2026-10-12T02:58:23.023727+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/finish.json",
+          "sha256": "3811d0c82dea506cf46f4bc2a98ac5da19927e64d5b129d8b970600dfc7446b7"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/runtime-observation.json",
+          "sha256": "d584563dc2cd051e2d1fb62265e738ac2faa710ca34df355ea55d2b8ecfee787"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/startup.json",
+          "sha256": "cee26377e0c26051240ebe4dac9f6cb0bd827a8f54969d08b45469058dcc678c"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/stdout.txt",
+          "sha256": "239ff82c397197d9c6823be9e796e1d3fceb3e1487595918358bfb602227d2e8"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v1/producer",
+      "source_inventory_sha256": "b0afcf0a9d0151b74d103b917632483a50d4448e7004602dd61ad4d8cf8950da",
+      "storage_forecast_bytes": 73890383,
+      "store_bytes_before_finish": 25500764155,
+      "summary": [
+        "321 passed, 16 deselected in 14.85s"
+      ],
+      "utc": "2026-10-12T00:58:23.023709+00:00"
+    },
+    {
+      "attempt": "red-self-review-v1",
+      "child_cpu_system_seconds": 0.237112,
+      "child_cpu_user_seconds": 1.221289,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 347133,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "-k",
+        "finite_divergence or canonical_trial_types or regressions_keep"
+      ],
+      "data_free_after": 73515253760,
+      "elapsed_seconds": 9.718117374999565,
+      "exit_code": 1,
+      "git_free_after": 6920609792,
+      "launcher_cpu_system_seconds": 1.695508,
+      "launcher_cpu_user_seconds": 4.05855,
+      "local_time": "2026-10-12T02:59:05.280522+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/finish.json",
+          "sha256": "2df90a34186376e7393307baab3dc27f9f709adbea381c541a8766aa73dabbbc"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/runtime-observation.json",
+          "sha256": "fcd5a0046dea4270d248e7ab2a024e3e58dff53e0daf7f249cf8b211e23cc310"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/startup.json",
+          "sha256": "66c1372e285c0a31ce4f0be090c83623eba6747e7455da44aaf4e07f604a55e5"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/stdout.txt",
+          "sha256": "71045c5f1a3d52da3aac4fab5bf785fc89bdc0fafcb971a1932f56f04c4ab07e"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-self-review-v1/producer",
+      "source_inventory_sha256": "9649d6a4e7b492b747d928047114e3dd56ffd40fef3d23904702adcbf13055e8",
+      "storage_forecast_bytes": 75894784,
+      "store_bytes_before_finish": 25554170755,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_finite_divergence_keeps_observed_unequal_feature_work",
+        "FAILED tests/unit/test_ablation_contracts.py::test_canonical_trial_types_cannot_masquerade_as_exact_identity",
+        "FAILED tests/unit/test_ablation_contracts.py::test_regressions_keep_distinct_mechanism_names",
+        "3 failed, 94 deselected in 1.36s"
+      ],
+      "utc": "2026-10-12T00:59:05.280504+00:00"
+    },
+    {
+      "attempt": "red-augmentation-v1",
+      "child_cpu_system_seconds": 0.192411,
+      "child_cpu_user_seconds": 1.186674,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 107277,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "-k",
+        "augmented_ordinary"
+      ],
+      "data_free_after": 73453019136,
+      "elapsed_seconds": 9.789084625001124,
+      "exit_code": 1,
+      "git_free_after": 6920495104,
+      "launcher_cpu_system_seconds": 2.129043,
+      "launcher_cpu_user_seconds": 4.038021,
+      "local_time": "2026-10-12T03:00:40.564838+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/finish.json",
+          "sha256": "92c2c849a244b251c88abd6cdb7bf597bcefd8a0810a14e79a7573c711a922fa"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/runtime-observation.json",
+          "sha256": "ace15347e9b7d2518249bab72ed0704ce1cf62da803254bd37e4fd4ba374ace7"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/startup.json",
+          "sha256": "c94b73585ad8894cab3b78c81c8901f364a6d38c78340863ad33e44dc38e7247"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/stdout.txt",
+          "sha256": "6e31eb0160e685e0ae535cf410602cc630a7667febc6d5d9f6e07e086bc77495"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/red-augmentation-v1/producer",
+      "source_inventory_sha256": "e187d606b284d99fe3f30caf4f4a10fbd8666b298953e7cf67b9042842ef36aa",
+      "storage_forecast_bytes": 75934790,
+      "store_bytes_before_finish": 25605098806,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_augmented_ordinary_control_must_charge_actual_additional_exposure",
+        "1 failed, 97 deselected in 1.12s"
+      ],
+      "utc": "2026-10-12T01:00:40.564823+00:00"
+    },
+    {
+      "attempt": "focused-final-cpu-v2",
+      "child_cpu_system_seconds": 3.436389,
+      "child_cpu_user_seconds": 12.093785,
+      "child_output_allowance_bytes": 134217728,
+      "child_output_bytes": 81486674,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "tests/unit/test_actions.py",
+        "tests/unit/test_controllers.py",
+        "tests/unit/test_method_registry.py",
+        "tests/unit/test_finalist_selection.py",
+        "tests/unit/test_config_records.py",
+        "tests/unit/test_cost_ledgers.py",
+        "tests/unit/test_e04_attempt_storage.py",
+        "tests/integration/test_policy_identity.py",
+        "-k",
+        "not mps"
+      ],
+      "data_free_after": 73275146240,
+      "elapsed_seconds": 24.325031916996522,
+      "exit_code": 1,
+      "git_free_after": 6920441856,
+      "launcher_cpu_system_seconds": 1.950303,
+      "launcher_cpu_user_seconds": 4.033713,
+      "local_time": "2026-10-12T03:01:24.198677+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/finish.json",
+          "sha256": "f6589cb08d37265aa2d3e87800101a0d3dea970ccbefef9c196e07b349986cce"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/runtime-observation.json",
+          "sha256": "9e3eda95f038a9feee384d90ee121d8f6af55f913bb465f19360032add8ddf10"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/startup.json",
+          "sha256": "a13500bf75f405984f3f2b67a3deaa22c72a0cfa76dd3ad6ba82749114d495fc"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/stdout.txt",
+          "sha256": "fe55e7ffe7378a1cf1f6cc1a3391dfee1bdb434e56fdfb6879906abe7b5506c9"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v2/producer",
+      "source_inventory_sha256": "a68be1a8a343e14ecffe2e3bf6de48a1e8a86feea494a40d86f851bbf9d6fab6",
+      "storage_forecast_bytes": 193404381,
+      "store_bytes_before_finish": 25737419457,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas0-favorable]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas1-unfavorable]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas2-inconclusive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_reports_paired_direction_and_cost_unknowns[deltas3-inconclusive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[stream]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[scorer]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[parent]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[missing_retune]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[missing_retrain]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[skipped_feature]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[fake_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[design]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[duplicate_seed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_analysis_rejects_mismatched_pair_or_unearned_learning_labels[status_score]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_divergence_and_missing_seed_deny_favorable_inference",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cli_engineering_artifacts_are_analyzed_and_real_prerequisite_is_explicit",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-history_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-alpha_zero]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-history_scramble_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-magnitude_preconditioned_additive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-norm_matched]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[False-extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-history_removed]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-alpha_zero]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-history_scramble_inference]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-magnitude_preconditioned_additive]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-norm_matched]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_learning_obligations_and_interventions_execute_as_declared[True-extra_compute]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_fresh_engineering_confirmation_and_posttest_choice",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[unbound_cost]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[missing_warm]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[different_warm]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_cost_receipt_authentication_and_retained_warm_scan_telemetry[skipped_telemetry]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_family_multiplicity_corrects_every_planned_contrast_and_freshness",
+        "FAILED tests/unit/test_ablation_contracts.py::test_strict_identity_and_new_branch_budget_boundary[semantic_cost_change]",
+        "FAILED tests/unit/test_ablation_contracts.py::test_finite_divergence_keeps_observed_unequal_feature_work",
+        "FAILED tests/unit/test_ablation_contracts.py::test_canonical_trial_types_cannot_masquerade_as_exact_identity",
+        "FAILED tests/unit/test_ablation_contracts.py::test_regressions_keep_distinct_mechanism_names",
+        "FAILED tests/unit/test_ablation_contracts.py::test_augmented_ordinary_control_must_charge_actual_additional_exposure",
+        "39 failed, 286 passed, 16 deselected in 14.99s"
+      ],
+      "utc": "2026-10-12T01:01:24.198662+00:00"
+    },
+    {
+      "attempt": "attribution-cli-v2",
+      "child_cpu_system_seconds": 0.263412,
+      "child_cpu_user_seconds": 1.365298,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 31237,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "ralup",
+        "run",
+        "--phase",
+        "explore",
+        "--suite",
+        "attribution",
+        "--config",
+        "configs/e05-attribution-prerequisites.json"
+      ],
+      "data_free_after": 73177448448,
+      "elapsed_seconds": 11.29497458399419,
+      "exit_code": 2,
+      "git_free_after": 6920364032,
+      "launcher_cpu_system_seconds": 2.259224,
+      "launcher_cpu_user_seconds": 4.177336,
+      "local_time": "2026-10-12T03:01:53.101667+02:00",
+      "prerequisites": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/attribution-prerequisites.json",
+        "sha256": "3d551663ebaa44541d034abaa1ab03f1cc5fe4f77be5f76969d4bb35ea597c00"
+      },
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/finish.json",
+          "sha256": "0a7dc229fcccb6802fb5dffeba9098927c8debd785e09fceae217b352bd9e2ce"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/runtime-observation.json",
+          "sha256": "2f4962635c7ec89c0847a53fe37bdb0103171c6bf2c4a774004bcd567489e89e"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/startup.json",
+          "sha256": "b70791b104d1403a57a96dedce347b9c0ddea1ffcd937edc456526bd89179982"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/stdout.txt",
+          "sha256": "04a5260cf533c816df4e8861cb9b6103346185fe99d06664517bd2f05f179966"
+        }
+      },
+      "scientific_outcome": {
+        "authentic_producer": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+          "sha256": "d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4"
+        },
+        "contrasts_measured": [],
+        "known_cost": {
+          "complete_project_cost": null,
+          "current_attempt_cost": "separate immutable launcher finish receipt",
+          "producer_elapsed_seconds_lower_bound": 5.685045416998037,
+          "producer_finish": {
+            "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json",
+            "sha256": "e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30"
+          },
+          "scientific_deployment_cost": null,
+          "scope": "original E02 administrative producer only; no numerical attribution attempt"
+        },
+        "protected_scoring_attempted": false,
+        "scientific_mechanism_established": false,
+        "scope": "scientific-development",
+        "status": "blocked",
+        "wp08": "not_attempted"
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v2/producer",
+      "source_inventory_sha256": "2da14fc8700eb7c08828a16ae1ca81a60821db508b773b818b9a1bc20a873935",
+      "storage_forecast_bytes": 77985885,
+      "store_bytes_before_finish": 25792624446,
+      "summary": [
+        "{\"authentic_producer\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json\",\"sha256\":\"d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4\"},\"blockers\":[\"Cannot freeze scientific confirmation: WP04 inconclusive: accepted robust B0/recipe applicability missing; WP06 NEEDS_REVISION: finalized genuinely trained/development-selected C and learned-LR artifacts missing; B* final comparator selection and immutable final arm/config/budget identities missing; four independent fresh paired final-arm development seeds, complete final scores/failure/cost receipts missing; adequate pilot variance/tail review/precision/resource evidence and scientific locked n missing; confirmation seed/arm list, randomized timing order and final checkpoint/status inventory missing. Owning integration: E01/reopened WP06, then E02. No confirm_manifest published.\",\"Finalized trained C/LR/Bstar, final learning budget and independently retuned attribution authority absent; integrate E01/reopened WP06.\"],\"claim_status\":\"exploratory\",\"config\":{\"path\":\"configs/e05-attribution-prerequisites.json\",\"sha256\":\"997209a989cabe74f031f63fd9b2bbf13aa40313b1fa630c09101c8b2ee0f7f5\"},\"contrasts_measured\":[],\"current_prerequisites\":{\"B0\":null,\"B_star\":null,\"WP04\":\"inconclusive\",\"WP06\":\"NEEDS_REVISION\",\"blocked_methods\":{\"MetaQuant Muon/Muon+ composition\":{\"reason\":\"Constructor-admitted only; actual composition/native model scope remains unverified.\"},\"MetaQuant SOAP/Madam composition\":{\"reason\":\"Unsupported trusted backbone envelope; neither baseline is defeated or excluded from B0/Bstar.\"},\"MetaQuant frozen\":{\"reason\":\"No genuine META-trained/META-development-selected theta artifact; M10 initialized mechanics are not eligible.\"}},\"candidate\":null,\"completed_tournament\":false,\"global_unaffordability\":false,\"learned_lr\":null,\"measured_non_advantage\":false,\"prerequisite_evidence\":{\"B0\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m07-20261011/closing-disposition-v2/b0-disposition.json\",\"sha256\":\"28ed3fa513dfc4b5d56b8f4755caceb0d3f25093f69d279580ae16dab236da45\"},\"controller\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/disposition.json\",\"sha256\":\"81c6764d049c23d71d019c45c628327e15ab7295f2b54514051ef941c83d9445\"}},\"producer\":{\"finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/finish.json\",\"sha256\":\"dd8b47d2b24b0e18865300968b6ef3d7a42e6f126c2a079378de7e8f44d32cb5\"},\"startup\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/startup.json\",\"sha256\":\"39d9f9e98bd9652d1a51206620b6b11ceed97cc30966c1dcbcc370af4b48d28f\"}},\"reason\":\"Both provisional one-step policies rank better atK32/64 but worse atfull496 on both disjoint query panels; residual independent direction sampling variability. Exact brief short-horizon/noisy diagnostic branch. No trained-family defeat, general rejection, failed core transfer, or resource impossibility claim.\",\"required_advancement\":[{\"action\":\"Prospectively justify longer-horizon/objective calibration and resolve evidence-based budgets; restart matched candidate45/LR49/static3 learning with each own-current-policy refresh; complete META-development then full official-development selection and B0/recipe applicability or retraining.\",\"owner\":\"E01/reopened WP06\"},{\"action\":\"Robust backbone recipe and independent family backboneLR tuning; exploratory commonMuon.02 is not a competitiveness claim.\",\"owner\":\"E01\"},{\"action\":\"Shared-range learnedLR sensitivity and retuned mechanism/removal contrasts.\",\"owner\":\"E05\"},{\"action\":\"Merge retained source-offset unions and globally deduplicate ancestors/costs; preserve unknown engineering work and all failure scopes.\",\"owner\":\"E07\"},{\"action\":\"Independent strongest B* tournament: all locally competitive families, LR/betas/decay/schedule brackets, genuine META-trained frozen MetaQuant, full-budget fresh development replication and data/compute-augmented ordinary training.\",\"owner\":\"E01\"}],\"selection\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/selection.json\",\"sha256\":\"00f6bb750d3c6602ee1eb00afcaabdeda3ec7f2b6f08b740bd04ac45e87be1f3\"},\"static\":null,\"status\":\"inconclusive\",\"unresolved_methods\":{\"AdamW\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"EWGS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Madam\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"MetaQuant\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon+\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QAR\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QuEST\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"SOAP\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"TRS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"affine45\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"damping_masking\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_lr49\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_scale\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"static3\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"stochastic_rounding\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"}}},\"inherited_scientific_cost_unknowns\":{\"paired_bytes\":null,\"paired_seconds\":null,\"scope\":\"Complete common warmstart and every target/query/gradient/HVP/reset/snapshot/failure cost required; actual paired run costs unknown. Shared-parent project dedup remains separate.\"},\"known_cost\":{\"complete_project_cost\":null,\"current_attempt_cost\":\"separate immutable launcher finish receipt\",\"producer_elapsed_seconds_lower_bound\":5.685045416998037,\"producer_finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json\",\"sha256\":\"e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30\"},\"scientific_deployment_cost\":null,\"scope\":\"original E02 administrative producer only; no numerical attribution attempt\"},\"protected_scoring_attempted\":false,\"requested_contrasts\":[\"learned_lr_wider\",\"learned_lr_shared\",\"static\",\"alpha_zero\",\"history_removed\",\"cell_removed\",\"history_permuted\",\"magnitude_preconditioned_additive\"],\"retune\":true,\"schema\":\"ralup.attribution_prerequisites.v1\",\"scientific_mechanism_established\":false,\"scope\":\"scientific-development\",\"source_identity\":{\"src/ralup/__init__.py\":\"ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd\",\"src/ralup/__main__.py\":\"bd4c146a116a6e431baad6513eea54a08554d99d09c8a81c7a429b32cd7d6cf1\",\"src/ralup/analysis/__init__.py\":\"1a9981c5428c32bad5203aefdc7875dbe15cd5c1c0030f8c17f1108f6639f9d8\",\"src/ralup/analysis/attribution.py\":\"3c0f15971bc836b58b14f1b2648fd8b028b0be13df0e26cdc8e9c1b4db942298\",\"src/ralup/analysis/confirm.py\":\"22361c350af49782a59fd18dce391e69c691ddadb515b4fee8d364dc10389009\",\"src/ralup/analysis/cost.py\":\"ffb3ebc6b110ad2cb8a191d00d8e97105895e3dfbb28acf61a6af7ab1dbfb06d\",\"src/ralup/analysis/power.py\":\"1fafb25aaacfbf1bfdfd1b560e8c045ef5286c50210b5b20f60f9e304a40647c\",\"src/ralup/baselines/__init__.py\":\"19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f\",\"src/ralup/baselines/checks.py\":\"9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b\",\"src/ralup/baselines/ewgs.py\":\"00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff\",\"src/ralup/baselines/learned_scale.py\":\"d3b3e092245149c4ad36926f33d041a12f7c64d5ecedf1cbbcc17da5569a7b22\",\"src/ralup/baselines/metaquant.py\":\"e3db83d0c2906affcd6c4ad0e38811dea9b311c3b8bca2582170f0d5e25af6c7\",\"src/ralup/baselines/muon_checks.py\":\"ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11\",\"src/ralup/baselines/noise.py\":\"4fb6514e055274805531ae4926500a8db952caa3486535c46dd028eb8a1c861f\",\"src/ralup/baselines/qar.py\":\"a309831c37e9b55e68e109dd5dd4d672bcf3e7aee98371c34bd549d5336437ea\",\"src/ralup/baselines/references/__init__.py\":\"6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f\",\"src/ralup/baselines/references/soap_reference.py\":\"9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b\",\"src/ralup/baselines/registry.py\":\"8e8f956b0cc47c8b5f50be76bce3b215f8891c7d068f22b32b4d76b8e68dd5d4\",\"src/ralup/baselines/rounding.py\":\"21f9e162ad8c4a6b10df51049ff9f80389c67fafe24583fb3d8a131024a1d7fa\",\"src/ralup/baselines/soap_madam_checks.py\":\"d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b\",\"src/ralup/baselines/trs.py\":\"6c759a7ee85b0b92c7027e43c59dcadd435773f651d7c5a650c8a95a2a0edf8d\",\"src/ralup/calibrate.py\":\"1e26bd718902ad4639978eac7ec0f8e30bbeaae6eb7b68a34b29204573b2518b\",\"src/ralup/config.py\":\"dabdbda877fc43272ff58a1157398ee849227bc93e661d63b0914cef77fa6980\",\"src/ralup/data/__init__.py\":\"6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0\",\"src/ralup/data/articles.py\":\"1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c\",\"src/ralup/data/batches.py\":\"5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750\",\"src/ralup/data/blocks.py\":\"c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe\",\"src/ralup/data/checks.py\":\"cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f\",\"src/ralup/data/cursor.py\":\"2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af\",\"src/ralup/data/dedup.py\":\"c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f\",\"src/ralup/data/partitions.py\":\"551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9\",\"src/ralup/data/source.py\":\"fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f\",\"src/ralup/diagnostics/__init__.py\":\"ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00\",\"src/ralup/diagnostics/quadratics.py\":\"3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840\",\"src/ralup/environment.py\":\"0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160\",\"src/ralup/evaluate.py\":\"b930cc8f0b5788148e32c958060e50d5958668ac7e29e55f675be020a68641b1\",\"src/ralup/meta/__init__.py\":\"9f080d8764e62251844c6da57cd873c552e977ecdb0fd3f0141590cc67a782cb\",\"src/ralup/meta/es.py\":\"e5a510f34760198d0d6008172d159406772f9506d8bf33fa0add2c3dc7c60c87\",\"src/ralup/meta/selection.py\":\"2140082f2f831134d8229218618c571ad76c608c161be72a1af0c8cad5339112\",\"src/ralup/meta/tasks.py\":\"f04fb1451d4cb64c354d251fe949b3dfa099e3275528527c3962f574aa26948d\",\"src/ralup/models/__init__.py\":\"7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752\",\"src/ralup/models/checks.py\":\"f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a\",\"src/ralup/models/embedding.py\":\"11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1\",\"src/ralup/models/linear.py\":\"f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546\",\"src/ralup/models/transformer.py\":\"4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05\",\"src/ralup/optim/__init__.py\":\"ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae\",\"src/ralup/optim/adamw.py\":\"c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c\",\"src/ralup/optim/base.py\":\"61bacd5807767a7b92b261651cb4b0b0eecfa48f21db00929c98d33cf6ccb4bb\",\"src/ralup/optim/madam.py\":\"afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6\",\"src/ralup/optim/matrix_adapter.py\":\"45f6d5600e0470c8e3ad63be349b8fc06c8ad0bb17ee5d6352bb4bac94b575bc\",\"src/ralup/optim/muon.py\":\"c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35\",\"src/ralup/optim/muon_plus.py\":\"0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d\",\"src/ralup/optim/soap.py\":\"f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b\",\"src/ralup/policy/__init__.py\":\"2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4\",\"src/ralup/policy/actions.py\":\"44b90d839c2617e528b390ec26fe2844e32f1a3d9e3c6df3bb7fa1087262698f\",\"src/ralup/policy/adapter.py\":\"5842cc94bbeaff51063b1010b0e906fb4a1b31fe9549c311b578ab8f93392dcd\",\"src/ralup/policy/checks.py\":\"669127f4b9ee5af65a23c05662239eff643762b219026acb643d4853160d0b5f\",\"src/ralup/policy/controllers.py\":\"1bdd7b3077b0e1eb20b3e7430f455039939dd78a04f484cd2e29dcfe2b9ae9d5\",\"src/ralup/policy/features.py\":\"31e647ce2b15f6735887c36f592f3d3c5978f9c6450fd815b571f46e8b0af657\",\"src/ralup/policy/history.py\":\"b750ccd592eeaa6c2a71ad21f149418dada2e8abb6694fb49816a6a41611c1c8\",\"src/ralup/policy/normalizer.py\":\"0358135d4bf09a4b9a2104394f24f0adb8cc425bf201fea5c45425ee5d560c28\",\"src/ralup/quantization/__init__.py\":\"733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16\",\"src/ralup/quantization/checks.py\":\"fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2\",\"src/ralup/quantization/context.py\":\"3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c\",\"src/ralup/quantization/formats.py\":\"a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896\",\"src/ralup/quantization/fp32.py\":\"ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5\",\"src/ralup/quantization/oracle.py\":\"78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c\",\"src/ralup/quantization/rotation.py\":\"a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d\",\"src/ralup/quantization/scales.py\":\"17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64\",\"src/ralup/quantization/surrogates.py\":\"a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614\",\"src/ralup/records.py\":\"7401be3fd29100a603a43e6a80ab188765a4433733c7fb4970c624656537c2a2\",\"src/ralup/runner.py\":\"1dd60dbb766090d2a648994ebe167bd0a6cbc4566b4880eafffbbaa1dc0d2698\",\"src/ralup/search.py\":\"d6b492317e3264b2f572d17f6e2ab75b820a4d0567c67c12ea610bc4dbcdf67f\",\"src/ralup/state.py\":\"24993da7dfe631902955045cd0d9bb887330772fefaea9b2cd63e9e8f2feabc7\",\"src/ralup/train.py\":\"34e9d41cf4efff90d8fefdcae5449566707bd25e066687a06bb06b115df4908a\",\"src/ralup/warmstart.py\":\"ade8c8301389b92f1d0eb1c00dc3ee5404e133ef2617cb41fc76b562cad13406\"},\"status\":\"blocked\",\"unmeasured_common_engineering_cost\":null,\"wp08\":\"not_attempted\"}"
+      ],
+      "utc": "2026-10-12T01:01:53.101650+00:00"
+    },
+    {
+      "attempt": "green-self-review-v1",
+      "child_cpu_system_seconds": 0.8959659999999999,
+      "child_cpu_user_seconds": 2.210414,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 5487297,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py"
+      ],
+      "data_free_after": 73102524416,
+      "elapsed_seconds": 12.157937000003585,
+      "exit_code": 0,
+      "git_free_after": 6919626752,
+      "launcher_cpu_system_seconds": 1.8030599999999999,
+      "launcher_cpu_user_seconds": 4.219795,
+      "local_time": "2026-10-12T03:02:21.460762+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/finish.json",
+          "sha256": "ef4ade1140772aef3abdcf7c497cb9a854134672df3b20a5decef10a73ed1e06"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/runtime-observation.json",
+          "sha256": "2e26bafa37c24531f46487ff3b7b57c81b271944e2420b701b8fd2a314d6eb94"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/startup.json",
+          "sha256": "3fbbfcaeecc0eaf56b2e9f19f78b14075f54239e0875540ef2f83a90a56a4be8"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/stdout.txt",
+          "sha256": "0d257f26fbf5b26d87b01dc6c72f17850b9eb21f92aae148608329cf9877223a"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/green-self-review-v1/producer",
+      "source_inventory_sha256": "adee5970991f35bef532dd8450c9f6b441164911b1960b04d9db302748a0ce2d",
+      "storage_forecast_bytes": 78006901,
+      "store_bytes_before_finish": 25850981318,
+      "summary": [
+        "98 passed in 2.99s"
+      ],
+      "utc": "2026-10-12T01:02:21.460744+00:00"
+    },
+    {
+      "attempt": "focused-final-cpu-v3",
+      "child_cpu_system_seconds": 3.580126,
+      "child_cpu_user_seconds": 11.871094,
+      "child_output_allowance_bytes": 134217728,
+      "child_output_bytes": 81502500,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/unit/test_ablation_contracts.py",
+        "tests/unit/test_actions.py",
+        "tests/unit/test_controllers.py",
+        "tests/unit/test_method_registry.py",
+        "tests/unit/test_finalist_selection.py",
+        "tests/unit/test_config_records.py",
+        "tests/unit/test_cost_ledgers.py",
+        "tests/unit/test_e04_attempt_storage.py",
+        "tests/integration/test_policy_identity.py",
+        "-k",
+        "not mps"
+      ],
+      "data_free_after": 72932265984,
+      "elapsed_seconds": 24.525755708004,
+      "exit_code": 0,
+      "git_free_after": 6920253440,
+      "launcher_cpu_system_seconds": 1.890811,
+      "launcher_cpu_user_seconds": 4.208107,
+      "local_time": "2026-10-12T03:03:16.951365+02:00",
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/finish.json",
+          "sha256": "62ed25a0c3f42051c145ebf955bfac995ef381640210b7681f2de8696949cd55"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/runtime-observation.json",
+          "sha256": "14fde64859a05697b7a0fd4b958678cca759d701b2fa183080809164bf318fd6"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/startup.json",
+          "sha256": "4cf3b6ca0fddc6f6e19d6725ec89bee3ffc53f0e70c8d8cde985ed8f75e1e57c"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/stdout.txt",
+          "sha256": "fb32d9938185ec471f6a1502f656c1d27d12316ee1f05e02c21383686fd9c335"
+        }
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/focused-final-cpu-v3/producer",
+      "source_inventory_sha256": "e251bf5f0b1f1c7a484867b325b38168e31510476e90368a10639bf3800f977a",
+      "storage_forecast_bytes": 195806667,
+      "store_bytes_before_finish": 25986131088,
+      "summary": [
+        "325 passed, 16 deselected in 14.93s"
+      ],
+      "utc": "2026-10-12T01:03:16.951347+00:00"
+    },
+    {
+      "attempt": "attribution-cli-v3",
+      "child_cpu_system_seconds": 0.24125,
+      "child_cpu_user_seconds": 1.3864509999999999,
+      "child_output_allowance_bytes": 16777216,
+      "child_output_bytes": 31237,
+      "child_output_within_allowance": true,
+      "command": [
+        "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/.venv/bin/python",
+        "-m",
+        "ralup",
+        "run",
+        "--phase",
+        "explore",
+        "--suite",
+        "attribution",
+        "--config",
+        "configs/e05-attribution-prerequisites.json"
+      ],
+      "data_free_after": 72835817472,
+      "elapsed_seconds": 10.932115292001981,
+      "exit_code": 2,
+      "git_free_after": 6920134656,
+      "launcher_cpu_system_seconds": 2.171775,
+      "launcher_cpu_user_seconds": 4.377318,
+      "local_time": "2026-10-12T03:04:19.364449+02:00",
+      "prerequisites": {
+        "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/attribution-prerequisites.json",
+        "sha256": "7218186a693db465c1c5e17c90499174445fb68c8ef55d680a299a7b975423c0"
+      },
+      "receipts": {
+        "finish.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/finish.json",
+          "sha256": "d4bc8f930ab84cc05f3483f03e8d5154c72e689de0f2ec399fd569a636b63f3b"
+        },
+        "runtime-observation.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/runtime-observation.json",
+          "sha256": "5a4fe51ce3685ccbf69ecbcf232ab0b70b1152f7c48a5cea9cc8cbfdcc538412"
+        },
+        "startup.json": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/startup.json",
+          "sha256": "12593e6c639223bb4edeaf48c2f55c1ba5e8991132079677d5cfe3108228bd18"
+        },
+        "stderr.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/stdout.txt",
+          "sha256": "303cb60b12afc862c62c7959f5395984b42e1cc925c8a747793d400cabc016bf"
+        }
+      },
+      "scientific_outcome": {
+        "authentic_producer": {
+          "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+          "sha256": "d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4"
+        },
+        "contrasts_measured": [],
+        "known_cost": {
+          "complete_project_cost": null,
+          "current_attempt_cost": "separate immutable launcher finish receipt",
+          "producer_elapsed_seconds_lower_bound": 5.685045416998037,
+          "producer_finish": {
+            "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json",
+            "sha256": "e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30"
+          },
+          "scientific_deployment_cost": null,
+          "scope": "original E02 administrative producer only; no numerical attribution attempt"
+        },
+        "protected_scoring_attempted": false,
+        "scientific_mechanism_established": false,
+        "scope": "scientific-development",
+        "status": "blocked",
+        "wp08": "not_attempted"
+      },
+      "source_archive": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/producer",
+      "source_inventory_sha256": "63fc954f472e887fc2cce9f7997fa0e512222bb1a66df929ade6c9cb6cd4b207",
+      "storage_forecast_bytes": 80399306,
+      "store_bytes_before_finish": 26043757841,
+      "summary": [
+        "{\"authentic_producer\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json\",\"sha256\":\"d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4\"},\"blockers\":[\"Cannot freeze scientific confirmation: WP04 inconclusive: accepted robust B0/recipe applicability missing; WP06 NEEDS_REVISION: finalized genuinely trained/development-selected C and learned-LR artifacts missing; B* final comparator selection and immutable final arm/config/budget identities missing; four independent fresh paired final-arm development seeds, complete final scores/failure/cost receipts missing; adequate pilot variance/tail review/precision/resource evidence and scientific locked n missing; confirmation seed/arm list, randomized timing order and final checkpoint/status inventory missing. Owning integration: E01/reopened WP06, then E02. No confirm_manifest published.\",\"Finalized trained C/LR/Bstar, final learning budget and independently retuned attribution authority absent; integrate E01/reopened WP06.\"],\"claim_status\":\"exploratory\",\"config\":{\"path\":\"configs/e05-attribution-prerequisites.json\",\"sha256\":\"5af98bd4a003641e922ae5cd8ae136c36799cc8a9ae41bde61cf222dcbf5490a\"},\"contrasts_measured\":[],\"current_prerequisites\":{\"B0\":null,\"B_star\":null,\"WP04\":\"inconclusive\",\"WP06\":\"NEEDS_REVISION\",\"blocked_methods\":{\"MetaQuant Muon/Muon+ composition\":{\"reason\":\"Constructor-admitted only; actual composition/native model scope remains unverified.\"},\"MetaQuant SOAP/Madam composition\":{\"reason\":\"Unsupported trusted backbone envelope; neither baseline is defeated or excluded from B0/Bstar.\"},\"MetaQuant frozen\":{\"reason\":\"No genuine META-trained/META-development-selected theta artifact; M10 initialized mechanics are not eligible.\"}},\"candidate\":null,\"completed_tournament\":false,\"global_unaffordability\":false,\"learned_lr\":null,\"measured_non_advantage\":false,\"prerequisite_evidence\":{\"B0\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m07-20261011/closing-disposition-v2/b0-disposition.json\",\"sha256\":\"28ed3fa513dfc4b5d56b8f4755caceb0d3f25093f69d279580ae16dab236da45\"},\"controller\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/closure-v1/disposition.json\",\"sha256\":\"81c6764d049c23d71d019c45c628327e15ab7295f2b54514051ef941c83d9445\"}},\"producer\":{\"finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/finish.json\",\"sha256\":\"dd8b47d2b24b0e18865300968b6ef3d7a42e6f126c2a079378de7e8f44d32cb5\"},\"startup\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/startup.json\",\"sha256\":\"39d9f9e98bd9652d1a51206620b6b11ceed97cc30966c1dcbcc370af4b48d28f\"}},\"reason\":\"Both provisional one-step policies rank better atK32/64 but worse atfull496 on both disjoint query panels; residual independent direction sampling variability. Exact brief short-horizon/noisy diagnostic branch. No trained-family defeat, general rejection, failed core transfer, or resource impossibility claim.\",\"required_advancement\":[{\"action\":\"Prospectively justify longer-horizon/objective calibration and resolve evidence-based budgets; restart matched candidate45/LR49/static3 learning with each own-current-policy refresh; complete META-development then full official-development selection and B0/recipe applicability or retraining.\",\"owner\":\"E01/reopened WP06\"},{\"action\":\"Robust backbone recipe and independent family backboneLR tuning; exploratory commonMuon.02 is not a competitiveness claim.\",\"owner\":\"E01\"},{\"action\":\"Shared-range learnedLR sensitivity and retuned mechanism/removal contrasts.\",\"owner\":\"E05\"},{\"action\":\"Merge retained source-offset unions and globally deduplicate ancestors/costs; preserve unknown engineering work and all failure scopes.\",\"owner\":\"E07\"},{\"action\":\"Independent strongest B* tournament: all locally competitive families, LR/betas/decay/schedule brackets, genuine META-trained frozen MetaQuant, full-budget fresh development replication and data/compute-augmented ordinary training.\",\"owner\":\"E01\"}],\"selection\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e01-20261011/select-finalists-v1/selection.json\",\"sha256\":\"00f6bb750d3c6602ee1eb00afcaabdeda3ec7f2b6f08b740bd04ac45e87be1f3\"},\"static\":null,\"status\":\"inconclusive\",\"unresolved_methods\":{\"AdamW\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"EWGS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Madam\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"MetaQuant\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"Muon+\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QAR\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"QuEST\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"SOAP\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"TRS\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"affine45\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"damping_masking\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_lr49\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"learned_scale\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"static3\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"},\"stochastic_rounding\":{\"owner\":\"E01/reopened WP06\",\"reason\":\"No eligible fresh full-budget fair finalist tournament; retain for E01/reopened WP06.\",\"status\":\"unresolved\"}}},\"inherited_scientific_cost_unknowns\":{\"paired_bytes\":null,\"paired_seconds\":null,\"scope\":\"Complete common warmstart and every target/query/gradient/HVP/reset/snapshot/failure cost required; actual paired run costs unknown. Shared-parent project dedup remains separate.\"},\"known_cost\":{\"complete_project_cost\":null,\"current_attempt_cost\":\"separate immutable launcher finish receipt\",\"producer_elapsed_seconds_lower_bound\":5.685045416998037,\"producer_finish\":{\"path\":\"/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/finish.json\",\"sha256\":\"e4c35ca6c541c6480b00131a15e532744458a7618711cdc0e81ab5263a94af30\"},\"scientific_deployment_cost\":null,\"scope\":\"original E02 administrative producer only; no numerical attribution attempt\"},\"protected_scoring_attempted\":false,\"requested_contrasts\":[\"learned_lr_wider\",\"learned_lr_shared\",\"static\",\"alpha_zero\",\"history_removed\",\"cell_removed\",\"history_permuted\",\"magnitude_preconditioned_additive\"],\"retune\":true,\"schema\":\"ralup.attribution_prerequisites.v1\",\"scientific_mechanism_established\":false,\"scope\":\"scientific-development\",\"source_identity\":{\"src/ralup/__init__.py\":\"ca0db357b4a2b1812b1567f7cc2b578edb00c92b5dcd55a9cbdc9bda63e409fd\",\"src/ralup/__main__.py\":\"bd4c146a116a6e431baad6513eea54a08554d99d09c8a81c7a429b32cd7d6cf1\",\"src/ralup/analysis/__init__.py\":\"1a9981c5428c32bad5203aefdc7875dbe15cd5c1c0030f8c17f1108f6639f9d8\",\"src/ralup/analysis/attribution.py\":\"70c6487e699d291c1de5c05f1e08adeabc0f178f9842d8d97d650fdbd1d6b06b\",\"src/ralup/analysis/confirm.py\":\"22361c350af49782a59fd18dce391e69c691ddadb515b4fee8d364dc10389009\",\"src/ralup/analysis/cost.py\":\"ffb3ebc6b110ad2cb8a191d00d8e97105895e3dfbb28acf61a6af7ab1dbfb06d\",\"src/ralup/analysis/power.py\":\"1fafb25aaacfbf1bfdfd1b560e8c045ef5286c50210b5b20f60f9e304a40647c\",\"src/ralup/baselines/__init__.py\":\"19f591e37572378fbcb3736f36314548f27aa44ca10ffdffd69bf48f74fce05f\",\"src/ralup/baselines/checks.py\":\"9a671642e2a29e93a336cdf77312cbf0e2c3807168b4d43a71f696f3777ef00b\",\"src/ralup/baselines/ewgs.py\":\"00c4170c86a9299aa30449df9edd8a1cb9dbbab9b0c94469a49ca1a7467f85ff\",\"src/ralup/baselines/learned_scale.py\":\"d3b3e092245149c4ad36926f33d041a12f7c64d5ecedf1cbbcc17da5569a7b22\",\"src/ralup/baselines/metaquant.py\":\"e3db83d0c2906affcd6c4ad0e38811dea9b311c3b8bca2582170f0d5e25af6c7\",\"src/ralup/baselines/muon_checks.py\":\"ab65e3c43cdcb9b0bde13cea64d95bb7a7d82c4b91bcaa4da445365d4a2ead11\",\"src/ralup/baselines/noise.py\":\"4fb6514e055274805531ae4926500a8db952caa3486535c46dd028eb8a1c861f\",\"src/ralup/baselines/qar.py\":\"a309831c37e9b55e68e109dd5dd4d672bcf3e7aee98371c34bd549d5336437ea\",\"src/ralup/baselines/references/__init__.py\":\"6c50a0dd2a300b7c19e685023ae958f9e2b780e51cad5439c32e788df495015f\",\"src/ralup/baselines/references/soap_reference.py\":\"9e9021335ad02371584622fa256e73fe75f3eb74446a8d8a216e956534148f6b\",\"src/ralup/baselines/registry.py\":\"8e8f956b0cc47c8b5f50be76bce3b215f8891c7d068f22b32b4d76b8e68dd5d4\",\"src/ralup/baselines/rounding.py\":\"21f9e162ad8c4a6b10df51049ff9f80389c67fafe24583fb3d8a131024a1d7fa\",\"src/ralup/baselines/soap_madam_checks.py\":\"d9729eace282380bfc000bf2af414db3759f6208d438f6a8e132ea91299cd51b\",\"src/ralup/baselines/trs.py\":\"6c759a7ee85b0b92c7027e43c59dcadd435773f651d7c5a650c8a95a2a0edf8d\",\"src/ralup/calibrate.py\":\"1e26bd718902ad4639978eac7ec0f8e30bbeaae6eb7b68a34b29204573b2518b\",\"src/ralup/config.py\":\"dabdbda877fc43272ff58a1157398ee849227bc93e661d63b0914cef77fa6980\",\"src/ralup/data/__init__.py\":\"6901a4db8255caa1674ebcb6015de068f1a70069ad2c951b041c9ba9bd80cfe0\",\"src/ralup/data/articles.py\":\"1d2e21cb5e7d6ead9ee971bb4fcd333027f64b2a3ed8e8ddf1129d080c85998c\",\"src/ralup/data/batches.py\":\"5585e0e4d108a822967bf6a2271844e245526cd9e24bc288c0fd41d755d24750\",\"src/ralup/data/blocks.py\":\"c02c97c5925d25c2396c01d958d58a871821cb3b46eb41d210873d96d5571ebe\",\"src/ralup/data/checks.py\":\"cbe50138a73b8b510da34cdd92b9214721d5e8f96472de4e3115aa030ffbcc4f\",\"src/ralup/data/cursor.py\":\"2e0ec38b42c1ddd57ae5a40ad22467818c1f169b20803a16117918d590e1c2af\",\"src/ralup/data/dedup.py\":\"c2e988c56df6663dbd68dfc6126681a60083a6586784e9f6f920519cbdf95a3f\",\"src/ralup/data/partitions.py\":\"551d0291022d3674de0d2609dd3fc37fec45712c76492ddd2b53f9ad9553d8e9\",\"src/ralup/data/source.py\":\"fd080439806b4086449777181ccbf4bd64e0d3470fb5c1eba4ad6dc2e871be3f\",\"src/ralup/diagnostics/__init__.py\":\"ac68019b29a9dd9cf51015afd125ecbc169c7bdeaabacd8dd138186d48054c00\",\"src/ralup/diagnostics/quadratics.py\":\"3d5a4e9fbbd2541dcf58153995590e1edf333d8f19fa55fc90e2e37e559e7840\",\"src/ralup/environment.py\":\"0d9a0add92237e4d3fa28547aaad97f761304b49a174042cfba84bb1f89ab160\",\"src/ralup/evaluate.py\":\"b930cc8f0b5788148e32c958060e50d5958668ac7e29e55f675be020a68641b1\",\"src/ralup/meta/__init__.py\":\"9f080d8764e62251844c6da57cd873c552e977ecdb0fd3f0141590cc67a782cb\",\"src/ralup/meta/es.py\":\"e5a510f34760198d0d6008172d159406772f9506d8bf33fa0add2c3dc7c60c87\",\"src/ralup/meta/selection.py\":\"2140082f2f831134d8229218618c571ad76c608c161be72a1af0c8cad5339112\",\"src/ralup/meta/tasks.py\":\"f04fb1451d4cb64c354d251fe949b3dfa099e3275528527c3962f574aa26948d\",\"src/ralup/models/__init__.py\":\"7f11d6382704510ba46a074e1e9b81a32b3db1abbf0e95303fd1f5e8b2c50752\",\"src/ralup/models/checks.py\":\"f6f94bb865e1b4e3b0498171179b9eb63dd3ab03bfe73705aaf570f513ee093a\",\"src/ralup/models/embedding.py\":\"11d640c65cb6ad51451c9ca393d1f536b2eb9bdee7f7391483fa989f52e2f5f1\",\"src/ralup/models/linear.py\":\"f905c3059f9912e1c1361fa60e249aefcf8b3cdf1f4685d1e75b0f5d1b6bb546\",\"src/ralup/models/transformer.py\":\"4d713b7ac3fbee5bd642adeceb0497fe823acfc5db1fb00066ceb9640a872a05\",\"src/ralup/optim/__init__.py\":\"ee3fbba5ec93e870f2d18d730ea416589341fd98d36b53f0899445676e95caae\",\"src/ralup/optim/adamw.py\":\"c46dc08d83b31b61a833460bec7495228b1322a37a71453d6f304e47d88bd73c\",\"src/ralup/optim/base.py\":\"61bacd5807767a7b92b261651cb4b0b0eecfa48f21db00929c98d33cf6ccb4bb\",\"src/ralup/optim/madam.py\":\"afcb8934c08012de5ea150ece4cc369c460d354787aa31bf85582d11e8fe73c6\",\"src/ralup/optim/matrix_adapter.py\":\"45f6d5600e0470c8e3ad63be349b8fc06c8ad0bb17ee5d6352bb4bac94b575bc\",\"src/ralup/optim/muon.py\":\"c1b6f836e2b6a99c724c7fbb4e8005dbaccfb078eac6bd01a1782f9bde582d35\",\"src/ralup/optim/muon_plus.py\":\"0ba97b28915536973ac9ae977ed8a36cae7b3c5233352668f4b75151b20ba82d\",\"src/ralup/optim/soap.py\":\"f9230a08ed7d4e466a25400102e59c72abb40536f3255f56b18be2752ea7a21b\",\"src/ralup/policy/__init__.py\":\"2e73c8c93d9b043a95f8c908ea267bf1aff5a952527708f8c0bb0e0ca60c97c4\",\"src/ralup/policy/actions.py\":\"44b90d839c2617e528b390ec26fe2844e32f1a3d9e3c6df3bb7fa1087262698f\",\"src/ralup/policy/adapter.py\":\"5842cc94bbeaff51063b1010b0e906fb4a1b31fe9549c311b578ab8f93392dcd\",\"src/ralup/policy/checks.py\":\"669127f4b9ee5af65a23c05662239eff643762b219026acb643d4853160d0b5f\",\"src/ralup/policy/controllers.py\":\"1bdd7b3077b0e1eb20b3e7430f455039939dd78a04f484cd2e29dcfe2b9ae9d5\",\"src/ralup/policy/features.py\":\"31e647ce2b15f6735887c36f592f3d3c5978f9c6450fd815b571f46e8b0af657\",\"src/ralup/policy/history.py\":\"b750ccd592eeaa6c2a71ad21f149418dada2e8abb6694fb49816a6a41611c1c8\",\"src/ralup/policy/normalizer.py\":\"0358135d4bf09a4b9a2104394f24f0adb8cc425bf201fea5c45425ee5d560c28\",\"src/ralup/quantization/__init__.py\":\"733bd6a543f8301b434527386c8ef36302ddc5542edc7cd74a90744f20771a16\",\"src/ralup/quantization/checks.py\":\"fb748253fb3b6d7940abff4b2bd02de070ca8dbe2bf82c599879d323b7f9b1e2\",\"src/ralup/quantization/context.py\":\"3484d423db9c3c90f06358f7f91858595ed19793fbd9b1bff4a408e327e99c7c\",\"src/ralup/quantization/formats.py\":\"a121bd73ef474454afd3864faa3f34826288635d4532c4c51e9c031978c7f896\",\"src/ralup/quantization/fp32.py\":\"ede85a7a03eb42a08657f598d39baba6632acdd6392af12758f4ec98c9b2f5b5\",\"src/ralup/quantization/oracle.py\":\"78ab1c1074aab13c82bfada85614470ffcf5d76bf4af6a2ab2622586532cb71c\",\"src/ralup/quantization/rotation.py\":\"a00a7fbff6e3ad4815215fdb323c9b10542bffedbb628c33787a432ee27d751d\",\"src/ralup/quantization/scales.py\":\"17161edd15eadb63831be9fa92c90d5e4decd98df9f77568d396536c45161b64\",\"src/ralup/quantization/surrogates.py\":\"a82ebe029c79367121d0f64d75c9824fb9341529796d57ec36f165c6ef619614\",\"src/ralup/records.py\":\"7401be3fd29100a603a43e6a80ab188765a4433733c7fb4970c624656537c2a2\",\"src/ralup/runner.py\":\"1dd60dbb766090d2a648994ebe167bd0a6cbc4566b4880eafffbbaa1dc0d2698\",\"src/ralup/search.py\":\"d6b492317e3264b2f572d17f6e2ab75b820a4d0567c67c12ea610bc4dbcdf67f\",\"src/ralup/state.py\":\"24993da7dfe631902955045cd0d9bb887330772fefaea9b2cd63e9e8f2feabc7\",\"src/ralup/train.py\":\"34e9d41cf4efff90d8fefdcae5449566707bd25e066687a06bb06b115df4908a\",\"src/ralup/warmstart.py\":\"ade8c8301389b92f1d0eb1c00dc3ee5404e133ef2617cb41fc76b562cad13406\"},\"status\":\"blocked\",\"unmeasured_common_engineering_cost\":null,\"wp08\":\"not_attempted\"}"
+      ],
+      "utc": "2026-10-12T01:04:19.364434+00:00"
+    }
+  ],
+  "base": "b6aba9fa1d7eb239c7c2a1c08fe3a0f52caafc44",
+  "final_scientific_cli": "attribution-cli-v3",
+  "final_verification": "focused-final-cpu-v3",
+  "forecast_violations_are_not_passing_admission_or_complete_attempts": true,
+  "preparation_shell_failure": {
+    "before_imports_or_child_or_permanent_write": true,
+    "command": "Malformed unused E05_INPUT_REFS shell assignment; unmatched quote",
+    "exit_code": 1,
+    "numerical_attempt": false
+  },
+  "preserved_output_forecast_violations": [
+    "focused-final-v1",
+    "focused-final-cpu-v1"
+  ],
+  "research_cutoff": "2026-10-03",
+  "schema": "ralup.e05_evidence_index.v1",
+  "scientific_mechanism_established": false,
+  "unknown_enclosing_editing_tool_engineering_cost": null
+}

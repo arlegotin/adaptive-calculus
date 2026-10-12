@@ -1,0 +1,46 @@
+{
+  "catalogs": [
+    {
+      "path": "configs/ablations/actions.json",
+      "sha256": "1afcb55b97715e7d1c0ec581ec63ebe8bd7adaf59894070782407fe1b23dc04e"
+    },
+    {
+      "path": "configs/ablations/budgets.json",
+      "sha256": "d2d45f9977eae70b786b10180a32771660b4feddf1a4438c51732a4e79409556"
+    },
+    {
+      "path": "configs/ablations/information.json",
+      "sha256": "66be044417c3750a74baa119b7cacd56bac1e765d475c4c5c8b6e659961cda08"
+    },
+    {
+      "path": "configs/ablations/noise.json",
+      "sha256": "049fb2f40eaa7cd470e08e94ccd6ea158530c0ba407179f579a78da4e4d2d9d4"
+    },
+    {
+      "path": "configs/ablations/scales.json",
+      "sha256": "a28705b8f0dfe62ab7cfea8f7f478a41c07cbd75e965b9a7ad4de4ab22c2569a"
+    }
+  ],
+  "full_cartesian_required": false,
+  "output": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e05-20261012/attribution-cli-v3/attribution-prerequisites.json",
+  "parent": null,
+  "prerequisite_design": {
+    "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/e02-20261012/plan-confirmation-v1/confirmation-plan.json",
+    "sha256": "d8d58dae3fb00e698ab202fbc40252d95e51d8e12497e2f80f14772efab54dc4"
+  },
+  "purpose": "prerequisite_disposition_only_no_new_training_or_scoring",
+  "requested_contrasts": [
+    "learned_lr_wider",
+    "learned_lr_shared",
+    "static",
+    "alpha_zero",
+    "history_removed",
+    "cell_removed",
+    "history_permuted",
+    "magnitude_preconditioned_additive"
+  ],
+  "research_cutoff": "2026-10-03",
+  "retune": true,
+  "schema": "ralup.attribution_suite.v1",
+  "scope": "scientific-development"
+}
