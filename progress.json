@@ -1,6 +1,62 @@
 {
-  "schema_version": 1,
-  "current_gate": "WP06_NEEDS_REVISION",
+  "M11": {
+    "B0": null,
+    "WP04": "inconclusive",
+    "WP06": "NEEDS_REVISION",
+    "completed": [
+      "M11 corrected-source focused37passed and full sandboxCPU844passed/76skipped",
+      "55actual historical-producer calibration rollouts: noise/sigma/m/query and16/32/64/full508",
+      "Historical bootstrap fit/calibration limited by dropped pre-update last_actions telemetry; fixed with RED/GREEN owner preservation, no old rerun",
+      "Genuine broad-age baseline/bootstrap-policy META-only10752-row reference fit and complete16/256/448pool under5ed817e",
+      "All35changed-fit rollouts includingK16/32/64/full496, two disjoint query panels, broad-age and actualLR49 admissions",
+      "Logging-only action receipt fix16fe874: focused23passed7.20s; prior844CPUcoverage belongs5ed817e",
+      "Authenticated receipt-only accounting6420updates52592640training6078464query204evals; retained task source-offset union"
+    ],
+    "confirmation_eligible": false,
+    "current_reference_design": {
+      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
+      "sha256": "c19a02a4b38f41a2876f42177ea2be995b9416874c9518603f34407ddb42f837"
+    },
+    "disposition_basis": "Exact brief short-horizon/noisy revision branch: both provisional policies improveK32/64 but worsenfull496 on both panels; residual direction-sampling variability. No family defeat/resource impossibility/general rejection.",
+    "evidence_index": "docs/harness/m11-evidence.json",
+    "final_K": null,
+    "final_iterations": null,
+    "final_m": null,
+    "fix_round_1": {
+      "finding": "I1",
+      "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
+      "future_source_applicability": "New strict runtime identity; normalizer DATA unchanged, no old complete-state import",
+      "scope": "Only selector eligibility/endpoint/nomination authority; WP06 NEEDS_REVISION unchanged",
+      "status": "I1_addressed_by_scoped_review",
+      "verification": "fix1-verify-selector-v1:27passed1.54s; no model work"
+    },
+    "fix_round_2": {
+      "finding": "N1",
+      "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
+      "future_source_applicability": "New strict runtime identity; original normalizer DATA unchanged, no old complete-state import",
+      "scope": "One corpus-reference consumer comparison; original d75faa normalizer and trajectory bytes preserved",
+      "status": "addressed_scoped_review_clean",
+      "verification": "fix2-verify-selector-v1:31passed1.87s; no model work"
+    },
+    "implementation_commit": "5ed817e8a34640bc0227d9d603947a3ab8933007",
+    "logging_fix_commit": "16fe874b3a7e3249ae833fa977a9db974a7191d2",
+    "next_action": "Future scientifically justified WP06 revision; no packaging-driven extension.",
+    "open": [
+      "Prospectively justified longer-horizon/objective calibration and final budget resolution under reopenedWP06",
+      "Matched candidate/LR/static restarts and each own-current-policy refresh using fresh complete current-source pools",
+      "META-development and full official-development selection; robustB0/recipe applicability and familyLR tuningE01",
+      "Shared-range learnedLR and retuned mechanism contrastsE05; global evidence/cost unionE07"
+    ],
+    "selected_controller": null,
+    "status": "engineering_complete_scoped_review_clean; WP06_NEEDS_REVISION"
+  },
+  "blocks": [
+    "WP04 remains inconclusive with no accepted robust B0; WP06 NEEDS_REVISION.",
+    "Final C/LR/B_star, budgets, justified paired pilot, locked n and confirmation are absent; protected scoring is closed.",
+    "Historical H08 real-shape numerical failures and N01 failed/partial work retain their recorded scopes; task engineering completion does not reopen numerical/scientific gates.",
+    "Complete project cost and historical operand coverage remain unknown; source/licensing/fidelity limitations remain.",
+    "Fresh E07 task review, root whole-branch review and later durable root delta remain required."
+  ],
   "completed_checks": [
     "F01 canonical finite JSON and stable configuration hashing",
     "F01 purpose-specific null evidence gates and synthetic isolation",
@@ -22,116 +78,30 @@
     "H08 infrastructure: explicit bounded calibration purpose, disposable state restoration, synchronized full transactions, independent memory views, empirical packing fit, charged query/reset/checkpoint/failed work, and authenticated partition-isolated model-only warmstarts; actual measured evidence in docs/harness/h08-evidence.json; independent review pending",
     "N01 shared ordered token/position gather derivative and restricted authenticated historical model-only parent import; actual MPS covering suite559passed, frozen72-step all-owner exact duplicate/fresh-interpreter resume and one8192-byte matched whole-model QuEST parity passed; source-specific finite seven-step capacity recovery gives provisional64 observations; docs/harness/n01-evidence-fix1.json; early focused execution/cost receipts missing and complete engineering expenditure unknown; independent review pending"
   ],
-  "tasks": {
-    "F01": "complete",
-    "F02": "complete",
-    "F03": "complete",
-    "F04": "complete",
-    "F05": "complete",
-    "H01": "complete",
-    "H03": "complete",
-    "H08": "complete",
-    "N01": "complete",
-    "M11": "complete",
-    "E01": "complete",
-    "E02": "complete",
-    "E03": "complete",
-    "E04": "complete",
-    "E05": "complete",
-    "E06": "complete",
-    "E07": "implemented_pending_review",
-    "H02": "complete",
-    "H04": "complete",
-    "H05": "complete",
-    "H06": "complete",
-    "H07": "complete",
-    "M01": "complete",
-    "M02": "complete",
-    "M03": "complete",
-    "M04": "complete",
-    "M05": "complete",
-    "M06": "complete",
-    "M07": "complete",
-    "M08": "complete",
-    "M09": "complete",
-    "M10": "complete"
-  },
-  "last_valid_checkpoint": null,
-  "blocks": [
-    "WP04 remains inconclusive with no accepted robust B0; WP06 NEEDS_REVISION.",
-    "Final C/LR/B_star, budgets, justified paired pilot, locked n and confirmation are absent; protected scoring is closed.",
-    "Historical H08 real-shape numerical failures and N01 failed/partial work retain their recorded scopes; task engineering completion does not reopen numerical/scientific gates.",
-    "Complete project cost and historical operand coverage remain unknown; source/licensing/fidelity limitations remain.",
-    "Fresh E07 task review, root whole-branch review and later durable root delta remain required."
-  ],
-  "next_command": "Fresh E07 task review, then root-owned whole-branch review and later durable root delta before any only-own-plan cleanup.",
-  "M11": {
-    "status": "engineering_complete_scoped_review_clean; WP06_NEEDS_REVISION",
-    "evidence_index": "docs/harness/m11-evidence.json",
-    "confirmation_eligible": false,
-    "B0": null,
-    "WP04": "inconclusive",
-    "completed": [
-      "M11 corrected-source focused37passed and full sandboxCPU844passed/76skipped",
-      "55actual historical-producer calibration rollouts: noise/sigma/m/query and16/32/64/full508",
-      "Historical bootstrap fit/calibration limited by dropped pre-update last_actions telemetry; fixed with RED/GREEN owner preservation, no old rerun",
-      "Genuine broad-age baseline/bootstrap-policy META-only10752-row reference fit and complete16/256/448pool under5ed817e",
-      "All35changed-fit rollouts includingK16/32/64/full496, two disjoint query panels, broad-age and actualLR49 admissions",
-      "Logging-only action receipt fix16fe874: focused23passed7.20s; prior844CPUcoverage belongs5ed817e",
-      "Authenticated receipt-only accounting6420updates52592640training6078464query204evals; retained task source-offset union"
-    ],
-    "open": [
-      "Prospectively justified longer-horizon/objective calibration and final budget resolution under reopenedWP06",
-      "Matched candidate/LR/static restarts and each own-current-policy refresh using fresh complete current-source pools",
-      "META-development and full official-development selection; robustB0/recipe applicability and familyLR tuningE01",
-      "Shared-range learnedLR and retuned mechanism contrastsE05; global evidence/cost unionE07"
-    ],
-    "next_action": "Future scientifically justified WP06 revision; no packaging-driven extension.",
-    "implementation_commit": "5ed817e8a34640bc0227d9d603947a3ab8933007",
-    "current_reference_design": {
-      "path": "/Users/artemlegotin/ralup-evidence/adaptive-calculus/2026-10-03/m11-20261011/freeze-reference-v1/design.json",
-      "sha256": "c19a02a4b38f41a2876f42177ea2be995b9416874c9518603f34407ddb42f837"
+  "current_gate": "WP06_NEEDS_REVISION",
+  "engineering_status": {
+    "E07": "fix2_implemented_pending_fresh_scoped_review",
+    "E07_fix1": {
+      "base": "532370fa2d9936cef0d336f12d580fbc46fc815b",
+      "findings": [
+        "I1",
+        "I2"
+      ],
+      "source_applicability": "new report.py identity; CPU1250/native prior-source only; root owns final integration admission",
+      "verification": "16 focused report-contract tests; versioned actual raw report/CLI/shell/figures"
     },
-    "WP06": "NEEDS_REVISION",
-    "selected_controller": null,
-    "final_K": null,
-    "final_m": null,
-    "final_iterations": null,
-    "logging_fix_commit": "16fe874b3a7e3249ae833fa977a9db974a7191d2",
-    "disposition_basis": "Exact brief short-horizon/noisy revision branch: both provisional policies improveK32/64 but worsenfull496 on both panels; residual direction-sampling variability. No family defeat/resource impossibility/general rejection.",
-    "fix_round_1": {
-      "finding": "I1",
-      "status": "I1_addressed_by_scoped_review",
-      "fix_base": "e25a96c4c316129abc193f3715493a3fdbfe08ca",
-      "verification": "fix1-verify-selector-v1:27passed1.54s; no model work",
-      "scope": "Only selector eligibility/endpoint/nomination authority; WP06 NEEDS_REVISION unchanged",
-      "future_source_applicability": "New strict runtime identity; normalizer DATA unchanged, no old complete-state import"
+    "E07_fix2": {
+      "base": "af305faf0a8c31a6a7fcffbb517cb088f653c917",
+      "finding": "mutable operational prior_index",
+      "product_source_changed": false,
+      "verification": "current index ref authentication and actual-path regression only"
     },
-    "fix_round_2": {
-      "finding": "N1",
-      "status": "addressed_scoped_review_clean",
-      "fix_base": "e42d5c45f8e9e16bae766fbf027677986ea44921",
-      "verification": "fix2-verify-selector-v1:31passed1.87s; no model work",
-      "scope": "One corpus-reference consumer comparison; original d75faa normalizer and trajectory bytes preserved",
-      "future_source_applicability": "New strict runtime identity; original normalizer DATA unchanged, no old complete-state import"
-    }
+    "evidence_index": "docs/harness/e07-evidence.json",
+    "prior_tasks_complete": 31,
+    "whole_branch_review": "root_owned_after_E07"
   },
   "historical_progress_before_e07": {
-    "tasks": {
-      "F01": "complete",
-      "F02": "complete",
-      "F03": "complete",
-      "F04": "complete",
-      "F05": "complete",
-      "H01": "implemented_pending_review",
-      "H03": "implemented_pending_review",
-      "H08": "implemented_pending_review",
-      "N01": "implemented_pending_review",
-      "M11": "implemented_needs_revision_pending_review"
-    },
-    "next_command": "Scoped M11 N1 fix rereview from e42d5c45f8e9e16bae766fbf027677986ea44921..HEAD; then mandatoryM10 beforeE01.",
     "M11_status": "WP06_NEEDS_REVISION_pending_independent_review",
-    "original_progress_git_object": "3ee6668f97b60da8f4b7151c96341eeece917f5b:progress.json",
     "blocks": [
       "H01 independent reviewer gate pending",
       "WP02 requires independent acceptance of implemented data stages and remaining H04-H08; data correctness alone does not pass the harness gate",
@@ -142,21 +112,57 @@
       "H08 independent review pending; engineering measured capacity does not select B0, convergence or final warmstart/continuation durations (M07)",
       "H08 prospective real-shape MPS numeric scopes all twelve remain FAILED; downstream numerical/scientific acceptance CLOSED after fixed ceiling/discrete/frozen duplicate-envelope violations; historical tiny exact evidence remains scoped; later horizons require separate prospective characterization",
       "N01 independent review pending; original capacity search FAILED with unknown actual counts/selection, completed upper55 plus partial upper7 retained; root-revised seven-step direct probe passed, packing64 provisional; precise throughput/scientific budgets require M07 remeasurement; focused engineering outputs/cost receipts missing, complete engineering expenditure unknown without an inferred bound; controller accounting adjudication pending"
-    ]
-  },
-  "engineering_status": {
-    "prior_tasks_complete": 31,
-    "E07": "fix1_implemented_pending_fresh_scoped_review",
-    "whole_branch_review": "root_owned_after_E07",
-    "evidence_index": "docs/harness/e07-evidence.json",
-    "E07_fix1": {
-      "base": "532370fa2d9936cef0d336f12d580fbc46fc815b",
-      "findings": [
-        "I1",
-        "I2"
-      ],
-      "verification": "16 focused report-contract tests; versioned actual raw report/CLI/shell/figures",
-      "source_applicability": "new report.py identity; CPU1250/native prior-source only; root owns final integration admission"
+    ],
+    "next_command": "Scoped M11 N1 fix rereview from e42d5c45f8e9e16bae766fbf027677986ea44921..HEAD; then mandatoryM10 beforeE01.",
+    "original_progress_git_object": "3ee6668f97b60da8f4b7151c96341eeece917f5b:progress.json",
+    "tasks": {
+      "F01": "complete",
+      "F02": "complete",
+      "F03": "complete",
+      "F04": "complete",
+      "F05": "complete",
+      "H01": "implemented_pending_review",
+      "H03": "implemented_pending_review",
+      "H08": "implemented_pending_review",
+      "M11": "implemented_needs_revision_pending_review",
+      "N01": "implemented_pending_review"
     }
+  },
+  "last_valid_checkpoint": null,
+  "next_command": "Fresh E07 task review, then root-owned whole-branch review and later durable root delta before any only-own-plan cleanup.",
+  "schema_version": 1,
+  "tasks": {
+    "E01": "complete",
+    "E02": "complete",
+    "E03": "complete",
+    "E04": "complete",
+    "E05": "complete",
+    "E06": "complete",
+    "E07": "implemented_pending_review",
+    "F01": "complete",
+    "F02": "complete",
+    "F03": "complete",
+    "F04": "complete",
+    "F05": "complete",
+    "H01": "complete",
+    "H02": "complete",
+    "H03": "complete",
+    "H04": "complete",
+    "H05": "complete",
+    "H06": "complete",
+    "H07": "complete",
+    "H08": "complete",
+    "M01": "complete",
+    "M02": "complete",
+    "M03": "complete",
+    "M04": "complete",
+    "M05": "complete",
+    "M06": "complete",
+    "M07": "complete",
+    "M08": "complete",
+    "M09": "complete",
+    "M10": "complete",
+    "M11": "complete",
+    "N01": "complete"
   }
 }

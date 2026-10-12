@@ -23,10 +23,11 @@ for path in (GIT/'fix1-plots-v1').iterdir():
  if path.suffix in ('.svg','.pdf','.png') or path.name=='plot-provenance.json':assets[path.name]=ref(path)
 identical_png={n:ref(GIT/'fix1-plots-v1'/n)['sha256']==ref(GIT/'plots-v2'/n)['sha256'] for n in ('cost-quality.png','precision.png')}
 assert all(identical_png.values()) # Same plotted values/labels; prior visual inspection applies to exact PNG bytes.
-indexpath=ROOT/'docs/harness/e07-evidence.json';index=json.loads(indexpath.read_bytes());prior_index=ref(indexpath)
+indexpath=ROOT/'docs/harness/e07-evidence.json';index=json.loads(indexpath.read_bytes());prior_index=ref(GIT/'final-admin-v1/handoff/docs/harness/e07-evidence.json')
+assert prior_index['sha256']=='6ee31d1c46a0b8b572946d8aae487739bcb2e148bae2aafd1761ae8bd5f50921' and prior_index['bytes']==40921
 index['initial_assets_before_fix1']=index['assets'].copy();index['assets'].update(assets);index['attempts']+=ops
 index['status']='fix1_implemented_pending_fresh_scoped_review';index['fix1']={'base':'532370fa2d9936cef0d336f12d580fbc46fc815b','findings':['I1','I2'],
- 'prior_index':prior_index,'assets':assets,'plots_identical_PNG_bytes':identical_png,
+ 'prior_index':prior_index,'prior_index_original_location':{'kind':'historical_location_only','original_path':str(indexpath)},'assets':assets,'plots_identical_PNG_bytes':identical_png,
  'source_applicability':'Only focused report-contract checks cover changed report.py. Original CPU1250/native proof and ALL78 equality are historical; H07 strict cross-source restoration remains rejected.',
  'admin_startup':ref(OUT/'startup.json'),'admin_finish_path':str(OUT/'finish.json'),'late_root_delta_required':True}
 indexpath.write_bytes(m.encoded(index))

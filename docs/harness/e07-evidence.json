@@ -1087,10 +1087,58 @@
     },
     "prior_index": {
       "bytes": 40921,
-      "path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/e07-evidence.json",
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/final-admin-v1/handoff/docs/harness/e07-evidence.json",
       "sha256": "6ee31d1c46a0b8b572946d8aae487739bcb2e148bae2aafd1761ae8bd5f50921"
     },
+    "prior_index_original_location": {
+      "kind": "historical_location_only",
+      "meaning": "location at initial capture, not a current operational ArtifactRef",
+      "original_bytes": 40921,
+      "original_path": "/Volumes/git/legotin/adaptive-calculus/.worktrees/ralup-execution/docs/harness/e07-evidence.json",
+      "original_sha256": "6ee31d1c46a0b8b572946d8aae487739bcb2e148bae2aafd1761ae8bd5f50921"
+    },
     "source_applicability": "Only focused report-contract checks cover changed report.py. Original CPU1250/native proof and ALL78 equality are historical; H07 strict cross-source restoration remains rejected."
+  },
+  "fix2": {
+    "admin_finish_path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v2/finish.json",
+    "admin_startup": {
+      "bytes": 28006,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v2/startup.json",
+      "sha256": "d5ae7eb41c4f8a36aba9be9eb31d4cb99366882eddb3ba1e1c804bca555808e0"
+    },
+    "base": "af305faf0a8c31a6a7fcffbb517cb088f653c917",
+    "failed_first_verifier_attempt": {
+      "finish": {
+        "bytes": 1994,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v1/finish.json",
+        "sha256": "119868cf8d94d50490dc416f07427749b96d4b2ec5332a10be977573f5c22919"
+      },
+      "scope": "guard incorrectly equated occurrence count with root unique-ref count; one intended mismatch, no publication",
+      "startup": {
+        "bytes": 28006,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v1/startup.json",
+        "sha256": "d89eb663fc34c70d750391e62011cb6d7184f879ad53fbc7f113a7a33daa2ce7"
+      },
+      "stderr": {
+        "bytes": 986,
+        "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v1/stderr.txt",
+        "sha256": "511bd7e57759eb9ab0519829fb7394489bfd4b0f7bd075e5c84c47d60378bf90"
+      }
+    },
+    "late_root_delta_required": true,
+    "original_index_authenticated": {
+      "bytes": 40921,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/final-admin-v1/handoff/docs/harness/e07-evidence.json",
+      "sha256": "6ee31d1c46a0b8b572946d8aae487739bcb2e148bae2aafd1761ae8bd5f50921"
+    },
+    "previous_index": {
+      "bytes": 62457,
+      "path": "/Volumes/git/legotin/adaptive-calculus/artifacts/ralup-administration/20261012/e07-completion-v1/fix2-admin-v2/producer/docs/harness/e07-evidence.json",
+      "sha256": "86a6c2b04740d0291825ac7a790b0f38b6119b4b682964a89f3e9e76d5a4daf5"
+    },
+    "source_applicability": "metadata/administrative helpers only; src/report.py and all product code unchanged from fix1; prior CPU/native scope remains historical",
+    "status": "implemented_pending_fresh_scoped_review",
+    "verification": "actual current index RED then corrected complete operational refs GREEN; referenced historical JSON contents are not recursively reinterpreted"
   },
   "initial_assets_before_fix1": {
     "E06_dual_root_authentication": {
@@ -1258,5 +1306,5 @@
     "historical_source": "never acquire current restore compatibility through migration or index",
     "native": "numerical exact replay passes; child binding bound fails; original complete-stage bounds and exit0 preserved"
   },
-  "status": "fix1_implemented_pending_fresh_scoped_review"
+  "status": "fix2_implemented_pending_fresh_scoped_review"
 }

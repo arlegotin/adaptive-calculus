@@ -74,6 +74,7 @@ def main():
     parser.add_argument('--git-completion', action='store_true', help='requires specific root E07 completion-location authorization')
     parser.add_argument('--zero-data-admin', action='store_true')
     parser.add_argument('--zero-data-fix1', action='store_true')
+    parser.add_argument('--zero-data-fix2', action='store_true')
     parser.add_argument('--administration-mib',type=int,default=16)
     parser.add_argument('command', nargs=argparse.REMAINDER)
     a = parser.parse_args(); command = a.command
@@ -88,8 +89,10 @@ def main():
             (a.allowance_mib,a.reserve_mib)!=expected[mode] or a.administration_mib!=4 or
             command != [str(BASE/'environment-v1/core/bin/python'),'-B','docs/harness/e07-fix1.py',mode]):
             raise ValueError('Fix1 route restricted to exact finite administrative stages')
-    if not a.zero_data_fix1 and a.administration_mib!=16: raise ValueError('Other stages retain original admin bound')
-    zero_data_route=a.zero_data_admin or a.zero_data_fix1
+    if a.zero_data_fix2 and (not a.git_completion or a.name not in ('fix2-admin-v1','fix2-admin-v2') or a.allowance_mib!=4 or a.reserve_mib!=1 or a.administration_mib!=4 or command != [str(BASE/'environment-v1/core/bin/python'),'-B','docs/harness/e07-fix2.py']):
+        raise ValueError('Fix2 route restricted to exact finite reference repair/publication')
+    if not (a.zero_data_fix1 or a.zero_data_fix2) and a.administration_mib!=16: raise ValueError('Other stages retain original admin bound')
+    zero_data_route=a.zero_data_admin or a.zero_data_fix1 or a.zero_data_fix2
     base=GIT_COMPLETION if a.git_completion else BASE
     dest = base/a.name
     if dest.exists(): raise ValueError('Immutable operation directory already exists')
@@ -125,7 +128,7 @@ def main():
         completion_root=str(base),git_completion_before=git_before,
         prior_E06_git_evidence=prior_git,
         owned_Data_writes_permitted=not a.git_completion,
-        zero_data_admin_exception=a.zero_data_admin, zero_data_fix1_exception=a.zero_data_fix1, data_floor_pass_before=free>=64*GIB,
+        zero_data_admin_exception=a.zero_data_admin, zero_data_fix1_exception=a.zero_data_fix1, zero_data_fix2_exception=a.zero_data_fix2, data_floor_pass_before=free>=64*GIB,
         forecast_physical_bytes=forecast, remaining_reserve_bytes=reserve,
         source={k:dict(sha256=hashlib.sha256(v).hexdigest(), bytes=len(v)) for k,v in raws.items()},
         source_archive='producer', child_allocation_bound_bytes=a.allowance_mib*MIB,
@@ -151,6 +154,9 @@ def main():
             ruling += '\n' + [line for line in context.splitlines() if line.startswith("Ruling: Authorize only E07's finite final administrative publication")][-1]
         if a.zero_data_fix1:
             ruling += '\n' + [line for line in context.splitlines() if line.startswith('Ruling: If the fresh FULL E07 task review confirms')][-1]
+        if a.zero_data_fix2:
+            ruling += '\n' + (ROOT/'.superpowers/sdd/2026-10-03-ralup/E07-fix2-findings.md').read_text()
+            ruling += '\n' + [line for line in (ROOT/'.superpowers/sdd/2026-10-03-ralup/progress.md').read_text().splitlines() if line.startswith('E07 REOPENED')][-1]
         (dest/'root-location-ruling.txt').write_text(ruling+'\n')
     env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(ROOT/'src'),
         PYTORCH_ENABLE_MPS_FALLBACK='0', E07_OPERATION=str(dest), E07_BASE=str(BASE),
